@@ -1,6 +1,8 @@
 # 8 Weeks SQL Challenge: Week #1 Case Study Danny's Diner
 
-Thanks Danny Ma for the excellent case study! You can find it here: https://8weeksqlchallenge.com/case-study-1/
+Thanks Danny Ma for the excellent case study! 
+
+You can find it here: https://8weeksqlchallenge.com/case-study-1/
 
 #### Business Task:
 Danny wants to use the data to answer a few simple questions about his customers, especially about their visiting patterns, how much money they’ve spent and also which menu items are their favourite. 
@@ -12,5 +14,5 @@ Microsoft SQL Server
 
 #### Posted in:
 
-Medium
+Medium (https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab)
 
