@@ -72,20 +72,27 @@ ON s.product_id = m.product_id
 GROUP BY customer_id;
 
 --2. How many days has each customer visited the restaurant?
-SELECT DISTINCT (customer_id), COUNT(order_date) AS visit_no
+SELECT DISTINCT (customer_id), COUNT(DISTINCT(order_date)) AS visit_no
 FROM dbo.sales
 GROUP BY customer_id;
 
 --3. What was the first item from the menu purchased by each customer?
-SELECT customer_id, order_date, product_name
+WITH summary AS
+(
+SELECT customer_id, order_date, product_name,
+	ROW_NUMBER() OVER(PARTITION BY s.customer_id
+		ORDER BY s.order_date) 
+		AS rank
 FROM dbo.sales AS s
 JOIN dbo.menu AS m
 ON s.product_id = m.product_id
-WHERE order_date = '2021-01-01'
-GROUP BY s.customer_id, order_date, product_name
-ORDER BY order_date ASC
---OFFSET 0 ROWS
---FETCH NEXT 3 ROWS ONLY;
+)
+
+SELECT customer_id, order_date, product_name, rank
+FROM summary
+WHERE rank = 1
+GROUP BY customer_id, order_date, product_name, rank;
+
 
 --4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 SELECT DISTINCT(s.product_id), COUNT(s.product_id) AS no_of_orders, product_name
@@ -96,12 +103,20 @@ GROUP BY s.product_id, product_name
 ORDER BY no_of_orders DESC;
 
 --5. Which item was the most popular for each customer?
-SELECT DISTINCT(s.customer_id), s.product_id, m.product_name, COUNT(m.product_id) AS no_of_orders
+WITH summary AS
+(
+SELECT DISTINCT(s.customer_id), s.product_id, m.product_name, COUNT(m.product_id) AS no_of_orders,
+ROW_NUMBER() OVER(PARTITION BY s.customer_id
+		ORDER BY COUNT(m.product_id) DESC) 
+		AS rank
 FROM dbo.menu AS m
 JOIN dbo.sales AS s
 	ON m.product_id = s.product_id
 GROUP BY s.customer_id, s.product_id, m.product_name
-ORDER BY s.customer_id, no_of_orders DESC;
+)
+SELECT DISTINCT(customer_id), product_id, product_name, rank
+FROM summary 
+WHERE rank = 1
 
 --6. Which item was purchased first by the customer after they became a member?
 WITH summary (customer_id, join_date, order_date, product_id, rank) AS 
@@ -116,7 +131,7 @@ WITH summary (customer_id, join_date, order_date, product_id, rank) AS
 	WHERE s.order_date >= m.join_date
 	)
 
-SELECT s.customer_id, s.order_date, s.product_id, m2.product_name 
+SELECT s.customer_id, s.join_date, s.order_date, s.product_id, m2.product_name 
 FROM summary AS s
 JOIN menu AS m2
 	ON s.product_id = m2.product_id
@@ -135,7 +150,7 @@ WITH summary (customer_id, join_date, order_date, product_id, rank) AS
 	WHERE s.order_date < m.join_date
 	)
 
-SELECT s.customer_id, s.order_date, s.product_id, m2.product_name 
+SELECT s.customer_id, s.join_date, s.order_date, s.product_id, m2.product_name 
 FROM summary AS s
 JOIN menu AS m2
 	ON s.product_id = m2.product_id
@@ -145,9 +160,6 @@ WHERE rank = 1;
 WITH summary (customer_id, join_date, order_date, product_id, price) AS 
 	(
     SELECT s.customer_id, m.join_date, s.order_date, s.product_id, mm.price
-      --  ROW_NUMBER() OVER(PARTITION BY s.customer_id
-		--ORDER BY s.order_date DESC) 
-		--AS rank
     FROM sales AS s
 	JOIN members AS m
 		ON s.customer_id = m.customer_id
@@ -156,7 +168,7 @@ WITH summary (customer_id, join_date, order_date, product_id, price) AS
 	WHERE s.order_date < m.join_date
 	)
 
-SELECT s.customer_id, SUM(m.price) AS total_spent_before_member
+SELECT s.customer_id, COUNT(order_date) AS total_items, SUM(m.price) AS total_spent_before_member
 FROM summary AS s
 JOIN menu AS m
 	ON s.product_id = m.product_id
@@ -178,7 +190,7 @@ SELECT DISTINCT(s.customer_id), SUM(p.price) AS total_spent, SUM(p.points) AS to
 FROM price_points AS p
 JOIN sales AS s
 	ON p.product_id = s.product_id
-GROUP BY s.customer_id, p.price, p.points
+GROUP BY s.customer_id, p.price, p.points;
 
 --10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 -- 1. Find validity date of each customer and get last date of January
@@ -201,7 +213,7 @@ FROM dates AS d
 JOIN sales AS s
 	ON d.customer_id = s.customer_id
 JOIN menu AS m
-	ON s.product_id = m.product_id
+	ON s.product_id = m.product_id;
 
 
 
