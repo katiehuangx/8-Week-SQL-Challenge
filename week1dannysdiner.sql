@@ -1,3 +1,12 @@
+-------------------------------------
+--CASE STUDY WEEK #1: DANNY'S DINER--
+-------------------------------------
+
+--Author: Katie Huang
+--Date: 16/07/2021
+--Tool used: MS SQL Server
+--SQL functions: Aggregation functions, Joins, CTE, Row Numbering
+
 CREATE SCHEMA dannys_diner;
 
 CREATE TABLE sales (
@@ -80,7 +89,7 @@ GROUP BY customer_id;
 WITH summary AS
 (
 SELECT customer_id, order_date, product_name,
-	ROW_NUMBER() OVER(PARTITION BY s.customer_id
+	DENSE_RANK() OVER(PARTITION BY s.customer_id
 		ORDER BY s.order_date) 
 		AS rank
 FROM dbo.sales AS s
@@ -92,7 +101,6 @@ SELECT customer_id, order_date, product_name, rank
 FROM summary
 WHERE rank = 1
 GROUP BY customer_id, order_date, product_name, rank;
-
 
 --4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 SELECT DISTINCT(s.product_id), COUNT(s.product_id) AS no_of_orders, product_name
@@ -106,7 +114,7 @@ ORDER BY no_of_orders DESC;
 WITH summary AS
 (
 SELECT DISTINCT(s.customer_id), s.product_id, m.product_name, COUNT(m.product_id) AS no_of_orders,
-ROW_NUMBER() OVER(PARTITION BY s.customer_id
+DENSE_RANK() OVER(PARTITION BY s.customer_id
 		ORDER BY COUNT(m.product_id) DESC) 
 		AS rank
 FROM dbo.menu AS m
@@ -114,15 +122,16 @@ JOIN dbo.sales AS s
 	ON m.product_id = s.product_id
 GROUP BY s.customer_id, s.product_id, m.product_name
 )
+
 SELECT DISTINCT(customer_id), product_id, product_name, rank
 FROM summary 
-WHERE rank = 1
+WHERE rank = 1;
 
 --6. Which item was purchased first by the customer after they became a member?
 WITH summary (customer_id, join_date, order_date, product_id, rank) AS 
 	(
     SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
-        ROW_NUMBER() OVER(PARTITION BY s.customer_id
+        DENSE_RANK() OVER(PARTITION BY s.customer_id
 		ORDER BY s.order_date) 
 		AS rank
     FROM sales AS s
@@ -141,7 +150,7 @@ WHERE rank = 1;
 WITH summary (customer_id, join_date, order_date, product_id, rank) AS 
 	(
     SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
-        ROW_NUMBER() OVER(PARTITION BY s.customer_id
+        DENSE_RANK() OVER(PARTITION BY s.customer_id
 		ORDER BY s.order_date DESC) 
 		AS rank
     FROM sales AS s
@@ -166,7 +175,7 @@ WITH summary (customer_id, join_date, order_date, product_id, price) AS
 	JOIN menu AS mm
 		ON s.product_id = mm.product_id
 	WHERE s.order_date < m.join_date
-	)
+	);
 
 SELECT s.customer_id, COUNT(order_date) AS total_items, SUM(m.price) AS total_spent_before_member
 FROM summary AS s
@@ -198,9 +207,9 @@ GROUP BY s.customer_id, p.price, p.points;
 -- 3. SUM price and points
 
 WITH dates AS (
-SELECT *, DATEADD(day, 6, join_date) AS valid_date, EOMONTH('2021-01-31') AS last_date
-FROM members AS m)
-
+	SELECT *, DATEADD(day, 6, join_date) AS valid_date, 
+		EOMONTH('2021-01-31') AS last_date
+	FROM members AS m)
 
 SELECT d.customer_id, d.join_date, d.valid_date, d.last_date, s.order_date, s.product_id, m.price,
 CASE
@@ -215,14 +224,24 @@ JOIN sales AS s
 JOIN menu AS m
 	ON s.product_id = m.product_id;
 
+------------------------
+--BONUS QUESTIONS-------
+------------------------
 
+-- Join All The Things
+-- Recreate the table with: customer_id, order_date, product_name, price, member (Y/N)
 
+SELECT s.customer_id, s.order_date, m.product_name, m.price,
+CASE
+	WHEN mm.join_date > s.order_date THEN 'N'
+	WHEN mm.join_date <= s.order_date THEN 'Y'
+	ELSE 'N'
+	END AS member
+FROM sales AS s
+LEFT JOIN menu AS m
+	ON s.product_id = m.product_id
+LEFT JOIN members AS mm
+	ON s.customer_id = mm.customer_id;
+	
 
-
-
-
-
-
-
-
-
+------------------------
