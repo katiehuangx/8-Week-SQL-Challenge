@@ -74,14 +74,14 @@ FROM dbo.sales;
 ------------------------
 
 --1. What is the total amount each customer spent at the restaurant?
-SELECT DISTINCT (customer_id), SUM(price) AS total_spent
+SELECT s.customer_id, SUM(price) AS total_spent
 FROM dbo.sales AS s
 JOIN dbo.menu AS m
 ON s.product_id = m.product_id
 GROUP BY customer_id;
 
 --2. How many days has each customer visited the restaurant?
-SELECT DISTINCT (customer_id), COUNT(DISTINCT(order_date)) AS visit_no
+SELECT customer_id, COUNT(DISTINCT(order_date)) AS visit_no
 FROM dbo.sales
 GROUP BY customer_id;
 
@@ -103,7 +103,7 @@ WHERE rank = 1
 GROUP BY customer_id, order_date, product_name, rank;
 
 --4. What is the most purchased item on the menu and how many times was it purchased by all customers?
-SELECT DISTINCT(s.product_id), COUNT(s.product_id) AS no_of_orders, product_name
+SELECT s.product_id, COUNT(s.product_id) AS no_of_orders, product_name
 FROM dbo.sales AS s
 JOIN dbo.menu AS m
 ON s.product_id = m.product_id
@@ -113,7 +113,7 @@ ORDER BY no_of_orders DESC;
 --5. Which item was the most popular for each customer?
 WITH summary AS
 (
-SELECT DISTINCT(s.customer_id), s.product_id, m.product_name, COUNT(m.product_id) AS no_of_orders,
+SELECT s.customer_id, s.product_id, m.product_name, COUNT(m.product_id) AS no_of_orders,
 DENSE_RANK() OVER(PARTITION BY s.customer_id
 		ORDER BY COUNT(m.product_id) DESC) 
 		AS rank
@@ -123,7 +123,7 @@ JOIN dbo.sales AS s
 GROUP BY s.customer_id, s.product_id, m.product_name
 )
 
-SELECT DISTINCT(customer_id), product_id, product_name, rank
+SELECT customer_id, product_id, product_name, rank
 FROM summary 
 WHERE rank = 1;
 
@@ -175,7 +175,7 @@ WITH summary (customer_id, join_date, order_date, product_id, price) AS
 	JOIN menu AS mm
 		ON s.product_id = mm.product_id
 	WHERE s.order_date < m.join_date
-	);
+	)
 
 SELECT s.customer_id, COUNT(order_date) AS total_items, SUM(m.price) AS total_spent_before_member
 FROM summary AS s
@@ -195,7 +195,7 @@ END AS points
 FROM menu
 )
 
-SELECT DISTINCT(s.customer_id), SUM(p.price) AS total_spent, SUM(p.points) AS total_points
+SELECT s.customer_id, SUM(p.price) AS total_spent, SUM(p.points) AS total_points
 FROM price_points AS p
 JOIN sales AS s
 	ON p.product_id = s.product_id
@@ -211,9 +211,10 @@ WITH dates AS (
 		EOMONTH('2021-01-31') AS last_date
 	FROM members AS m)
 
-SELECT d.customer_id, d.join_date, d.valid_date, d.last_date, s.order_date, s.product_id, m.price,
+SELECT d.customer_id, d.join_date, d.valid_date, s.order_date, d.last_date, s.product_id, m.price,
 CASE
-	WHEN s.order_date < d.join_date THEN price * 0
+	WHEN s.order_date < d.join_date THEN price * 10
+	WHEN s.order_date < d.join_date AND s.product_id = 1 THEN price * 20
 	WHEN s.order_date <= d.join_date AND s.order_date <= d.valid_date THEN price * 20
 	WHEN s.order_date BETWEEN d.valid_date AND d.last_date AND s.product_id = 1 THEN price * 20
 	ELSE price * 10
