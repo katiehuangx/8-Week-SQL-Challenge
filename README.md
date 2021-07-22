@@ -1,4 +1,4 @@
-# 8 Weeks SQL Challenge: Week #1 Case Study Danny's Diner
+# 8 Week SQL Challenge: Week #1 Case Study Danny's Diner
 
 Thanks Danny Ma for the excellent case study! 
 
