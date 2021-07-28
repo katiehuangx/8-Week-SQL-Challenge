@@ -1,8 +1,8 @@
 # 8 Week SQL Challenge: Week #2 Pizza Runner
 
-![Uploading image.png…]()
+![image](https://user-images.githubusercontent.com/81607668/127271856-3c0d5b4a-baab-472c-9e24-3c1e3c3359b2.png)
 
-Thanks Danny Ma for the excellent case study! You can find it here: https://8weeksqlchallenge.com/case-study-1/
+Thanks Danny Ma for the excellent case study! You can find it here: https://8weeksqlchallenge.com/case-study-2/
 
 #### Business Task:
 Danny is expanding his new Pizza Empire and at the same time, he wants to Uberize it, so Pizza Runner was launched!
