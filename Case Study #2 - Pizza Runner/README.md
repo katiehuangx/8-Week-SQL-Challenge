@@ -9,18 +9,6 @@ Danny is expanding his new Pizza Empire and at the same time, he wants to Uberiz
 
 Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runner Headquarters (otherwise known as Danny’s house) and also maxed out his credit card to pay freelance developers to build a mobile app to accept orders from customers.
 
-The case study questions are based on the following metrics:
-
-A. Pizza Metrics
-
-B. Runner and Customer Experience
-
-C. Ingredient Optimisation
-
-D. Pricing and Ratings
-
-E. Bonus DML Challenges (DML = Data Manipulation Language)
-
 #### Entity Relationship Diagram:
 
 ![image](https://user-images.githubusercontent.com/81607668/127271531-0b4da8c7-8b24-4a14-9093-0795c4fa037e.png)
