@@ -159,4 +159,83 @@ WHERE rank = 1;
 
 ***
 
+### 6. Which item was purchased first by the customer after they became a member?
+
+````sql
+WITH summary (customer_id, join_date, order_date, product_id, rank) AS 
+(
+   SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
+   DENSE_RANK() OVER(PARTITION BY s.customer_id
+   ORDER BY s.order_date) AS rank
+   FROM sales AS s
+   JOIN members AS m
+      ON s.customer_id = m.customer_id
+   WHERE s.order_date >= m.join_date
+)
+
+SELECT s.customer_id, s.join_date, s.order_date, s.product_id, m2.product_name 
+FROM summary AS s
+JOIN menu AS m2
+   ON s.product_id = m2.product_id
+WHERE rank = 1;
+````
+
+#### Steps:
+- Create **CTE** and filter ***order_date*** to be on or after ***join_date***and rank ***product_id*** by ***order_date***.
+- filter the table by rank = 1 to show 1st item purchased by each customer.
+
+#### Answer:
+| customer_id | join_date | order_date  | product_id | product_name |
+| ----------- | ---------- |----------  |----------- |--------------|
+| A           | 2021-01-07 | 2021-01-07 |  2         | curry        |
+| B           | 2021-01-09 | 2021-01-11 |  1         | sushi        |
+
+- Customer A's first order as member is curry.
+- Customer B's first order as member is sushi.
+
+***
+
+### 7. Which item was purchased just before the customer became a member?
+
+````sql
+WITH summary (customer_id, join_date, order_date, product_id, rank) AS 
+(
+   SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
+   DENSE_RANK() OVER(PARTITION BY s.customer_id
+   ORDER BY s.order_date DESC) AS rank
+   FROM sales AS s
+   JOIN members AS m
+      ON s.customer_id = m.customer_id
+   WHERE s.order_date < m.join_date
+)
+
+SELECT s.customer_id, s.join_date, s.order_date, s.product_id, m2.product_name 
+FROM summary AS s
+JOIN menu AS m2
+   ON s.product_id = m2.product_id
+WHERE rank = 1;
+````
+
+#### Steps:
+- Create a **CTE** to create new column ***rank*** by using **Windows function** and partitioning ***customer_id*** by descending ***order_date*** to find out the last ***order_date*** before customer becomes a member.
+- Filter ***order_date*** before ***join_date***.
+
+#### Answer:
+| customer_id | join_date | order_date  | product_id | product_name |
+| ----------- | ---------- |----------  |----------- |--------------|
+| A           | 2021-01-07 | 2021-01-01 |  1         | sushi        |
+| A           | 2021-01-07 | 2021-01-01 |  2         | curry        |
+| B           | 2021-01-09 | 2021-01-04 |  1         | sushi        |
+
+- Customer A’s last order before becoming a member is sushi and curry.
+- Whereas for Customer B, it's sushi. That must have been a real good sushi!
+
+***
+
+
+
+
+
+
+
 
