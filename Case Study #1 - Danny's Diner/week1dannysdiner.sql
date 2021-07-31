@@ -4,8 +4,7 @@
 
 --Author: Katie Huang
 --Date: 16/07/2021
---Tool used: MS SQL Server
---SQL functions: Aggregation functions, Joins, CTE, Row Numbering
+--Tool used: Microsoft SQL Server 2019
 
 CREATE SCHEMA dannys_diner;
 
