@@ -3,10 +3,8 @@
 ------------------------
 
 --SQL functions: Create temp table, CASE WHEN, TRIM, ALTER TABLE, ALTER data type, filtering using '%'
---Data cleaning, transformation: customer_orders, runner_orders
 
 --TABLE: customer_orders
---Clean up exclusions and extras
 
 SELECT order_id, customer_id, pizza_id, 
 CASE
@@ -22,7 +20,6 @@ INTO #customer_orders
 FROM customer_orders
 
 --TABLE: runner_orders
---Check data type
 
 exec sp_help runner_orders
 
@@ -64,13 +61,3 @@ ALTER COLUMN distance FLOAT
 ALTER TABLE #runner_orders
 ALTER COLUMN duration INT
 
-SELECT *
-FROM #runner_orders
-
---TABLE: pizza_names
---Check data type
-
-exec sp_help pizza_names
-
-ALTER TABLE pizza_names
-ALTER COLUMN pizza_name NVARCHAR(50)
