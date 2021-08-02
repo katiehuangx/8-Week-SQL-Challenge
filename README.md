@@ -40,7 +40,7 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 View the case study [here](https://8weeksqlchallenge.com/case-study-2/).
 
-View my solutions here. (To add link here)
+View my solutions here and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?sk=5463dad7c9b0b1ba83d570f09e1fce90).
 
 #### Business Task:
 Danny is expanding his new Pizza Empire and at the same time, he wants to Uberize it, so Pizza Runner was launched!
