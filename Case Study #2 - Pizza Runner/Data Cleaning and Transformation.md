@@ -78,16 +78,12 @@ SELECT
 FROM pizza_runner.runner_orders;
 ````
 
-Then, we have to alter the `pickup_time`, `distance` and `duration` columns to the correct data type.
+Then, we alter the `pickup_time`, `distance` and `duration` columns to the correct data type.
 
 ````sql
 ALTER TABLE runner_orders_temp
-ALTER COLUMN pickup_time DATETIME;
-
-ALTER TABLE runner_orders_temp
-ALTER COLUMN distance FLOAT;
-
-ALTER TABLE runner_orders_temp
+ALTER COLUMN pickup_time DATETIME,
+ALTER COLUMN distance FLOAT,
 ALTER COLUMN duration INT;
 ````
 
