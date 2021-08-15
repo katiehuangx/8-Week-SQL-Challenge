@@ -1,4 +1,4 @@
-# 8 Week SQL Challenge
+# 🍔 8 Week SQL Challenge
 
 Thanks @DataWithDanny for the excellent SQL case studies! 👋🏻
 
@@ -6,7 +6,7 @@ Thanks @DataWithDanny for the excellent SQL case studies! 👋🏻
 
 ***
 
-## Case Study #1: Danny's Diner 
+## 🍜 Case Study #1: Danny's Diner 
 <img src="https://user-images.githubusercontent.com/81607668/127727503-9d9e7a25-93cb-4f95-8bd0-20b87cb4b459.png" alt="Image" width="600" height="650">
 
 View the case study [here](https://8weeksqlchallenge.com/case-study-1/).
@@ -35,7 +35,7 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ***
 
-## Case Study #2: Pizza Runner
+## 🍕 Case Study #2: Pizza Runner
 
 <img src="https://user-images.githubusercontent.com/81607668/127271856-3c0d5b4a-baab-472c-9e24-3c1e3c3359b2.png" alt="Image" width="600" height="650">
 
@@ -115,3 +115,5 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 
 ***
+
+## 🥑 Case Study #3: Foodie-Fi
