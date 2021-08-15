@@ -21,6 +21,12 @@ Danny wants to use the data to answer a few simple questions about his customers
 ![image](https://user-images.githubusercontent.com/81607668/127271130-dca9aedd-4ca9-4ed8-b6ec-1e1920dca4a8.png)
 
 ### Case Study Questions:
+
+<details>
+<summary>
+Click here to expand!
+</summary>
+
 1. What is the total amount each customer spent at the restaurant?
 2. How many days has each customer visited the restaurant?
 3. What was the first item from the menu purchased by each customer?
@@ -32,6 +38,7 @@ Danny wants to use the data to answer a few simple questions about his customers
 11. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 12. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
+</details>
 
 ***
 
@@ -56,6 +63,11 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 
 #### A. Pizza Metrics
 
+<details>
+<summary>
+Click here to expand!
+</summary>
+
 1. How many pizzas were ordered?
 2. How many unique customer orders were made?
 3. How many successful orders were delivered by each runner?
@@ -67,7 +79,14 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 9. What was the total volume of pizzas ordered for each hour of the day?
 10. What was the volume of orders for each day of the week?
 
+</details>
+  
 #### B. Runner and Customer Experience
+
+<details>
+<summary>
+Click here to expand!
+</summary>
 
 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
@@ -77,7 +96,14 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 7. What is the successful delivery percentage for each runner?
 
+</details>
+  
 #### C. Ingredient Optimisation
+
+<details>
+<summary>
+Click here to expand!
+</summary>
 
 1. What are the standard ingredients for each pizza?
 2. What was the most commonly added extra?
@@ -90,8 +116,15 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 6. For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 7. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+  
+</details>
 
 #### D. Pricing and Ratings
+
+<details>
+<summary>
+Click here to expand!
+</summary>
 
 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
 2. What if there was an additional $1 charge for any pizza extras?
@@ -110,10 +143,19 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 - Total number of pizzas
 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
 
+</details>
+
 #### E. Bonus Questions
+
+<details>
+<summary>
+Click here to expand!
+</summary>
 
 If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 
+</details>
+  
 ***
 
 ## 🥑 Case Study #3: Foodie-Fi
