@@ -75,7 +75,7 @@ WHERE distance != 0
 GROUP BY runner_id, c.order_id, distance, duration
 ORDER BY runner_id, pizza_count, avg_speed
 
---What is the successful delivery percentage for each runner?
+--7. What is the successful delivery percentage for each runner?
 WITH delivery AS
 (
 SELECT runner_id, COUNT(order_id) AS total_delivery,
