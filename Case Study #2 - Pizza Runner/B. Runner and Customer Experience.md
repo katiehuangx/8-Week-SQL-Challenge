@@ -13,6 +13,9 @@ GROUP BY DATEPART(WEEK, registration_date);
 ````
 
 **Answer:**
+
+![image](https://user-images.githubusercontent.com/81607668/129739658-a233932a-9f79-4280-a618-8bab6d3bd1f2.png)
+
 - On Week 1 of Jan 2021, 2 new runners signed up.
 - On Week 2 and 3 of Jan 2021, 1 new runner signed up.
 
@@ -40,6 +43,9 @@ WHERE pickup_minutes > 1;
 ````
 
 **Answer:**
+
+![image](https://user-images.githubusercontent.com/81607668/129739701-e94b75e9-7193-4cf3-8e77-3c76be8b638d.png)
+
 - The average time taken in minutes by runners to arrive at Pizza Runner HQ to pick up the order is 15 minutes.
 
 ### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
@@ -69,6 +75,9 @@ GROUP BY pizza_order;
 ````
 
 **Answer:**
+
+![image](https://user-images.githubusercontent.com/81607668/129739816-05e3ba03-d3fe-4206-8557-869930a897d1.png)
+
 - On average, a single pizza order takes 12 minutes to prepare.
 - An order with 3 pizzas takes 30 minutes at an average of 10 minutes per pizza.
 - It takes 16 minutes to prepare an order with 2 pizzas which is 8 minutes per pizza — making 2 pizzas in a single order the ultimate efficiency rate.
@@ -88,7 +97,10 @@ GROUP BY c.customer_id;
 
 **Answer:**
 
+![image](https://user-images.githubusercontent.com/81607668/129739847-5e338f4f-b42c-4531-9685-e2e822063183.png)
+
 _(Assuming that distance is calculated from Pizza Runner HQ to customer’s place)_
+
 - Customer 104 stays the nearest to Pizza Runner HQ at average distance of 10km, whereas Customer 105 stays the furthest at 25km.
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
@@ -115,6 +127,9 @@ WHERE delivery_time > 1;
 ````
 
 **Answer:**
+
+![image](https://user-images.githubusercontent.com/81607668/129739884-b79fac19-1d83-42ea-bf7d-1c031f6f05de.png)
+
 - The difference between longest (30 minutes) and shortest (10 minutes) delivery time for all orders is 20 minutes.
 
 ### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
@@ -137,6 +152,8 @@ ORDER BY c.order_id;
 
 **Answer:**
 
+![image](https://user-images.githubusercontent.com/81607668/129739931-54127037-0879-43bf-b53f-e4a1a6ebffeb.png)
+
 _(Average speed = Distance in km / Duration in hour)_
 - Runner 1’s average speed runs from 37.5km/h to 60km/h.
 - Runner 2’s average speed runs from 35.1km/h to 93.6km/h. Danny should investigate Runner 2 as the average speed has a 300% fluctuation rate!
@@ -155,6 +172,9 @@ GROUP BY runner_id;
 ````
 
 **Answer:**
+
+![image](https://user-images.githubusercontent.com/81607668/129740007-021d78fb-ec32-46c0-98f2-9e8f1891baed.png)
+
 - Runner 1 has 100% successful delivery.
 - Runner 2 has 75% successful delivery.
 - Runner 3 has 50% successful delivery
