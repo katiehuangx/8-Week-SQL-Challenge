@@ -25,6 +25,7 @@ FROM #customer_orders;
 
 **Answer:**
 
+![image](https://user-images.githubusercontent.com/81607668/129737993-710198bd-433d-469f-b5de-14e4022a3a45.png)
 
 - There are 10 unique customer orders.
 
@@ -40,6 +41,9 @@ GROUP BY runner_id;
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/414/1*NKdjXr6v4Vc9lyLUWLeJSA.png![image](https://user-images.githubusercontent.com/81607668/129738112-6eada46a-8c32-495a-8e26-793b2fec89ef.png)
+
 - Runner 1 has 4 successful delivered orders.
 - Runner 2 has 3 successful delivered orders.
 - Runner 3 has 1 successful delivered order.
@@ -60,6 +64,9 @@ GROUP BY p.pizza_name;
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/464/1*6pMyslgNSGqFsD4wHXjFVQ.png![image](https://user-images.githubusercontent.com/81607668/129738140-c9c002ff-5aed-48ab-bdfa-cadbd98973a9.png)
+
 There are 9 delivered Meatlovers pizzas.
 There are 3 delivered Vegetarian pizzas.
 
@@ -78,6 +85,9 @@ ORDER BY c.customer_id;
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/504/1*7_wHB3Zg2T4JYWQlaJBvAQ.png![image](https://user-images.githubusercontent.com/81607668/129738167-269df165-1c9a-446a-b757-c7fc9a9021ed.png)
+
 - Customer 101 ordered 2 Meatlovers pizzas and 1 Vegetarian pizza.
 - Customer 102 ordered 2 Meatlovers pizzas and 2 Vegetarian pizzas.
 - Customer 103 ordered 3 Meatlovers pizzas and 1 Vegetarian pizza.
@@ -105,7 +115,10 @@ FROM pizza_count_cte;
 ````
 
 **Answer:**
-Maximum number of pizza delivered in a single order is 3 pizzas.
+
+https://miro.medium.com/max/384/1*fC_ySIYqndaccexZAU2Ikg.png![image](https://user-images.githubusercontent.com/81607668/129738201-f676edd4-2530-4663-9ed8-6e6ec4d9cc68.png)
+
+- Maximum number of pizza delivered in a single order is 3 pizzas.
 
 ### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
@@ -129,6 +142,9 @@ ORDER BY c.customer_id;
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/580/1*JSTd2z7Idqs7Q2a_mJUVUQ.png![image](https://user-images.githubusercontent.com/81607668/129738236-2c4383cb-9d42-458c-b9be-9963c336ee58.png)
+
 - Customer 101 and 102 likes his/her pizzas per the original recipe.
 - Customer 103, 104 and 105 have their own preference for pizza topping and requested at least 1 change (extra or exclusion topping) on their pizza.
 
@@ -149,6 +165,9 @@ WHERE r.distance >= 1
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/436/1*Nu6AHOWR6jTsuh-B1SSt9g.png![image](https://user-images.githubusercontent.com/81607668/129738278-dd3e7056-309d-42fc-a5e3-00f7b5d4609e.png)
+
 Only 1 pizza delivered that had both extra and exclusion topping. That’s one fussy customer!
 
 ### 9. What was the total volume of pizzas ordered for each hour of the day?
@@ -162,6 +181,9 @@ GROUP BY DATEPART(HOUR, [order_time]);
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/382/1*std-zRWky_RCZQ9khPbVCQ.png![image](https://user-images.githubusercontent.com/81607668/129738302-573430e9-1785-4c71-adc1-464ffa94de8a.png)
+
 - Highest volume of pizza ordered is at 13 (1:00 pm), 18 (6:00 pm) and 21 (9:00 pm).
 - Lowest volume of pizza ordered is at 11 (11:00 am), 19 (7:00 pm) and 23 (11:00 pm).
 
@@ -176,10 +198,12 @@ GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd');
 ````
 
 **Answer:**
+
+https://miro.medium.com/max/462/1*TR6Qr1iu9DJDeWXLJxFGKw.png![image](https://user-images.githubusercontent.com/81607668/129738331-233744f6-3b57-4f4f-9a51-f7a699a9eb2e.png)
+
 - There are 5 pizzas ordered on Friday and Monday.
 - There are 3 pizzas ordered on Saturday.
 - There is 1 pizza ordered on Sunday.
 
-***Click here for solution for B. Runner and Customer Experience!***
+***Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/B.%20Runner%20and%20Customer%20Experience.md) for solution for B. Runner and Customer Experience!***
 
-***
