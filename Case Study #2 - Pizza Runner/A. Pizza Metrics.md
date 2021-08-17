@@ -67,8 +67,7 @@ GROUP BY p.pizza_name;
 
 ![image](https://user-images.githubusercontent.com/81607668/129738140-c9c002ff-5aed-48ab-bdfa-cadbd98973a9.png)
 
-There are 9 delivered Meatlovers pizzas.
-There are 3 delivered Vegetarian pizzas.
+- There are 9 delivered Meatlovers pizzas and 3 Vegetarian pizzas.
 
 ### 5. How many Vegetarian and Meatlovers were ordered by each customer?**
 
