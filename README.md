@@ -160,7 +160,7 @@ If Danny wants to expand his range of pizzas - how would this impact the existin
 
 ## 🥑 Case Study #3: Foodie-Fi
 
-<width="500" height="520" alt="image" src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png">
+<img src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png" width="500" height="520" alt="image">
 
 View the case study [here](https://8weeksqlchallenge.com/case-study-3/).
 
