@@ -139,10 +139,6 @@ ORDER BY next_plan;
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
-
-
-
-
 ### 8. How many customers have upgraded to an annual plan in 2020?
 ````sql
 SELECT 
@@ -159,8 +155,7 @@ WHERE plan_id = 3
 ### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
 ````sql
-WITH 
-  trial_plan AS 
+WITH trial_plan AS 
   (SELECT 
       customer_id, 
       start_date AS trial_date
@@ -181,15 +176,13 @@ FROM trial_plan tp
 JOIN annual_plan ap
   ON tp.customer_id = ap.customer_id;
 ````
+
 **Answer:**
 
 <img width="182" alt="image" src="https://user-images.githubusercontent.com/81607668/129856015-4bafa22c-b732-4c71-93d6-c9417e8556b9.png">
 
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
-
-
-
 
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
