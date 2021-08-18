@@ -62,9 +62,9 @@ _Note: Question calls for events occuring after 1 Jan 2021 only, but I run the q
 ````sql
 SELECT 
   COUNT(*) AS churn_count,
-  ROUND(100 * COUNT(*) / (
+  ROUND(100 * COUNT(*)::NUMERIC / (
     SELECT COUNT(DISTINCT customer_id) 
-    FROM foodie_fi.subscriptions),0) AS churn_percentage
+    FROM foodie_fi.subscriptions),1) AS churn_percentage
 FROM foodie_fi.subscriptions s
 JOIN foodie_fi.plans p
   ON s.plan_id = p.plan_id
@@ -73,9 +73,9 @@ WHERE s.plan_id = 4;
 
 **Answer:**
 
-<img width="328" alt="image" src="https://user-images.githubusercontent.com/81607668/129831248-b875bee3-de51-475d-8cf7-99d2a2e86160.png">
+<img width="368" alt="image" src="https://user-images.githubusercontent.com/81607668/129840630-adebba8c-9219-4816-bba6-ba8119f298d9.png">
 
-- There are 307 customers who have churned, which is 30% of Foodie-Fi customer base.
+- There are 307 customers who have churned, which is 30.7% of Foodie-Fi customer base.
 
 ### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
@@ -109,8 +109,33 @@ WHERE plan_id = 4 -- Filter to churn plan
 
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
+WITH next_plan_cte AS (
+SELECT 
+  customer_id, 
+  plan_id, 
+  LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY plan_id) as next_plan
+FROM foodie_fi.subscriptions)
+
+SELECT 
+  next_plan, 
+  COUNT(*) AS conversions,
+  ROUND(100 * COUNT(*)::NUMERIC / (
+    SELECT COUNT(DISTINCT customer_id) 
+    FROM foodie_fi.subscriptions),1) AS conversion_percentage
+FROM next_plan_cte
+WHERE next_plan IS NOT NULL 
+  AND plan_id = 0
+GROUP BY next_plan
+ORDER BY next_plan;
+
+<img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/129843509-2cfb76ed-82cc-4291-a59f-a854580a115e.png">
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+
+
+
+
+
 ### 8. How many customers have upgraded to an annual plan in 2020?
 ### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
