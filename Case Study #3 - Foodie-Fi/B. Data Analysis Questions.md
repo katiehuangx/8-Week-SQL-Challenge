@@ -86,7 +86,9 @@ SELECT
   s.plan_id, 
   p.plan_name,
   -- Run a ROW_NUMBER() to rank the plans from 0 to 4
-  ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.plan_id) AS plan_rank 
+  ROW_NUMBER() OVER (
+    PARTITION BY s.customer_id 
+    ORDER BY s.plan_id) AS plan_rank 
 FROM foodie_fi.subscriptions s
 JOIN foodie_fi.plans p
   ON s.plan_id = p.plan_id)
@@ -109,11 +111,14 @@ WHERE plan_id = 4 -- Filter to churn plan
 
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
+````sql
 WITH next_plan_cte AS (
 SELECT 
   customer_id, 
   plan_id, 
-  LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY plan_id) as next_plan
+  LEAD(plan_id, 1) OVER(
+    PARTITION BY customer_id 
+    ORDER BY plan_id) as next_plan
 FROM foodie_fi.subscriptions)
 
 SELECT 
@@ -127,6 +132,8 @@ WHERE next_plan IS NOT NULL
   AND plan_id = 0
 GROUP BY next_plan
 ORDER BY next_plan;
+````
+**Answer:**
 
 <img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/129843509-2cfb76ed-82cc-4291-a59f-a854580a115e.png">
 
