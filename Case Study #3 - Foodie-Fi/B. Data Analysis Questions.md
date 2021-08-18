@@ -144,12 +144,13 @@ ORDER BY next_plan;
 
 
 ### 8. How many customers have upgraded to an annual plan in 2020?
-
+````sql
 SELECT 
   COUNT(DISTINCT customer_id) AS unique_customer
 FROM foodie_fi.subscriptions
 WHERE plan_id = 3
   AND start_date <= '2020-12-31'
+````
 
 **Answer:**
 
@@ -157,32 +158,38 @@ WHERE plan_id = 3
 
 ### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
+````sql
 WITH 
   trial_plan AS 
   (SELECT 
-    customer_id, 
-    start_date AS trial_date
+      customer_id, 
+      start_date AS trial_date
   FROM foodie_fi.subscriptions
   WHERE plan_id = 0
-),
+  ),
   annual_plan AS
   (SELECT 
-    customer_id, 
-    start_date AS annual_date
+      customer_id, 
+      start_date AS annual_date
   FROM foodie_fi.subscriptions
   WHERE plan_id = 3
-)
+  )
 
 SELECT 
-  ROUND(AVG(annual_date - trial_date),2) AS avg_days_to_upgrade
+  ROUND(AVG(annual_date - trial_date),0) AS avg_days_to_upgrade
 FROM trial_plan tp
 JOIN annual_plan ap
   ON tp.customer_id = ap.customer_id;
-
+````
 **Answer:**
 
-<img width="175" alt="image" src="https://user-images.githubusercontent.com/81607668/129855582-7dd3bf45-b12a-41cc-a8c6-6ed96c48197f.png">
+<img width="182" alt="image" src="https://user-images.githubusercontent.com/81607668/129856015-4bafa22c-b732-4c71-93d6-c9417e8556b9.png">
+
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+
+
+
+
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
