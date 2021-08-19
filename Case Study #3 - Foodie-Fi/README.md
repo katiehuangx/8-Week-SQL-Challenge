@@ -2,20 +2,26 @@
 
 <img src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png" width="500" height="520" alt="image">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-3/).
+## 📚 Table of Contents
+- [Business Task](#business-task)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
+- [Case Study Questions](#case-study-questions)
+- Solution
+  - [A. Customer Journey](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/A.%20Customer%20Journey.md)
+  - [B. Data Analysis Questions](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md)
 
-## 💡 Business Task:
+***
+
+## Business Task
 Danny and his friends launched a new startup Foodie-Fi and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world.
 
 This case study focuses on using subscription style digital data to answer important business questions on customer journey, payments, and business performances.
 
-## 💡 Entity Relationship Diagram:
+## Entity Relationship Diagram
 
 ![image](https://user-images.githubusercontent.com/81607668/129744449-37b3229b-80b2-4cce-b8e0-707d7f48dcec.png)
 
-*** 
-
-## 💡 Solution
+## Case Study Questions
 
 ### A. Customer Journey
 
