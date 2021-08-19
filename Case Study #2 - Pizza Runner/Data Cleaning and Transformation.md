@@ -91,5 +91,4 @@ This is how the clean `runner_orders_temp` table looks like and we will use this
 
 <img width="915" alt="image" src="https://user-images.githubusercontent.com/81607668/129472778-6403381d-6e30-4884-a011-737b1eff7379.png">
 
-
 ***
