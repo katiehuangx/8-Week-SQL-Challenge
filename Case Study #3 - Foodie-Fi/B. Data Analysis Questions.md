@@ -80,6 +80,7 @@ WHERE s.plan_id = 4;
 ### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
 ````sql
+-- To find ranking of the plans by customers and plans
 WITH ranking AS (
 SELECT 
   s.customer_id, 
@@ -112,11 +113,12 @@ WHERE plan_id = 4 -- Filter to churn plan
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
 ````sql
+-- To retrieve next plan's start date located in the next row based on current row
 WITH next_plan_cte AS (
 SELECT 
   customer_id, 
   plan_id, 
-  LEAD(plan_id, 1) OVER(
+  LEAD(plan_id, 1) OVER( -- Offset by 1 to retrieve the immediate row's value below 
     PARTITION BY customer_id 
     ORDER BY plan_id) as next_plan
 FROM foodie_fi.subscriptions)
@@ -139,6 +141,8 @@ ORDER BY next_plan;
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
+````sql
+-- To retrieve next plan's start date located in the next row based on current row
 WITH next_plan AS(
 SELECT 
   customer_id, 
@@ -147,6 +151,7 @@ SELECT
   LEAD(start_date, 1) OVER(PARTITION BY customer_id ORDER BY start_date) as next_date
 FROM foodie_fi.subscriptions
 WHERE start_date <= '2020-12-31'),
+-- To find breakdown of customers with existing plans on or after 31 Dec 2020
 customer_breakdown AS (
   SELECT plan_id, COUNT(DISTINCT customer_id) AS customers
     FROM next_plan
@@ -161,12 +166,14 @@ SELECT plan_id, customers,
 FROM customer_breakdown
 GROUP BY plan_id, customers
 ORDER BY plan_id
+````
 
 **Answer:**
 
 <img width="448" alt="image" src="https://user-images.githubusercontent.com/81607668/130024738-f16ad7dc-5fed-469f-9c6d-0a24453e1dcd.png">
 
 ### 8. How many customers have upgraded to an annual plan in 2020?
+
 ````sql
 SELECT 
   COUNT(DISTINCT customer_id) AS unique_customer
@@ -179,23 +186,27 @@ WHERE plan_id = 3
 
 <img width="160" alt="image" src="https://user-images.githubusercontent.com/81607668/129848711-3b64442a-5724-4723-bea7-e4515a8687ec.png">
 
+- 196 customers upgraded to an annual plan in 2020.
+
 ### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
 ````sql
+-- Filter results to customers at trial plan = 0
 WITH trial_plan AS 
-  (SELECT 
-      customer_id, 
-      start_date AS trial_date
-  FROM foodie_fi.subscriptions
-  WHERE plan_id = 0
-  ),
-  annual_plan AS
-  (SELECT 
-      customer_id, 
-      start_date AS annual_date
-  FROM foodie_fi.subscriptions
-  WHERE plan_id = 3
-  )
+(SELECT 
+  customer_id, 
+  start_date AS trial_date
+FROM foodie_fi.subscriptions
+WHERE plan_id = 0
+),
+-- Filter results to customers at pro annual plan = 3
+annual_plan AS
+(SELECT 
+  customer_id, 
+  start_date AS annual_date
+FROM foodie_fi.subscriptions
+WHERE plan_id = 3
+)
 
 SELECT 
   ROUND(AVG(annual_date - trial_date),0) AS avg_days_to_upgrade
@@ -208,30 +219,34 @@ JOIN annual_plan ap
 
 <img width="182" alt="image" src="https://user-images.githubusercontent.com/81607668/129856015-4bafa22c-b732-4c71-93d6-c9417e8556b9.png">
 
+- On average, it takes 105 days for a customer to upragde to an annual plan from the day they join Foodie-Fi.
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
 ````sql
+-- Filter results to customers at trial plan = 0
 WITH trial_plan AS 
-  (SELECT 
-    customer_id, 
-    start_date AS trial_date
-  FROM foodie_fi.subscriptions
-  WHERE plan_id = 0
-  ),
-  annual_plan AS
-  (SELECT 
-    customer_id, 
-    start_date AS annual_date
-  FROM foodie_fi.subscriptions
-  WHERE plan_id = 3
-  ),
-  bins AS 
-  (SELECT 
-    WIDTH_BUCKET(ap.annual_date - tp.trial_date, 0, 360, 12) AS avg_days_to_upgrade
-    FROM trial_plan tp
-    JOIN annual_plan ap
-      ON tp.customer_id = ap.customer_id)
+(SELECT 
+  customer_id, 
+  start_date AS trial_date
+FROM foodie_fi.subscriptions
+WHERE plan_id = 0
+),
+-- Filter results to customers at pro annual plan = 3
+annual_plan AS
+(SELECT 
+  customer_id, 
+  start_date AS annual_date
+FROM foodie_fi.subscriptions
+WHERE plan_id = 3
+),
+-- Sort values above in buckets of 12 with range of 30 days each
+bins AS 
+(SELECT 
+  WIDTH_BUCKET(ap.annual_date - tp.trial_date, 0, 360, 12) AS avg_days_to_upgrade
+FROM trial_plan tp
+JOIN annual_plan ap
+  ON tp.customer_id = ap.customer_id)
   
 SELECT 
   ((avg_days_to_upgrade - 1) * 30 || ' - ' || (avg_days_to_upgrade) * 30) || ' days' AS breakdown, 
@@ -248,6 +263,7 @@ ORDER BY avg_days_to_upgrade;
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
 ````sql
+-- To retrieve next plan's start date located in the next row based on current row
 WITH next_plan_cte AS (
 SELECT 
   customer_id, 
