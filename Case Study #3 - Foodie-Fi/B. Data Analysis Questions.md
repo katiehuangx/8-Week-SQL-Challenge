@@ -139,6 +139,33 @@ ORDER BY next_plan;
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
+WITH next_plan AS(
+SELECT 
+  customer_id, 
+  plan_id, 
+  start_date,
+  LEAD(start_date, 1) OVER(PARTITION BY customer_id ORDER BY start_date) as next_date
+FROM foodie_fi.subscriptions
+WHERE start_date <= '2020-12-31'),
+customer_breakdown AS (
+  SELECT plan_id, COUNT(DISTINCT customer_id) AS customers
+    FROM next_plan
+    WHERE (next_date IS NOT NULL AND (start_date < '2020-12-31' AND next_date > '2020-12-31'))
+      OR (next_date IS NULL AND start_date < '2020-12-31')
+    GROUP BY plan_id)
+
+SELECT plan_id, customers, 
+  ROUND(100 * customers::NUMERIC / (
+    SELECT COUNT(DISTINCT customer_id) 
+    FROM foodie_fi.subscriptions),1) AS percentage
+FROM customer_breakdown
+GROUP BY plan_id, customers
+ORDER BY plan_id
+
+**Answer:**
+
+<img width="448" alt="image" src="https://user-images.githubusercontent.com/81607668/130024738-f16ad7dc-5fed-469f-9c6d-0a24453e1dcd.png">
+
 ### 8. How many customers have upgraded to an annual plan in 2020?
 ````sql
 SELECT 
@@ -184,6 +211,7 @@ JOIN annual_plan ap
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
+````sql
 WITH trial_plan AS 
   (SELECT 
     customer_id, 
@@ -211,10 +239,30 @@ SELECT
 FROM bins
 GROUP BY avg_days_to_upgrade
 ORDER BY avg_days_to_upgrade;
+````
 
 **Answer:**
 
 <img width="399" alt="image" src="https://user-images.githubusercontent.com/81607668/130019061-d2b54041-83ff-4a92-b30e-f519fb904d91.png">
 
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+````sql
+WITH next_plan_cte AS (
+SELECT 
+  customer_id, 
+  plan_id, 
+  LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY plan_id) as next_plan
+FROM foodie_fi.subscriptions)
+
+SELECT 
+  COUNT(*) AS downgraded
+FROM next_plan_cte
+WHERE plan_id = 2 AND next_plan = 1;
+````
+
+**Answer:**
+
+<img width="115" alt="image" src="https://user-images.githubusercontent.com/81607668/130021792-6c37301f-bdf8-4d57-bbfd-ca86fc759a70.png">
+
 
