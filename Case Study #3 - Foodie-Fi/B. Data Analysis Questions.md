@@ -268,17 +268,20 @@ WITH next_plan_cte AS (
 SELECT 
   customer_id, 
   plan_id, 
+  start_date,
   LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY plan_id) as next_plan
 FROM foodie_fi.subscriptions)
 
 SELECT 
   COUNT(*) AS downgraded
 FROM next_plan_cte
-WHERE plan_id = 2 AND next_plan = 1;
+WHERE start_date <= '2020-12-31'
+  AND plan_id = 2 
+  AND next_plan = 1;
 ````
 
 **Answer:**
 
 <img width="115" alt="image" src="https://user-images.githubusercontent.com/81607668/130021792-6c37301f-bdf8-4d57-bbfd-ca86fc759a70.png">
 
-
+- No customer has downgrade from pro monthly to basic monthly in 2020.
