@@ -15,9 +15,7 @@ Thanks @DataWithDanny for the excellent SQL case studies! 👋🏻
 ## Case Study #1: Danny's Diner 
 <img src="https://user-images.githubusercontent.com/81607668/127727503-9d9e7a25-93cb-4f95-8bd0-20b87cb4b459.png" alt="Image" width="500" height="520">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-1/).
-
-View my **solutions** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Danny's%20Diner%20Solution.md) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe).
+View the case study [here](https://8weeksqlchallenge.com/case-study-1/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Danny's%20Diner%20Solution.md) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe).
 
 ### Business Task:
 Danny wants to use the data to answer a few simple questions about his customers, especially about their visiting patterns, how much money they’ve spent and also which menu items are their favourite. 
@@ -52,9 +50,7 @@ Click here to expand!
 
 <img src="https://user-images.githubusercontent.com/81607668/127271856-3c0d5b4a-baab-472c-9e24-3c1e3c3359b2.png" alt="Image" width="500" height="520">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-2/).
-
-View my **solutions** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?sk=5463dad7c9b0b1ba83d570f09e1fce90).
+View the case study [here](https://8weeksqlchallenge.com/case-study-2/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?sk=5463dad7c9b0b1ba83d570f09e1fce90).
 
 ### Business Task:
 Danny is expanding his new Pizza Empire and at the same time, he wants to Uberize it, so Pizza Runner was launched!
@@ -168,9 +164,7 @@ If Danny wants to expand his range of pizzas - how would this impact the existin
 
 <img src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png" width="500" height="520" alt="image">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-3/).
-
-View my **solutions** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi) and on [Medium].
+View the case study [here](https://8weeksqlchallenge.com/case-study-3/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi) and on [Medium].
 
 ### Business Task:
 Danny and his friends launched a new startup Foodie-Fi and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world.
@@ -251,3 +245,59 @@ The following are open ended questions which might be asked during a technical i
 ***
 
 ## Case Study #4: Data Bank
+
+<img src="https://user-images.githubusercontent.com/81607668/130343294-a8dcceb7-b6c3-4006-8ad2-fab2f6905258.png" alt="Image" width="500" height="520">
+
+View the case study [here](https://8weeksqlchallenge.com/case-study-4/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%234%20-%20Data%20Bank) and on [Medium].
+
+### Business Task:
+Danny launched a new initiative, Data Bank which runs just like any other digital bank - but it isn’t only for banking activities, they also have the world’s most secure distributed data storage platform!
+
+Customers are allocated cloud data storage limits which are directly linked to how much money they have in their accounts. There are a few interesting caveats that go with this business model, and this is where the Data Bank team need your help!
+
+The management team at Data Bank want to increase their total customer base - but also need some help tracking just how much data storage their customers will need.
+
+This case study is all about calculating metrics, growth and helping the business analyse their data in a smart way to better forecast and plan for their future developments!
+
+### Entity Relationship Diagram:
+
+<img width="631" alt="image" src="https://user-images.githubusercontent.com/81607668/130343339-8c9ff915-c88c-4942-9175-9999da78542c.png">
+
+### Case Study Questions:
+
+**A. Customer Nodes Exploration**
+
+<details>
+<summary>
+Click here to expand!
+</summary>
+
+1. How many unique nodes are there on the Data Bank system?
+2. What is the number of nodes per region?
+3. How many customers are allocated to each region?
+4. How many days on average are customers reallocated to a different node?
+5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
+
+</details>
+
+**B. Customer Transactions**
+
+<details>
+<summary>
+Click here to expand!
+</summary>
+  
+1. What is the unique count and total amount for each transaction type?
+2. What is the average total historical deposit counts and amounts for all customers?
+3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+4. What is the closing balance for each customer at the end of the month?
+5. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:
+  - Have a negative first month balance?
+  - Have a positive first month balance?
+  - Increase their opening month’s positive closing balance by more than 5% in the following month?
+  - Reduce their opening month’s positive closing balance by more than 5% in the following month?
+  - Move from a positive balance in the first month to a negative balance in the second month?
+  
+</details>
+
+***
