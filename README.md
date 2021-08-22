@@ -56,16 +56,16 @@ View the case study [here](https://8weeksqlchallenge.com/case-study-2/).
 
 View my **solutions** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?sk=5463dad7c9b0b1ba83d570f09e1fce90).
 
-#### Business Task:
+### Business Task:
 Danny is expanding his new Pizza Empire and at the same time, he wants to Uberize it, so Pizza Runner was launched!
 
 Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runner Headquarters (otherwise known as Danny’s house) and also maxed out his credit card to pay freelance developers to build a mobile app to accept orders from customers. 
 
-#### Entity Relationship Diagram:
+### Entity Relationship Diagram:
 
 ![image](https://user-images.githubusercontent.com/81607668/127271531-0b4da8c7-8b24-4a14-9093-0795c4fa037e.png)
 
-#### Case Study Questions:
+### Case Study Questions:
 
 #### A. Pizza Metrics
 
@@ -172,16 +172,16 @@ View the case study [here](https://8weeksqlchallenge.com/case-study-3/).
 
 View my **solutions** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi) and on [Medium].
 
-#### Business Task:
+### Business Task:
 Danny and his friends launched a new startup Foodie-Fi and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world.
 
 This case study focuses on using subscription style digital data to answer important business questions on customer journey, payments, and business performances.
 
-#### Entity Relationship Diagram:
+### Entity Relationship Diagram:
 
 ![image](https://user-images.githubusercontent.com/81607668/129744449-37b3229b-80b2-4cce-b8e0-707d7f48dcec.png)
 
-#### Case Study Questions:
+### Case Study Questions:
 
 #### A. Customer Journey
 
