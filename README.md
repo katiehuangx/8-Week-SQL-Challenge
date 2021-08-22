@@ -4,9 +4,15 @@ Thanks @DataWithDanny for the excellent SQL case studies! 👋🏻
 
 **#8WeekSQLChallenge**
 
+## 📚 Table of Contents
+- [Case Study #1: Danny's Diner](#case-study-1-dannys-diner)
+- [Case Study #2: Pizza Runner](#case-study-2-pizza-runner)
+- [Case Study #3: Foodie-Fi](#case-study-3-foodie-fi)
+- [Case Study #4: Data Bank](#case-study-4-data-bank)
+
 ***
 
-## 🍜 Case Study #1: Danny's Diner 
+## Case Study #1: Danny's Diner 
 <img src="https://user-images.githubusercontent.com/81607668/127727503-9d9e7a25-93cb-4f95-8bd0-20b87cb4b459.png" alt="Image" width="500" height="520">
 
 View the case study [here](https://8weeksqlchallenge.com/case-study-1/).
@@ -42,7 +48,7 @@ Click here to expand!
 
 ***
 
-## 🍕 Case Study #2: Pizza Runner
+## Case Study #2: Pizza Runner
 
 <img src="https://user-images.githubusercontent.com/81607668/127271856-3c0d5b4a-baab-472c-9e24-3c1e3c3359b2.png" alt="Image" width="500" height="520">
 
@@ -158,7 +164,7 @@ If Danny wants to expand his range of pizzas - how would this impact the existin
   
 ***
 
-## 🥑 Case Study #3: Foodie-Fi
+## Case Study #3: Foodie-Fi
 
 <img src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png" width="500" height="520" alt="image">
 
@@ -243,3 +249,5 @@ The following are open ended questions which might be asked during a technical i
 </details>
 
 ***
+
+## Case Study #4: Data Bank
