@@ -4,19 +4,21 @@
 
 1. What is the unique count and total amount for each transaction type?
 
+````sql
 SELECT 
   txn_type, 
   COUNT(*), 
   SUM(txn_amount) AS total_amount
 FROM data_bank.customer_transactions
 GROUP BY txn_type
+````
 
 **Answer:**
 
 <img width="479" alt="image" src="https://user-images.githubusercontent.com/81607668/130349158-acb36028-df02-472a-bd34-15856f93b2b8.png">
 
 2. What is the average total historical deposit counts and amounts for all customers?
-
+````sql
 --Find count of each transaction type and average transaction amount for each customer
 WITH deposits AS (
   SELECT 
@@ -32,7 +34,7 @@ SELECT
   ROUND(AVG(avg_amount),2) AS avg_amount
 FROM deposits
 WHERE txn_type = 'deposit';
-
+````
 **Answer:**
 
 <img width="325" alt="image" src="https://user-images.githubusercontent.com/81607668/130349626-97309a3e-790b-47a9-b9bf-32e7f6f078e7.png">
