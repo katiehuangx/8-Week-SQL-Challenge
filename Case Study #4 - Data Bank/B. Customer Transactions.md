@@ -81,8 +81,31 @@ ORDER BY month;
 
 **4. What is the closing balance for each customer at the end of the month? Also show the change in balance each month in the same table output.**
 
-This is a particularly difficult question - with probably the most CTEs I have in a single query! 5 CTEs! I have run each CTE's results to show my though process. 
+This is a particularly difficult question - with probably the most CTEs I have in a single query! 5 CTEs! 
 
+Firstly, I will show each CTE's output in order to provide a walkthrough of my thought process. I have also appended the full syntax below. 
+
+_Note: If you have a shorter solution to this question, please share yours with me 🙂_
+
+````sql
+-- CTE 1 - To affix the transaction amount as an inflow (+) or outflow (-)
+WITH monthly_balances AS (
+SELECT 
+  customer_id, 
+  (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
+  txn_type, 
+  txn_amount,
+  SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
+    ELSE txn_amount END) AS transaction_balance
+FROM data_bank.customer_transactions
+GROUP BY customer_id, txn_date, txn_type, txn_amount)
+````
+
+Referring to the output below, deposits are inflow hence, it is a positive value whereas purchases and withdrawals are outflow hence, they are negative values with a '-' affix.
+<img width="757" alt="image" src="https://user-images.githubusercontent.com/81607668/130432171-91eaa3db-9ac9-4e19-a512-72720859b0cd.png">
+
+
+````sql
 WITH monthly_balances AS (
 SELECT 
   customer_id, 
@@ -101,7 +124,9 @@ SELECT
 FROM data_bank.customer_transactions
 ),
 solution_t1 AS (
-SELECT ld.customer_id, ld.ending_month,
+SELECT 
+  ld.customer_id, 
+  ld.ending_month,
   COALESCE(mb.transaction_balance, 0) AS monthly_change,
   SUM(mb.transaction_balance) OVER 
     (PARTITION BY ld.customer_id ORDER BY ld.ending_month
@@ -127,8 +152,9 @@ SELECT customer_id, ending_month, monthly_change, closing_balance,
 FROM solution_t3
 WHERE lead_no IS NULL;
 
-<img width="634" alt="image" src="https://user-images.githubusercontent.com/81607668/130431426-1882daec-8c93-4818-b041-943883aa21cb.png">
+Answer:
 
+<img width="634" alt="image" src="https://user-images.githubusercontent.com/81607668/130431426-1882daec-8c93-4818-b041-943883aa21cb.png">
 
 6. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:
   - Have a negative first month balance?
