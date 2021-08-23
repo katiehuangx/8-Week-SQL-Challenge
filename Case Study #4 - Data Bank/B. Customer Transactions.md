@@ -85,27 +85,10 @@ This is a particularly difficult question - with probably the most CTEs I have i
 
 Firstly, I will show each CTE's output in order to provide a walkthrough of my thought process. I have also appended the full syntax below. 
 
-_Note: If you have a shorter solution to this question, please share yours with me 🙂_
+_Note: If you have a shorter solution to this question, do share it 🙂_
 
 ````sql
--- CTE 1 - To affix the transaction amount as an inflow (+) or outflow (-)
-WITH monthly_balances AS (
-SELECT 
-  customer_id, 
-  (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
-  txn_type, 
-  txn_amount,
-  SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
-    ELSE txn_amount END) AS transaction_balance
-FROM data_bank.customer_transactions
-GROUP BY customer_id, txn_date, txn_type, txn_amount)
-````
-
-Referring to the output below, deposits are inflow hence, it is a positive value whereas purchases and withdrawals are outflow hence, they are negative values with a '-' affix.
-<img width="757" alt="image" src="https://user-images.githubusercontent.com/81607668/130432171-91eaa3db-9ac9-4e19-a512-72720859b0cd.png">
-
-
-````sql
+-- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
 WITH monthly_balances AS (
 SELECT 
   customer_id, 
@@ -117,12 +100,16 @@ SELECT
 FROM data_bank.customer_transactions
 GROUP BY customer_id, txn_date, txn_type, txn_amount
 ),
+
+-- CTE 2 - To generate txn_date as a series of last day of month for each customer
 last_day AS (
 SELECT
   DISTINCT customer_id,
   ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
 FROM data_bank.customer_transactions
 ),
+
+-- CTE 3 - Create closing balance for each month using Window function SUM() to add monthly_change
 solution_t1 AS (
 SELECT 
   ld.customer_id, 
@@ -137,11 +124,15 @@ LEFT JOIN monthly_balances mb
   ON ld.ending_month = mb.closing_month
   AND ld.customer_id = mb.customer_id
 ),
+
+-- CTE 4 - Use Window function ROW_NUMBER() to rank the transaction within each month
 solution_t2 AS (
 SELECT customer_id, ending_month, monthly_change, closing_balance,
   ROW_NUMBER() OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS record_no
 FROM solution_t1
 ),
+
+-- CTE 5 - Use Window function LEAD() to query the value in next row and retrieve NULL for last row
 solution_t3 AS (
 SELECT customer_id, ending_month, monthly_change, closing_balance, record_no,
   LEAD(record_no) OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS lead_no
@@ -151,8 +142,9 @@ SELECT customer_id, ending_month, monthly_change, closing_balance,
   CASE WHEN lead_no IS NULL THEN record_no END AS criteria
 FROM solution_t3
 WHERE lead_no IS NULL;
+````
 
-Answer:
+**Answer:**
 
 <img width="634" alt="image" src="https://user-images.githubusercontent.com/81607668/130431426-1882daec-8c93-4818-b041-943883aa21cb.png">
 
