@@ -2,7 +2,7 @@
 
 ## 🏦 Solution - A. Customer Nodes Exploration
 
-1. How many unique nodes are there on the Data Bank system?
+**1. How many unique nodes are there on the Data Bank system?**
 
 ````sql
 SELECT 
@@ -16,7 +16,9 @@ FROM data_bank.customer_nodes;
 
 - There are 5 unique nodes on Data Bank system.
 
-2. What is the number of nodes per region?
+***
+
+**2. What is the number of nodes per region?**
 
 ````sql
 SELECT 
@@ -34,7 +36,9 @@ ORDER BY region_id;
 
 <img width="391" alt="image" src="https://user-images.githubusercontent.com/81607668/130343679-c49a7b82-bef5-4242-a6ec-b449f643f656.png">
 
-3. How many customers are allocated to each region?
+***
+
+**3. How many customers are allocated to each region?**
 
 ````sql
 SELECT 
@@ -49,7 +53,9 @@ ORDER BY region_id;
 
 <img width="296" alt="image" src="https://user-images.githubusercontent.com/81607668/130344283-5c675490-b8b1-46ea-93df-0683ff87243b.png">
 
-5. How many days on average are customers reallocated to a different node?
+***
+
+**5. How many days on average are customers reallocated to a different node?**
 
 ````sql
 WITH node_diff AS (
@@ -78,5 +84,10 @@ FROM sum_diff_cte;
 
 - On average, customers are reallocated to a different node every 24 days.
 
-5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
+***
 
+**5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?**
+
+***
+
+Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md) for B. Customer Transactions solution!
