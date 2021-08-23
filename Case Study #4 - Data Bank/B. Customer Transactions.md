@@ -83,9 +83,7 @@ ORDER BY month;
 
 This is a particularly difficult question - with probably the most CTEs I have in a single query! 5 CTEs! 
 
-Firstly, I will show each CTE's output in order to provide a walkthrough of my thought process. I have also appended the full syntax below. 
-
-_Note: If you have a shorter solution to this question, do share it 🙂_
+I'm quite sure there's a shorter way to write the syntax, but I decided to create separate tables and combine them to understand them better.
 
 ````sql
 -- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
