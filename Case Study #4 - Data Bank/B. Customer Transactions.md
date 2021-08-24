@@ -21,8 +21,10 @@ GROUP BY txn_type
 
 **2. What is the average total historical deposit counts and amounts for all customers?**
 
+- Firstly, find the count of transaction and average transaction amount for each customer.
+- Then, find the average of both columns where the transaction type is deposit.
+
 ````sql
---Find count of each transaction type and average transaction amount for each customer
 WITH deposits AS (
   SELECT 
     customer_id, 
@@ -49,7 +51,11 @@ WHERE txn_type = 'deposit';
 **3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?**
 
 - First, create a CTE with output counting the number of deposits, purchases and withdrawals for each customer grouped by month.
-- Then, filter the results to deposits being 2 or more transactions and 1 or more purchase or withdrawal in a single month for each transaction.
+- Then, filter the results to 
+  - 2 or more deposits AND
+    - 1 or more purchase(s) OR
+    - 1 or more withdrawal(s) 
+in a single month.
 
 ````sql
 WITH monthly_transactions AS (
@@ -81,9 +87,9 @@ ORDER BY month;
 
 **4. What is the closing balance for each customer at the end of the month? Also show the change in balance each month in the same table output.**
 
-This is a particularly difficult question - with probably the most CTEs I have in a single query! 5 CTEs! 
+This is a particularly difficult question - with probably the most CTEs I have in a single query - there are 5 CTEs! 
 
-I'm quite sure there's a shorter way to write the syntax, but I decided to create separate tables and combine them to understand them better.
+I'm quite sure there's a shorter way to write the syntax, but I decided that this is the best way as it allows me to build on my results on the previous tables. Take your time and run the table CTE by CTE to see the full picture.
 
 ````sql
 -- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
@@ -107,7 +113,7 @@ SELECT
 FROM data_bank.customer_transactions
 ),
 
--- CTE 3 - Create closing balance for each month using Window function SUM() to add monthly_change
+-- CTE 3 - Create closing balance for each month using Window function SUM() to add changes during the month
 solution_t1 AS (
 SELECT 
   ld.customer_id, 
@@ -123,14 +129,14 @@ LEFT JOIN monthly_balances mb
   AND ld.customer_id = mb.customer_id
 ),
 
--- CTE 4 - Use Window function ROW_NUMBER() to rank the transaction within each month
+-- CTE 4 - Use Window function ROW_NUMBER() to rank transactions within each month
 solution_t2 AS (
 SELECT customer_id, ending_month, monthly_change, closing_balance,
   ROW_NUMBER() OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS record_no
 FROM solution_t1
 ),
 
--- CTE 5 - Use Window function LEAD() to query the value in next row and retrieve NULL for last row
+-- CTE 5 - Use Window function LEAD() to query value in next row and retrieve NULL for last row
 solution_t3 AS (
 SELECT customer_id, ending_month, monthly_change, closing_balance, record_no,
   LEAD(record_no) OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS lead_no
@@ -150,10 +156,13 @@ WHERE lead_no IS NULL;
 
 **5. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:**
 
-````sql
--- Create a temp table using solution from Question 4
-CREATE TEMP TABLE q5 AS (
+For this question, I created 2 temp tables
+  - Create `temp table #1` from Q4's solution. All you have to do is copy + paste the Q4 syntax and create a temp table.
+  - Then, using temp table #1, create `temp table #2` by running a `ROW_NUMBER` function to rank records for individual customer.
 
+````sql
+-- Create temp table #1 using solution from Question 4
+CREATE TEMP TABLE q5 AS (
 WITH monthly_balances AS (
 SELECT 
   customer_id, 
@@ -202,7 +211,7 @@ SELECT customer_id, ending_month, monthly_change, closing_balance,
 FROM solution_t3
 WHERE lead_no IS NULL);
 
--- Create another temp table here
+-- Create temp table #2
 CREATE TEMP TABLE q5_sequence AS (
 SELECT customer_id, ending_month, closing_balance,
   ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY ending_month) AS sequence
@@ -218,7 +227,7 @@ WHERE sequence = 1 AND
   closing_balance::TEXT LIKE '-%';
 ````
 
-I run the syntax above to get the output below where it confirms that I am getting records with negative first month balances only.
+I run the syntax above to get output below where it confirmed that I am getting only records with negative first month balances.
 
 <img width="604" alt="image" src="https://user-images.githubusercontent.com/81607668/130543803-5755f638-9cdd-4454-9c91-1e20d275365c.png">
 
@@ -259,6 +268,10 @@ WHERE sequence = 1 AND
 - 68.6% of customers have a positive first month balance.
 
 **- What percentage of customers increase their opening month’s positive closing balance by more than 5% in the following month?**
+
+- Use LEAD() function to query the following month's balances and then filter to select records with 1st month and 2nd month balances only. 
+- Also, filter for `next_balance` with positive balances only. 
+- We must exclude negative balances from the results because a higher negative balance in the following month does not represent an increase in balances and could mispresent our answer as the percentage of variance would still result in a positive percentage. There is no such thing as a negative percentage!
 
 ````sql
 WITH next_balance_cte AS (
@@ -362,3 +375,5 @@ FROM positive_negative;
 - 22.8% of customers move from a positive balance (refer: closing_balance) in the first month to a negative balance (refer: next_balance) in the second month.
 
 ***
+
+Thank you for reading. Do give me a 🌟 if you like this repo! 🙆🏻‍♀️
