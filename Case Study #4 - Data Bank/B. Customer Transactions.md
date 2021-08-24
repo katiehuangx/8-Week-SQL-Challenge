@@ -148,7 +148,7 @@ WHERE lead_no IS NULL;
 
 ***
 
-**6. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:**
+**5. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:**
 
 ````sql
 -- Create a temp table using solution from Question 4
@@ -202,6 +202,7 @@ SELECT customer_id, ending_month, monthly_change, closing_balance,
 FROM solution_t3
 WHERE lead_no IS NULL);
 
+-- Create another temp table here
 CREATE TEMP TABLE q5_sequence AS (
 SELECT customer_id, ending_month, closing_balance,
   ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY ending_month) AS sequence
@@ -258,7 +259,8 @@ WHERE sequence = 1 AND
 - 68.6% of customers have a positive first month balance.
 
 **- What percentage of customers increase their opening month’s positive closing balance by more than 5% in the following month?**
-  
+
+````sql
 WITH next_balance_cte AS (
 SELECT customer_id, ending_month, closing_balance, 
   LEAD(closing_balance) OVER (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
@@ -272,15 +274,18 @@ WHERE ending_month = '2020-01-31'
   AND next_balance::TEXT NOT LIKE '-%'
 GROUP BY customer_id, ending_month, closing_balance, next_balance
 HAVING ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) > 5.0)
+````
 
 <img width="701" alt="image" src="https://user-images.githubusercontent.com/81607668/130546284-c2632ab5-f732-4382-861a-2a2a5b405e8d.png">
 
+````sql
 -- Run this syntax with the above syntax as well
 SELECT 
   ROUND(100.0 * COUNT(*)::NUMERIC / 
     (SELECT COUNT(DISTINCT customer_id)
     FROM q5_sequence),2) AS variance_more_5_percentage
 FROM variance_cte; 
+````
 
 **Answer:**
 
@@ -325,6 +330,35 @@ FROM variance_cte;
 
 **- What percentage of customers move from a positive balance in the first month to a negative balance in the second month?**
 
+````sql
+WITH next_balance_cte AS (
+SELECT customer_id, ending_month, closing_balance, 
+  LEAD(closing_balance) OVER (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
+FROM q5_sequence
+),
+positive_negative AS (
+SELECT *
+FROM next_balance_cte
+WHERE ending_month = '2020-01-31'
+  AND closing_balance::TEXT NOT LIKE '-%'
+  AND next_balance::TEXT LIKE '-%')
+````
 
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/81607668/130547016-1344dd2f-b29b-4d49-9773-38b440039680.png">
 
+````sql
+-- Run this syntax with the above syntax as well
+SELECT 
+  ROUND(100.0 * COUNT(*)::NUMERIC / 
+    (SELECT COUNT(DISTINCT customer_id)
+    FROM q5_sequence),2) AS positive_1st_negative_2nd_percentage
+FROM positive_negative;
+````
 
+**Answer:**
+
+<img width="312" alt="image" src="https://user-images.githubusercontent.com/81607668/130547175-5d2a6b78-182a-4d65-ab23-5a152d57bac3.png">
+
+- 22.8% of customers move from a positive balance (refer: closing_balance) in the first month to a negative balance (refer: next_balance) in the second month.
+
+***
