@@ -271,7 +271,7 @@ WHERE sequence = 1 AND
 
 - Use LEAD() function to query the following month's balances and then filter to select records with 1st month and 2nd month balances only. 
 - Also, filter for `next_balance` with positive balances only. 
-- We must exclude negative balances from the results because a higher negative balance in the following month does not represent an increase in balances and could mispresent our answer as the percentage of variance would still result in a positive percentage. There is no such thing as a negative percentage!
+- We must exclude negative balances from the results because a higher negative balance in the following month does not represent an increase in balances and could mispresent our answer as the percentage of variance would still result in a positive percentage. 
 
 ````sql
 WITH next_balance_cte AS (
