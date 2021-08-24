@@ -11,6 +11,8 @@
   - [B. Customer Transactions](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md)
   - [Complete SQL Syntax](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/SQL%20Syntax/Complete%20SQL%20solution.sql)
 
+***
+
 ## Business Task
 Danny launched a new initiative, Data Bank which runs banking activities and also acts as the world’s most secure distributed data storage platform!
 
@@ -23,6 +25,23 @@ This case study is all about calculating metrics, growth and helping the busines
 ## Entity Relationship Diagram
 
 <img width="631" alt="image" src="https://user-images.githubusercontent.com/81607668/130343339-8c9ff915-c88c-4942-9175-9999da78542c.png">
+
+**Table 1: Regions**
+This regions table contains the region_id and their respective region_name values.
+
+<img width="176" alt="image" src="https://user-images.githubusercontent.com/81607668/130551759-28cb434f-5cae-4832-a35f-0e2ce14c8811.png">
+
+**Table 2: Customer Nodes**
+Customers are randomly distributed across the nodes according to their region. This random distribution changes frequently to reduce the risk of hackers getting into Data Bank’s system and stealing customer’s money and data!
+
+<img width="412" alt="image" src="https://user-images.githubusercontent.com/81607668/130551806-90a22446-4133-45b5-927c-b5dd918f1fa5.png">
+
+**Table 3: Customer Transactions**
+This table stores all customer deposits, withdrawals and purchases made using their Data Bank debit card.
+
+<img width="343" alt="image" src="https://user-images.githubusercontent.com/81607668/130551879-2d6dfc1f-bb74-4ef0-aed6-42c831281760.png">
+
+***
 
 ## Case Study Questions
 
