@@ -50,7 +50,7 @@ WHERE txn_type = 'deposit';
 
 **3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?**
 
-- First, create a CTE with output counting the number of deposits, purchases and withdrawals for each customer grouped by month.
+- First, create a `CTE` with output counting the number of deposits, purchases and withdrawals for each customer grouped by month.
 - Then, filter the results to 
   - 2 or more deposits AND
     - 1 or more purchase(s) OR
@@ -87,9 +87,9 @@ ORDER BY month;
 
 **4. What is the closing balance for each customer at the end of the month? Also show the change in balance each month in the same table output.**
 
-This is a particularly difficult question - with probably the most CTEs I have in a single query - there are 5 CTEs! 
+This is a particularly difficult question - with probably the most `CTE`s I have in a single query - there are 5 `CTE`s! 
 
-I'm quite sure there's a shorter way to write the syntax, but I decided that this is the best way as it allows me to build on my results on the previous tables. Take your time and run the table CTE by CTE to see the full picture.
+I'm sure there's a shorter way to write the syntax, but I reckoned this is the best way as it allows me to build on my results. Take your time and run the table `CTE` by `CTE` to see the full picture and gain a complete understanding of the solution. 
 
 ````sql
 -- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
@@ -269,7 +269,7 @@ WHERE sequence = 1 AND
 
 **- What percentage of customers increase their opening month’s positive closing balance by more than 5% in the following month?**
 
-- Use LEAD() function to query the following month's balances and then filter to select records with 1st month and 2nd month balances only. 
+- Use `LEAD()` function to query the following month's balances and, then filter to select records with 1st month and 2nd month balances only. 
 - Also, filter for `next_balance` with positive balances only. 
 - We must exclude negative balances from the results because a higher negative balance in the following month does not represent an increase in balances and could mispresent our answer as the percentage of variance would still result in a positive percentage. 
 
