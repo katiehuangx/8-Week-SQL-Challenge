@@ -88,6 +88,8 @@ FROM sum_diff_cte;
 
 **5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?**
 
+_Note: I have tried multiple times, but have not been able to get a reasonable solution for this question so, I'll come back to this after a few days. 
+
 ***
 
-Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md) for B. Customer Transactions solution!
+Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md) for **B. Customer Transactions** solution!
