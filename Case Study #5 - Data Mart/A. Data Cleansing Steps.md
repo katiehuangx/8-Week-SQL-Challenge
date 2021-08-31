@@ -52,6 +52,15 @@ There are 7 `region`s.
 <img width="150" alt="image" src="https://user-images.githubusercontent.com/81607668/131461982-ab8a0f6c-e88d-483a-92a0-b8569cbe9301.png">
 
 ````sql
+SELECT DISTINCT platform
+FROM data_mart.weekly_sales
+````
+
+There are 2 `platform`s - Shopify and Retail.
+
+<img width="115" alt="image" src="https://user-images.githubusercontent.com/81607668/131462951-3d93f35b-751b-4270-a0d4-d17f2d52bfe5.png">
+
+````sql
 SELECT DISTINCT segment
 FROM data_mart.weekly_sales
 ORDER BY segment
