@@ -355,7 +355,7 @@ In a single query, perform the following operations and generate a new table in 
 <img width="166" alt="image" src="https://user-images.githubusercontent.com/81607668/131438667-3b7f3da5-cabc-436d-a352-2022841fc6a2.png">
   
 - Add a new demographic column using the following mapping for the first letter in the segment values:  
-| ------- | ----------- |
+
 | segment | demographic | 
 | ------- | ----------- |
 | C | Couples |
