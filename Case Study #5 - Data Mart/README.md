@@ -6,10 +6,10 @@
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Case Study Solution](#case-study-solution)
-  - [A. Data Cleansing Steps]
-  - [B. Data Exploration]
-  - [C. Before & After Analysis]
-  - [D. Bonus Question]
+  - [A. Data Cleansing Steps](#a-data-cleansing-steps)
+  - [B. Data Exploration](#b-data-exploration)
+  - [C. Before & After Analysis](#c-before-&-after-analysis)
+  - [D. Bonus Question](#d-bonus-question)
   - [Complete SQL Syntax]
 
 ***
