@@ -9,7 +9,7 @@ Thanks @DataWithDanny for the excellent SQL case studies! 👋🏻
 - [Case Study #2: Pizza Runner](#case-study-2-pizza-runner)
 - [Case Study #3: Foodie-Fi](#case-study-3-foodie-fi)
 - [Case Study #4: Data Bank](#case-study-4-data-bank)
-- [Case Study #5: Data Mart](#case-study-4-data-mart)
+- [Case Study #5: Data Mart](#case-study-5-data-mart)
 
 ***
 
