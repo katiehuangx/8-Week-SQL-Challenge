@@ -8,7 +8,7 @@
 - [Case Study Solution](#case-study-solution)
   - [A. Data Cleansing Steps](#a-data-cleansing-steps)
   - [B. Data Exploration](#b-data-exploration)
-  - [C. Before & After Analysis](#c-before-&-after-analysis)
+  - [C. Before & After Analysis](#c-before--after-analysis)
   - [D. Bonus Question](#d-bonus-question)
   - [Complete SQL Syntax]
 
