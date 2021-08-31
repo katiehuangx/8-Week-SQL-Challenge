@@ -28,9 +28,9 @@ The key business question to answer are the following:
 
 ## Entity Relationship Diagram
 
-<img width="287" alt="image" src="https://user-images.githubusercontent.com/81607668/131438278-45e6a4e8-7cf5-468a-937b-2c306a792782.png">
+For this case study there is only a single table: data_mart.weekly_sales
 
-<img width="649" alt="image" src="https://user-images.githubusercontent.com/81607668/131438417-1e21efa3-9924-490f-9bff-3c28cce41a37.png">
+<img width="287" alt="image" src="https://user-images.githubusercontent.com/81607668/131438278-45e6a4e8-7cf5-468a-937b-2c306a792782.png">
 
 Here are some further details about the dataset:
 
@@ -40,6 +40,10 @@ Here are some further details about the dataset:
 4. `transactions` is the count of unique purchases made through Data Mart and `sales` is the actual dollar amount of purchases.
 
 Each record in the dataset is related to a specific aggregated slice of the underlying sales data rolled up into a week_date value which represents the start of the sales week.
+
+10 random rows are shown in the table output below from `data_mart.weekly_sales`.
+
+<img width="649" alt="image" src="https://user-images.githubusercontent.com/81607668/131438417-1e21efa3-9924-490f-9bff-3c28cce41a37.png">
 
 ***
 
