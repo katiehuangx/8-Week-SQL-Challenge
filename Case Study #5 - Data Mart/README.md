@@ -7,7 +7,7 @@
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Case Study Questions](#case-study-questions)
 - Solution
-  - [A. Data Cleansing Steps]
+  - [A. Data Cleansing Steps](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/A.%20Data%20Cleansing%20Steps.md)
   - [B. Data Exploration]
   - [C. Before & After Analysis]
   - [D. Bonus Question]
