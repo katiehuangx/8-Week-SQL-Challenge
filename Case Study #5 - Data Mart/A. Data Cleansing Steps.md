@@ -93,3 +93,28 @@ _`*` represent new columns_
 
 **Answer:**
 
+DROP TABLE IF EXISTS clean_weekly_sales;
+CREATE TEMP TABLE clean_weekly_sales AS (
+SELECT
+  TO_DATE(week_date, 'DD/MM/YY') AS week_date,
+  DATE_PART('week', TO_DATE(week_date, 'DD/MM/YY')) AS week_number,
+  DATE_PART('month', TO_DATE(week_date, 'DD/MM/YY')) AS month_number,
+  DATE_PART('year', TO_DATE(week_date, 'DD/MM/YY')) AS calendar_year,
+  region, 
+  platform, 
+  segment,
+  CASE WHEN RIGHT(segment,1) = '1' THEN 'Young Adults'
+    WHEN RIGHT(segment,1) = '2' THEN 'Middle Aged'
+    WHEN RIGHT(segment,1) in ('3','4') THEN 'Retirees'
+    ELSE 'unknown' END AS age_band,
+  CASE WHEN LEFT(segment,1) = 'C' THEN 'Couples'
+    WHEN LEFT(segment,1) = 'F' THEN 'Families'
+    ELSE 'unknown' END AS demographic,
+  transactions,
+  ROUND((sales::NUMERIC/transactions),2) AS avg_transaction,
+  sales
+FROM data_mart.weekly_sales);
+
+<img width="1148" alt="image" src="https://user-images.githubusercontent.com/81607668/131474035-528e0af6-d848-427b-bbd9-73956a775f86.png">
+
+Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/B.%20Data%20Exploration.md_ for **B. Data Exploration** solution!
