@@ -38,9 +38,9 @@ SELECT COUNT(*)
 FROM data_mart.weekly_sales
 ````
 
-<img width="89" alt="image" src="https://user-images.githubusercontent.com/81607668/131461755-6e86df9d-a923-4f2c-96b0-f656e4867ff4.png">
+There are a total of 17,117 rows.
 
-There are total of 17,117 rows.
+<img width="89" alt="image" src="https://user-images.githubusercontent.com/81607668/131461755-6e86df9d-a923-4f2c-96b0-f656e4867ff4.png">
 
 ````sql
 SELECT DISTINCT region
@@ -72,27 +72,28 @@ There are 3 types of `customer_type`.
 
 ## Create New Table `clean_weekly_sales`
 
-Here, we construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
+Next, let's construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
 
 _`*` represent new columns_
 
 | Columns | Actions to take |
 | ------- | --------------- |
-| week_date | Convert to `DATE`
-| week_number* | Add number of week  
-| month_number* | Extract month from `week_date`
-| calendar_year* | Extract year from `week_date`
+| week_date | Convert to `DATE` using `TO_DATE`
+| week_number* | Extract number of week using `DATE_PART` 
+| month_number* | Extract number of month using `DATE_PART` 
+| calendar_year* | Extract year using `DATE_PART`
 | region | No changes
 | platform | No changes
 | segment | No changes
-| age_band* | Based on `segment`, 1 = `Young Adults`, 2 = `Middle Aged` and 3 or 4 = `Retirees` 
-| demographic* | Based on `segment`, C = `Couples` and F = `Families`, null = `unknown`
+| age_band* | Use `CASE WHEN` and based on `segment`, 1 = `Young Adults`, 2 = `Middle Aged`, 3/4 = `Retirees` and null = `Unknown`
+| demographic* | Use `CASE WHEN` and based on `segment`, C = `Couples` and F = `Families` and null = `Unknown`
 | transactions | No changes
 | avg_transaction* | Divide `sales` with `transactions` and round up to 2 decimal places
 | sales | No changes
 
 **Answer:**
 
+````sql
 DROP TABLE IF EXISTS clean_weekly_sales;
 CREATE TEMP TABLE clean_weekly_sales AS (
 SELECT
@@ -114,6 +115,7 @@ SELECT
   ROUND((sales::NUMERIC/transactions),2) AS avg_transaction,
   sales
 FROM data_mart.weekly_sales);
+````
 
 <img width="1148" alt="image" src="https://user-images.githubusercontent.com/81607668/131474035-528e0af6-d848-427b-bbd9-73956a775f86.png">
 
