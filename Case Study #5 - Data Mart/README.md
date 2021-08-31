@@ -67,7 +67,7 @@ In a single query, perform the following operations and generate a new table in 
 | C | Couples |
 | F | Families |
 
-- Ensure all `null` string values with an "unknown" string value in the original `segment` column as well as the new `age_band` and `demographic` columns
+  - Ensure all `null` string values with an "unknown" string value in the original `segment` column as well as the new `age_band` and `demographic` columns
 - Generate a new `avg_transaction` column as the sales value divided by transactions rounded to 2 decimal places for each record
 
 ### Data Exploration
