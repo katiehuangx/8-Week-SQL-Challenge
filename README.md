@@ -355,10 +355,11 @@ In a single query, perform the following operations and generate a new table in 
 <img width="166" alt="image" src="https://user-images.githubusercontent.com/81607668/131438667-3b7f3da5-cabc-436d-a352-2022841fc6a2.png">
   
 - Add a new demographic column using the following mapping for the first letter in the segment values:  
-segment | demographic | 
-------- | ----------- |
-C | Couples |
-F | Families |
+| ------- | ----------- |
+| segment | demographic | 
+| ------- | ----------- |
+| C | Couples |
+| F | Families |
 
 - Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
 - Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
