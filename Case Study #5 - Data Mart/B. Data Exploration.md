@@ -6,13 +6,38 @@
 
 ````sql
 SELECT 
-  DISTINCT(TO_CHAR(week_date, 'day')) AS week_day
+  DISTINCT(TO_CHAR(week_date, 'day')) AS week_day 
 FROM clean_weekly_sales;
 ````
 
+**Answer:**
+
 <img width="110" alt="image" src="https://user-images.githubusercontent.com/81607668/131616348-81580d0e-b919-439a-821d-7997d958f59e.png">
 
+- Monday is used for each `week_date` value.
+
 **2. What range of week numbers are missing from the dataset?**
+- First, generate the full range of week numbers for the entire year from 1st week to 52nd week.
+- Then, do a LEFT OUTER JOIN of `week_number_cte` with `clean_weekly_sales` - make sure that the join sequence is CTE followed by the temp table as doing this on reverse would result in null result (unless you run a RIGHT OUTER JOIN instead!).
+
+````sql
+WITH week_number_cte AS (
+  SELECT GENERATE_SERIES(1,52) AS week_number)
+  
+SELECT DISTINCT c.week_number
+FROM week_number_cte c
+LEFT OUTER JOIN clean_weekly_sales s
+ ON c.week_number = s.week_number
+WHERE s.week_number IS NULL; -- Filter for the missing week numbers whereby the values would be `null`
+````
+
+**Answer:**
+
+_I'm posting only 5 rows here - ensure that you retrieved 28 rows!_
+
+<img width="239" alt="image" src="https://user-images.githubusercontent.com/81607668/131644275-6a91200f-61fe-4b71-83d4-7b51945e4531.png">
+
+- 28 `week_number`s are missing from the dataset.
 
 **3. How many total transactions were there for each year in the dataset?**
 
@@ -24,6 +49,8 @@ FROM clean_weekly_sales
 GROUP BY calendar_year
 ORDER BY calendar_year;
 ````
+
+**Answer:**
 
 <img width="318" alt="image" src="https://user-images.githubusercontent.com/81607668/131616261-82cb0fca-2d55-4bd0-8859-508e0fda23ec.png">
 
@@ -39,6 +66,8 @@ GROUP BY region, month_number
 ORDER BY region, month_number;
 ````
 
+**Answer:**
+
 _As there are 7 regions and results came up to 49 rows, I'm only showing solution for AFRICA and ASIA._
 
 <img width="641" alt="image" src="https://user-images.githubusercontent.com/81607668/131622450-4bb787d6-8481-4798-acda-67db888e925b.png">
@@ -53,6 +82,8 @@ FROM clean_weekly_sales
 GROUP BY platform
 ORDER BY platform;
 ````
+
+**Answer:**
 
 <img width="319" alt="image" src="https://user-images.githubusercontent.com/81607668/131622827-35d01869-ab06-45f9-b5ac-6e9b6be8d74e.png">
 
@@ -80,6 +111,8 @@ SELECT
   GROUP BY calendar_year, month_number
   ORDER BY calendar_year, month_number;
 ````
+
+**Answer:**
 
 _The results came up to 20 rows, so I'm only showing solution year 2018._
 
@@ -110,6 +143,8 @@ GROUP BY calendar_year
 ORDER BY calendar_year;
 ````
 
+**Answer:**
+
 <img width="755" alt="image" src="https://user-images.githubusercontent.com/81607668/131632947-ba6d9444-73e2-4ecd-9ff2-5bd6ab78f66d.png">
 
 **8. Which age_band and demographic values contribute the most to Retail sales?**
@@ -126,6 +161,8 @@ GROUP BY age_band, demographic
 ORDER BY retail_sales DESC;
 ````
 
+**Answer:**
+
 <img width="650" alt="image" src="https://user-images.githubusercontent.com/81607668/131634091-bc09c295-f880-4ec1-ad2f-d503bb3b04b9.png">
 
 The highest retail sales are contributed by unknown `age_band` and `demographic` at 42% followed by retired families at 16.73% and retired couples at 16.07%.
@@ -140,6 +177,8 @@ FROM clean_weekly_sales
 GROUP BY calendar_year, platform
 ORDER BY calendar_year, platform;
 ````
+
+**Answer:**
 
 <img width="636" alt="image" src="https://user-images.githubusercontent.com/81607668/131635398-0d54f57b-b813-4a2f-9d9c-320cf033ff97.png">
 
