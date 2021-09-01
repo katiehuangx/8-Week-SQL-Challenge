@@ -10,3 +10,7 @@ Using this analysis approach - answer the following questions:
 1. What is the total sales for the 4 weeks before and after `2020-06-15`? What is the growth or reduction rate in actual values and percentage of sales?
 2. What about the entire 12 weeks before and after?
 3. How do the sale metrics for these 2 periods before and after compare with the previous years in 2018 and 2019?
+
+**Answer:**
+
+Before we get too excited and run off to answer the questions, let's create 2 temp tables to represent transactions `before 2020-06-15` and `after 2020-05-15`.
