@@ -10,7 +10,7 @@ Using this analysis approach - answer the following questions:
 
 **1. What is the total sales for the 4 weeks before and after `2020-06-15`? What is the growth or reduction rate in actual values and percentage of sales?**
 
-Before we start, we find out the week_number of '2020-06-15' so that we can use it for filtering. 
+Before we start, we find out the week_number of `'2020-06-15'` so that we can use it for filtering. 
 
 ````sql
 SELECT DISTINCT week_number
@@ -22,8 +22,8 @@ WHERE week_date = '2020-06-15'
 <img width="138" alt="image" src="https://user-images.githubusercontent.com/81607668/131943472-5de6c243-c8e9-490d-8a4d-7bf990b4fd21.png">
  
 The week_number is 25. Then, I created 2 CTEs
-- changes CTE: Filter to 4 weeks before and after '2020-06-15 and SUM up the sales
-- changes_2 CTE: Run a CASE WHEN for 4 weeks before and after '2020-06-15' and wrap with SUM as we only want the total sales for the period.
+- `changes` CTE: Filter to 4 weeks before and after `'2020-06-15` and `SUM` up the sales
+- `changes_2` CTE: Run a `CASE WHEN` for 4 weeks before and after `'2020-06-15'` and wrap with `SUM` as we only want the total sales for the period.
 
 ````sql
 WITH changes AS (
@@ -96,8 +96,8 @@ Looks like the sales has gone down even more with a negative 2.14%! I won't be h
 I'm breaking down this question to 2 parts.
 
 **Part 1: How do the sale metrics for 4 weeks before and after compare with the previous years in 2018 and 2019?**
-- Basically, the question is asking us to find the sales variance between 4 weeks before and after '2020-06-15' for years 2018, 2019 and 2020. Perhaps we can find a pattern here.
-- We can apply the same solution as above and add calendar_year into the syntax. 
+- Basically, the question is asking us to find the sales variance between 4 weeks before and after `'2020-06-15'` for years 2018, 2019 and 2020. Perhaps we can find a pattern here.
+- We can apply the same solution as above and add `calendar_year` into the syntax. 
 
 ````sql
 WITH summary AS (
