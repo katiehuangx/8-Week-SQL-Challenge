@@ -59,22 +59,22 @@ in a single month.
 
 ````sql
 WITH monthly_transactions AS (
-SELECT 
-  customer_id, 
-  DATE_PART('month', txn_date) AS month,
-  SUM(CASE WHEN txn_type = 'deposit' THEN 0 ELSE 1 END) AS deposit_count,
-  SUM(CASE WHEN txn_type = 'purchase' THEN 0 ELSE 1 END) AS purchase_count,
-  SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal_count
-FROM data_bank.customer_transactions
-GROUP BY customer_id, month
-ORDER BY customer_id, month)
+  SELECT 
+    customer_id, 
+    DATE_PART('month', txn_date) AS month,
+    SUM(CASE WHEN txn_type = 'deposit' THEN 0 ELSE 1 END) AS deposit_count,
+    SUM(CASE WHEN txn_type = 'purchase' THEN 0 ELSE 1 END) AS purchase_count,
+    SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal_count
+  FROM data_bank.customer_transactions
+  GROUP BY customer_id, month
+ )
 
 SELECT
   month,
   COUNT(DISTINCT customer_id) AS customer_count
 FROM monthly_transactions
-WHERE deposit_count >= 2 AND 
-  (purchase_count > 1 OR withdrawal_count > 1)
+WHERE deposit_count >= 2 
+  AND (purchase_count > 1 OR withdrawal_count > 1)
 GROUP BY month
 ORDER BY month;
 ````
@@ -94,55 +94,64 @@ I'm sure there's a shorter way to write the syntax, but I reckoned this is the b
 ````sql
 -- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
 WITH monthly_balances AS (
-SELECT 
-  customer_id, 
-  (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
-  txn_type, 
-  txn_amount,
-  SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
-    ELSE txn_amount END) AS transaction_balance
-FROM data_bank.customer_transactions
-GROUP BY customer_id, txn_date, txn_type, txn_amount
+  SELECT 
+    customer_id, 
+    (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
+    txn_type, 
+    txn_amount,
+    SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
+      ELSE txn_amount END) AS transaction_balance
+  FROM data_bank.customer_transactions
+  GROUP BY customer_id, txn_date, txn_type, txn_amount
 ),
 
 -- CTE 2 - To generate txn_date as a series of last day of month for each customer
 last_day AS (
-SELECT
-  DISTINCT customer_id,
-  ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
-FROM data_bank.customer_transactions
+  SELECT
+    DISTINCT customer_id,
+    ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
+  FROM data_bank.customer_transactions
 ),
 
 -- CTE 3 - Create closing balance for each month using Window function SUM() to add changes during the month
 solution_t1 AS (
-SELECT 
-  ld.customer_id, 
-  ld.ending_month,
-  COALESCE(mb.transaction_balance, 0) AS monthly_change,
-  SUM(mb.transaction_balance) OVER 
-    (PARTITION BY ld.customer_id ORDER BY ld.ending_month
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-    AS closing_balance
-FROM last_day ld
-LEFT JOIN monthly_balances mb
-  ON ld.ending_month = mb.closing_month
-  AND ld.customer_id = mb.customer_id
+  SELECT 
+    ld.customer_id, 
+    ld.ending_month,
+    COALESCE(mb.transaction_balance, 0) AS monthly_change,
+    SUM(mb.transaction_balance) OVER 
+      (PARTITION BY ld.customer_id ORDER BY ld.ending_month
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
+  FROM last_day ld
+  LEFT JOIN monthly_balances mb
+    ON ld.ending_month = mb.closing_month
+      AND ld.customer_id = mb.customer_id
 ),
 
 -- CTE 4 - Use Window function ROW_NUMBER() to rank transactions within each month
 solution_t2 AS (
-SELECT customer_id, ending_month, monthly_change, closing_balance,
-  ROW_NUMBER() OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS record_no
-FROM solution_t1
+  SELECT 
+    customer_id, ending_month, 
+    monthly_change, closing_balance,
+    ROW_NUMBER() OVER 
+      (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS record_no
+  FROM solution_t1
 ),
 
 -- CTE 5 - Use Window function LEAD() to query value in next row and retrieve NULL for last row
 solution_t3 AS (
-SELECT customer_id, ending_month, monthly_change, closing_balance, record_no,
-  LEAD(record_no) OVER (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS lead_no
-FROM solution_t2)
+  SELECT 
+    customer_id, ending_month, 
+    monthly_change, closing_balance, 
+    record_no,
+    LEAD(record_no) OVER 
+      (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS lead_no
+  FROM solution_t2
+)
 
-SELECT customer_id, ending_month, monthly_change, closing_balance,
+SELECT 
+  customer_id, ending_month, 
+  monthly_change, closing_balance,
   CASE WHEN lead_no IS NULL THEN record_no END AS criteria
 FROM solution_t3
 WHERE lead_no IS NULL;
@@ -164,57 +173,65 @@ For this question, I created 2 temp tables
 -- Create temp table #1 using solution from Question 4
 CREATE TEMP TABLE q5 AS (
 WITH monthly_balances AS (
-SELECT 
-  customer_id, 
-  (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
-  txn_type, 
-  txn_amount,
-  SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
-    ELSE txn_amount END) AS transaction_balance
-FROM data_bank.customer_transactions
-GROUP BY customer_id, txn_date, txn_type, txn_amount
+  SELECT 
+    customer_id, 
+    (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
+    txn_type, 
+    txn_amount,
+    SUM(CASE WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN (-txn_amount)
+      ELSE txn_amount END) AS transaction_balance
+  FROM data_bank.customer_transactions
+  GROUP BY customer_id, txn_date, txn_type, txn_amount
 ),
 last_day AS (
-SELECT
-  DISTINCT customer_id,
-  ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
-FROM data_bank.customer_transactions
+  SELECT
+    DISTINCT customer_id,
+    ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
+  FROM data_bank.customer_transactions
 ),
 solution_t1 AS (
-SELECT ld.customer_id, ld.ending_month,
-  COALESCE(mb.transaction_balance, 0) AS monthly_change,
-  SUM(mb.transaction_balance) OVER 
-    (PARTITION BY ld.customer_id ORDER BY ld.ending_month
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-    AS closing_balance
-FROM last_day ld
-LEFT JOIN monthly_balances mb
-  ON ld.ending_month = mb.closing_month
-  AND ld.customer_id = mb.customer_id
+  SELECT 
+    ld.customer_id, ld.ending_month,
+    COALESCE(mb.transaction_balance, 0) AS monthly_change,
+    SUM(mb.transaction_balance) OVER 
+      (PARTITION BY ld.customer_id ORDER BY ld.ending_month
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
+  FROM last_day ld
+  LEFT JOIN monthly_balances mb
+    ON ld.ending_month = mb.closing_month
+      AND ld.customer_id = mb.customer_id
 ),
 solution_t2 AS (
-SELECT customer_id, ending_month, monthly_change, closing_balance,
-  ROW_NUMBER() OVER 
-    (PARTITION BY customer_id, ending_month 
-    ORDER BY ending_month) AS record_no
-FROM solution_t1
+  SELECT 
+    customer_id, ending_month, 
+    monthly_change, closing_balance,
+    ROW_NUMBER() OVER 
+      (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS record_no
+  FROM solution_t1
 ),
 solution_t3 AS (
-SELECT customer_id, ending_month, monthly_change, closing_balance, record_no,
-  LEAD(record_no) OVER 
-  (PARTITION BY customer_id, ending_month 
-  ORDER BY ending_month) AS lead_no
-FROM solution_t2)
+  SELECT 
+    customer_id, ending_month, 
+    monthly_change, closing_balance, 
+    record_no,
+    LEAD(record_no) OVER 
+      (PARTITION BY customer_id, ending_month ORDER BY ending_month) AS lead_no
+FROM solution_t2
+)
 
-SELECT customer_id, ending_month, monthly_change, closing_balance,
+SELECT 
+  customer_id, ending_month, 
+  monthly_change, closing_balance,
   CASE WHEN lead_no IS NULL THEN record_no END AS criteria
 FROM solution_t3
 WHERE lead_no IS NULL);
 
 -- Create temp table #2
 CREATE TEMP TABLE q5_sequence AS (
-SELECT customer_id, ending_month, closing_balance,
-  ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY ending_month) AS sequence
+SELECT 
+  customer_id, ending_month, closing_balance,
+  ROW_NUMBER() OVER 
+    (PARTITION BY customer_id ORDER BY ending_month) AS sequence
 FROM q5)
 ````
 
@@ -275,18 +292,22 @@ WHERE sequence = 1 AND
 
 ````sql
 WITH next_balance_cte AS (
-SELECT customer_id, ending_month, closing_balance, 
-  LEAD(closing_balance) OVER (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
-FROM q5_sequence
+  SELECT 
+    customer_id, ending_month, closing_balance, 
+    LEAD(closing_balance) OVER 
+      (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
+  FROM q5_sequence
 ),
 variance_cte AS (
-SELECT customer_id, ending_month, closing_balance, next_balance, 
-  ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) AS variance
-FROM next_balance_cte  
-WHERE ending_month = '2020-01-31'
-  AND next_balance::TEXT NOT LIKE '-%'
-GROUP BY customer_id, ending_month, closing_balance, next_balance
-HAVING ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) > 5.0)
+  SELECT 
+    customer_id, ending_month, 
+    closing_balance, next_balance, 
+    ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) AS variance
+  FROM next_balance_cte  
+  WHERE ending_month = '2020-01-31'
+    AND next_balance::TEXT NOT LIKE '-%'
+  GROUP BY customer_id, ending_month, closing_balance, next_balance
+  HAVING ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) > 5.0)
 ````
 
 <img width="701" alt="image" src="https://user-images.githubusercontent.com/81607668/130546284-c2632ab5-f732-4382-861a-2a2a5b405e8d.png">
@@ -310,18 +331,22 @@ FROM variance_cte;
 
 ````sql
 WITH next_balance_cte AS (
-SELECT customer_id, ending_month, closing_balance, 
-  LEAD(closing_balance) OVER (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
-FROM q5_sequence
+  SELECT 
+    customer_id, ending_month, closing_balance, 
+    LEAD(closing_balance) OVER 
+      (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
+  FROM q5_sequence
 ),
 variance_cte AS (
-SELECT customer_id, ending_month, closing_balance, next_balance, 
-  ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) AS variance
-FROM next_balance_cte  
-WHERE ending_month = '2020-01-31'
-  AND next_balance::TEXT LIKE '-%'
-GROUP BY customer_id, ending_month, closing_balance, next_balance
-HAVING ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) > 5.0)
+  SELECT 
+    customer_id, ending_month, 
+    closing_balance, next_balance, 
+    ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) AS variance
+  FROM next_balance_cte  
+  WHERE ending_month = '2020-01-31'
+    AND next_balance::TEXT LIKE '-%'
+  GROUP BY customer_id, ending_month, closing_balance, next_balance
+  HAVING ROUND((1.0 * (next_balance - closing_balance)) / closing_balance,2) > 5.0)
 ````
 
 <img width="662" alt="image" src="https://user-images.githubusercontent.com/81607668/130546489-00e52b31-d223-4e02-8f5f-602cb1b718b4.png">
@@ -345,16 +370,18 @@ FROM variance_cte;
 
 ````sql
 WITH next_balance_cte AS (
-SELECT customer_id, ending_month, closing_balance, 
-  LEAD(closing_balance) OVER (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
-FROM q5_sequence
+  SELECT 
+    customer_id, ending_month, closing_balance, 
+    LEAD(closing_balance) OVER 
+      (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
+  FROM q5_sequence
 ),
 positive_negative AS (
-SELECT *
-FROM next_balance_cte
-WHERE ending_month = '2020-01-31'
-  AND closing_balance::TEXT NOT LIKE '-%'
-  AND next_balance::TEXT LIKE '-%')
+  SELECT *
+  FROM next_balance_cte
+  WHERE ending_month = '2020-01-31'
+    AND closing_balance::TEXT NOT LIKE '-%'
+    AND next_balance::TEXT LIKE '-%')
 ````
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/81607668/130547016-1344dd2f-b29b-4d49-9773-38b440039680.png">
