@@ -56,6 +56,8 @@ FROM changes_2
 
 Since the new sustainable packaging came into effect, the sales has dropped by $26,884,188 at a negative 1.15%. A new packaging isn't always the best idea - as customers may not recognise your product's new packaging on the shelves!
 
+***
+
 **2. What about the entire 12 weeks before and after?**
 
 We can apply the same logic and solution to this question. 
@@ -90,6 +92,8 @@ FROM changes_2
 <img width="582" alt="image" src="https://user-images.githubusercontent.com/81607668/131946233-45fa874e-0632-462d-9451-5ed4299b6183.png">
 
 Looks like the sales has gone down even more with a negative 2.14%! I won't be happy if I'm Danny's boss 😆
+
+***
 
 **3. How do the sale metrics for these 2 periods before and after compare with the previous years in 2018 and 2019?**
 
