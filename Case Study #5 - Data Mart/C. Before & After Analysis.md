@@ -89,8 +89,91 @@ FROM changes_2
 
 <img width="582" alt="image" src="https://user-images.githubusercontent.com/81607668/131946233-45fa874e-0632-462d-9451-5ed4299b6183.png">
 
-Looks like the sales has gone done even more with a negative 2.14%! I won't be happy if I'm Danny's boss 😆
+Looks like the sales has gone down even more with a negative 2.14%! I won't be happy if I'm Danny's boss 😆
 
 **3. How do the sale metrics for these 2 periods before and after compare with the previous years in 2018 and 2019?**
 
+I'm breaking down this question to 2 parts.
 
+**Part 1: How do the sale metrics for 4 weeks before and after compare with the previous years in 2018 and 2019?**
+- Basically, the question is asking us to find the sales variance between 4 weeks before and after '2020-06-15' for years 2018, 2019 and 2020. Perhaps we can find a pattern here.
+- We can apply the same solution as above and add calendar_year into the syntax. 
+
+````sql
+WITH summary AS (
+  SELECT 
+    calendar_year, -- added new column
+    week_number, 
+    SUM(sales) AS total_sales
+  FROM clean_weekly_sales
+  WHERE (week_number BETWEEN 21 AND 28) 
+  GROUP BY calendar_year, week_number
+),
+summary_2 AS (
+  SELECT 
+    calendar_year,
+    SUM(CASE WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_sales,
+    SUM(CASE WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_sales
+  FROM summary
+  GROUP BY calendar_year
+)
+
+SELECT 
+  calendar_year, 
+  before_sales, 
+  after_sales, 
+  after_sales - before_sales AS sales_variance, 
+  ROUND(100 * (after_sales - before_sales) / before_sales,2) AS percentage
+FROM summary_2
+````
+
+**Answer:**
+
+<img width="735" alt="image" src="https://user-images.githubusercontent.com/81607668/131950161-371052e1-ad8b-4fe7-a1a1-97b968416d1d.png">
+
+Let's a do some analysis with the results. 
+
+We can see that in previous years in 2018 and 2019, there's a sort of consistent increase in sales in week 25 to 28 at an average of 0.15%. 
+
+However, after the new packaging was implemented in 2020's week 25, there was a significant drop in sales at 1.15% and compared to the previous years, it's a reduction by 6.7%!
+
+**Part 2: How do the sale metrics for 12 weeks before and after compare with the previous years in 2018 and 2019?**
+- Use the same solution above and change to week 13 to 24 for before and week 25 to 37 for after.
+
+````sql
+WITH summary AS (
+  SELECT 
+    calendar_year, -- added new column
+    week_number, 
+    SUM(sales) AS total_sales
+  FROM clean_weekly_sales
+  WHERE (week_number BETWEEN 13 AND 37) 
+  GROUP BY calendar_year, week_number
+),
+summary_2 AS (
+  SELECT 
+    calendar_year,
+    SUM(CASE WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_sales,
+    SUM(CASE WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_sales
+  FROM summary
+  GROUP BY calendar_year
+)
+
+SELECT 
+  calendar_year, 
+  before_sales, 
+  after_sales, 
+  after_sales - before_sales AS sales_variance, 
+  ROUND(100 * (after_sales - before_sales) / before_sales,2) AS percentage
+FROM summary_2
+````
+
+**Answer:**
+
+<img width="719" alt="image" src="https://user-images.githubusercontent.com/81607668/131950689-0241db95-6e4b-4b86-80cb-5cd2eada23cc.png">
+
+There was a fair bit of percentage differences in all 3 years. However, now when you compare the worst year to their best year in 2018, the sales percentage difference is even more stark at a difference of 3.77% (1.63% + 2.14%).
+
+***
+
+Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/D.%20Bonus%20Question.md) for **D. Bonus Question** solution! 🙌🏻
