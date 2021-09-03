@@ -50,6 +50,8 @@ SELECT
 FROM changes_2
 ````
 
+**Answer:**
+
 <img width="528" alt="image" src="https://user-images.githubusercontent.com/81607668/131943973-1406a95d-8fde-4b12-9390-d91c22d7ddff.png">
 
 Since the new sustainable packaging came into effect, the sales has dropped by $26,884,188 at a negative 1.15%. A new packaging isn't always the best idea - as customers may not recognise your product's new packaging on the shelves!
@@ -82,6 +84,8 @@ SELECT
   ROUND(100 * (after_change - before_change) / before_change,2) AS percentage
 FROM changes_2
 ````
+
+**Answer:**
 
 <img width="582" alt="image" src="https://user-images.githubusercontent.com/81607668/131946233-45fa874e-0632-462d-9451-5ed4299b6183.png">
 
