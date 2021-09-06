@@ -13,7 +13,8 @@ Using this analysis approach - answer the following questions:
 Before we start, we find out the week_number of `'2020-06-15'` so that we can use it for filtering. 
 
 ````sql
-SELECT DISTINCT week_number
+SELECT 
+  DISTINCT week_number
 FROM clean_weekly_sales
 WHERE week_date = '2020-06-15' 
   AND calendar_year = '2020'
