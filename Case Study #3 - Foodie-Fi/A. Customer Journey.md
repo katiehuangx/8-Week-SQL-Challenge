@@ -33,3 +33,6 @@ Customer 13 started the free trial on 15 Dec 2020, then subscribed to the basic 
 
 Customer 15 commenced free trial on 17 Mar 2020, then upgraded to pro monthly plan on 24 Mar 2020 after the trial ended. In the following month on 29 Apr 2020, the customer terminated subscription and churned until the paid subscription ended on 24/25 May 2020.
 
+***
+
+Click here for [solution](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md) to **B. Data Analysis Questions**! 🙌🏻
