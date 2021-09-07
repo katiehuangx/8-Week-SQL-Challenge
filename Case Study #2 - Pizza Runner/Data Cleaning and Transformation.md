@@ -1,6 +1,8 @@
-# 🧼 Data Cleaning & Transformation
+# 🍕 Case Study #2 - Pizza Runner
 
-## 🔨 Table: customer_orders
+## 🧼 Data Cleaning & Transformation
+
+### 🔨 Table: customer_orders
 
 Looking at the `customer_orders` table below, we can see that there are
 - In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
@@ -36,7 +38,7 @@ This is how the clean `customers_orders_temp` table looks like and we will use t
 
 ***
 
-## 🔨 Table: runner_orders
+### 🔨 Table: runner_orders
 
 Looking at the `runner_orders` table below, we can see that there are
 - In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
@@ -92,3 +94,5 @@ This is how the clean `runner_orders_temp` table looks like and we will use this
 <img width="915" alt="image" src="https://user-images.githubusercontent.com/81607668/129472778-6403381d-6e30-4884-a011-737b1eff7379.png">
 
 ***
+
+Click here for [solution](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/A.%20Pizza%20Metrics.md) to **A. Pizza Metrics**!
