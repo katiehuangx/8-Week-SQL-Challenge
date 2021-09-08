@@ -21,58 +21,11 @@ In a single query, perform the following operations and generate a new table in 
 - Ensure all `null` string values with an "unknown" string value in the original `segment` column as well as the new `age_band` and `demographic` columns
 - Generate a new `avg_transaction` column as the sales value divided by transactions rounded to 2 decimal places for each record
 
-## Data Exploration
-
-Ok, before I begin with the solution, I'm running some queries to get a feel of the data.
-
-````sql
-SELECT *
-FROM data_mart.weekly_sales
-LIMIT 5
-````
-
-<img width="825" alt="image" src="https://user-images.githubusercontent.com/81607668/131461620-3cf44ebc-dbde-43d2-bbd4-bc8a648c4e1d.png">
-
-````sql
-SELECT COUNT(*)
-FROM data_mart.weekly_sales
-````
-
-There are a total of 17,117 rows.
-
-<img width="89" alt="image" src="https://user-images.githubusercontent.com/81607668/131461755-6e86df9d-a923-4f2c-96b0-f656e4867ff4.png">
-
-````sql
-SELECT DISTINCT region
-FROM data_mart.weekly_sales
-````
-
-There are 2 `platform`s - Shopify and Retail.
-
-<img width="115" alt="image" src="https://user-images.githubusercontent.com/81607668/131462951-3d93f35b-751b-4270-a0d4-d17f2d52bfe5.png">
-
-````sql
-SELECT DISTINCT segment
-FROM data_mart.weekly_sales
-ORDER BY segment
-````
-
-There are 8 unique `segment`s.
-
-<img width="102" alt="image" src="https://user-images.githubusercontent.com/81607668/131462305-91713443-b243-4099-88e4-95f9c7cb65f6.png">
-
-````sql
-SELECT DISTINCT customer_type
-FROM data_mart.weekly_sales
-````
-
-There are 3 types of `customer_type`.
-
-<img width="142" alt="image" src="https://user-images.githubusercontent.com/81607668/131462439-eeb70a70-5533-48fd-aa5a-ee1a36d0e2d1.png">
+**Answer:**
 
 ## Create New Table `clean_weekly_sales`
 
-Next, let's construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
+Let's construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
 
 _`*` represent new columns_
 
