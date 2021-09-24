@@ -70,7 +70,24 @@ WHERE ei.event_name = 'Purchase';
 
 <img width="179" alt="image" src="https://user-images.githubusercontent.com/81607668/134654086-6f051c8e-cf26-4929-936e-1bbfd7ff0f19.png">
 
-7. What is the percentage of visits which view the checkout page but do not have a purchase event?
-8. What are the top 3 pages by number of views?
-9. What is the number of views and cart adds for each product category?
-10. What are the top 3 products by purchases?
+6. What is the percentage of visits which view the checkout page but do not have a purchase event?
+
+**7. What are the top 3 pages by number of views?**
+
+````sql
+SELECT 
+  ph.page_name, 
+  COUNT(*) AS page_views
+FROM clique_bait.events AS e
+JOIN clique_bait.page_hierarchy AS ph
+  ON e.page_id = ph.page_id
+GROUP BY ph.page_name
+ORDER BY page_views DESC
+LIMIT 3;
+````
+
+<img width="249" alt="image" src="https://user-images.githubusercontent.com/81607668/134699614-a8b3f78c-8972-4472-bd30-19aaac4dc86b.png">
+
+8. What is the number of views and cart adds for each product category?
+9. What are the top 3 products by purchases?
+
