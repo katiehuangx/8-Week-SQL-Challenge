@@ -429,7 +429,7 @@ Do you have any further recommendations for Danny’s team at Data Mart or any i
 
 ## Case Study #6: Clique Bait
 
-<img src="<img width="545" alt="image" src="https://user-images.githubusercontent.com/81607668/134615258-d1108e0d-0816-4cd7-a972-d45580f82352.png">" alt="Image" width="500" height="520">
+<img src="https://user-images.githubusercontent.com/81607668/134615258-d1108e0d-0816-4cd7-a972-d45580f82352.png" alt="Image" width="500" height="520">
 
 View the case study [here](https://8weeksqlchallenge.com/case-study-6/) and my **solution** [here]() and on [Medium].
 
