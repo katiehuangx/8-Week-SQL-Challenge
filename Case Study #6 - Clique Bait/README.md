@@ -31,6 +31,7 @@ In this case study - you are required to support the founder and CEO Danny’s v
 <img width="849" alt="image" src="https://user-images.githubusercontent.com/81607668/134623132-dfa2acd3-60c9-4305-9bea-6b39a9403c14.png">
 
 **page_hierarchy table**
+
 <img width="576" alt="image" src="https://user-images.githubusercontent.com/81607668/134623202-3158ca06-6f04-4b67-91f1-e184761e885c.png">
 
 **event_identifier table**
