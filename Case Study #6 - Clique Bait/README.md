@@ -48,7 +48,7 @@ In this case study - you are required to support the founder and CEO Danny’s v
 
 ### A. Digital Analysis
 
-View my solution [here].
+View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/A.%20Digital%20Analysis.md).
 
 1. How many users are there?
 2. How many cookies does each user have on average?
