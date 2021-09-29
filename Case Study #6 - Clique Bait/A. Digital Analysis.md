@@ -66,6 +66,7 @@ ORDER BY event_type;
 - As the data is now filtered to having `Purchase` events only, counting the distinct visit IDs would give you the number of purchase events.
 - Then, divide the number of purchase events with a subquery of total number of distinct visits from the `events` table.
 
+````sql
 SELECT 
   100 * COUNT(DISTINCT e.visit_id)/
     (SELECT COUNT(DISTINCT visit_id) FROM clique_bait.events) AS percentage_purchase
@@ -73,15 +74,16 @@ FROM clique_bait.events AS e
 JOIN clique_bait.event_identifier AS ei
   ON e.event_type = ei.event_type
 WHERE ei.event_name = 'Purchase';
+````
 
 <img width="182" alt="image" src="https://user-images.githubusercontent.com/81607668/135199118-9d0a6d64-f95e-4b75-aab4-0fbd515235f6.png">
 
 **6. What is the percentage of visits which view the checkout page but do not have a purchase event?**
 The strategy to answer this question is to breakdown the question into 2 parts.
 
-Part 1: Create a CTE and using CASE statements, find the MAX() of:
-- event_type = 1 (Page View) and page_id = 12 (Checkout), and assign "1" to these events. These events are when user viewed the checkout page.
-- event_type = 3 (Purchase) and assign "1" to these events. These events signifies users who made a purchase.
+Part 1: Create a `CTE` and using `CASE statements`, find the `MAX()` of:
+- `event_type` = 1 (Page View) and `page_id` = 12 (Checkout), and assign "1" to these events. These events are when user viewed the checkout page.
+- `event_type` = 3 (Purchase) and assign "1" to these events. These events signifies users who made a purchase.
 
 We're using MAX() because we do not want to group the results by `event_type` and `page_id`. Since the max score is "1", it would mean "Give me the max score for each event".
 
