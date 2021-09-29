@@ -22,6 +22,8 @@ Use your 2 new output tables - answer the following questions:
 
 ***
 
+## Planning Our Answer Strategy
+
 Let us visualize the output table.
 
 | Column | Description | 
