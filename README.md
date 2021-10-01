@@ -166,7 +166,7 @@ If Danny wants to expand his range of pizzas - how would this impact the existin
 
 <img src="https://user-images.githubusercontent.com/81607668/129742132-8e13c136-adf2-49c4-9866-dec6be0d30f0.png" width="500" height="520" alt="image">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-3/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi) and on [Medium].
+View the case study [here](https://8weeksqlchallenge.com/case-study-3/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi) and on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-3-foodie-fi-3d8497376ea9?sk=579afc01c30aa6149d85050f8a46ddef).
 
 ### Business Task:
 Danny and his friends launched a new startup Foodie-Fi and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world.
