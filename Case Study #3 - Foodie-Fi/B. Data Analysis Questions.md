@@ -4,6 +4,8 @@
 
 ### 1. How many customers has Foodie-Fi ever had?
 
+To find the number of Foodie-Fi's unique customers, I use `DISTINCT` and wrap `COUNT` around it.
+
 ````sql
 SELECT 
   COUNT(DISTINCT customer_id) AS unique_customer
@@ -17,6 +19,12 @@ FROM foodie_fi.subscriptions;
 - Foodie-Fi has 1,000 unique customers.
 
 ### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
+
+Question is asking for the monthly numbers of users on trial plan.
+- Firstly, I extract numerical month using DATE_PART.
+- Then, I use TO_CHAR to extract the string or name of the month.
+- DATE_PART is used to extract numerical values from a date, whereas TO_CHAR extracts the string value (i.e. January, Wednesday)
+- Filter for plan_id = 0 for trial plans.
 
 ````sql
 SELECT
@@ -36,7 +44,15 @@ ORDER BY month_date;
 
 <img width="366" alt="image" src="https://user-images.githubusercontent.com/81607668/129826377-f4da52b6-13de-4871-be98-bf438f2ac230.png">
 
+- March has the highest number of trial plans, whereas February has the lowest number of trial plans.
+
 ### 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name.
+
+Question is asking for the number of plans for start dates occurring on 1 Jan 2021 and after grouped by plan names.
+- Filter plans with start_dates occurring on 2021–01–01 and after.
+- Group and order results by plan.
+
+_Note: Question calls for events occuring after 1 Jan 2021, however I ran the query for events in 2020 as well as I was curious with the year-on-year results._
 
 ````sql
 SELECT 
@@ -55,9 +71,17 @@ ORDER BY p.plan_id;
 
 <img width="592" alt="image" src="https://user-images.githubusercontent.com/81607668/129830050-4d345585-c8c5-4346-8b3b-9f718920c54b.png">
 
-_Note: Question calls for events occuring after 1 Jan 2021 only, but I run the query for events in 2020 as well for completeness._
+- There were 0 customer on trial plan in 2021. Does it mean that there were no new customers in 2021, or did they jumped on basic monthly plan without going through the 7-week trial?
+- We should also look at the data and look at the customer proportion for 2020 and 2021.
 
 ### 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
+
+I like to write down the steps and breakdown the questions into parts.
+
+**Steps:**
+- Find the number of customers who churned.
+- Find the percentage of customers who churned and round it to 1 decimal place.
+- What's the churned plan_id? Filter to 4
 
 ````sql
 SELECT 
@@ -78,6 +102,14 @@ WHERE s.plan_id = 4;
 - There are 307 customers who have churned, which is 30.7% of Foodie-Fi customer base.
 
 ### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
+
+In order to identify which customer churned straight after the trial plan, I rank each customer's plans using a `ROW_NUMBER`. Remember to partition by unique customer.
+
+My understanding is that if a customer churned immediately after trial, the plan ranking would look like this.
+- Trial Plan - Rank 1
+- Churned - Rank 2
+
+Using the CTE, I filtered for `plan id = 4` (churn plan) and `rank = 2` (being customers who churned immediately after trial) and find the percentage of churned customers.
 
 ````sql
 -- To find ranking of the plans by customers and plans
