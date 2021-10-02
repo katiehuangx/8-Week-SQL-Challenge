@@ -21,10 +21,10 @@ FROM foodie_fi.subscriptions;
 ### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
 Question is asking for the monthly numbers of users on trial plan.
-- Firstly, I extract numerical month using DATE_PART.
-- Then, I use TO_CHAR to extract the string or name of the month.
-- DATE_PART is used to extract numerical values from a date, whereas TO_CHAR extracts the string value (i.e. January, Wednesday)
-- Filter for plan_id = 0 for trial plans.
+- Firstly, I extract numerical month using `DATE_PART`.
+- Then, I use `TO_CHAR` to extract the string or name of the month.
+- `DATE_PART` is used to extract numerical values from a date, whereas `TO_CHAR` extracts the string value (i.e. January, Wednesday)
+- Filter for `plan_id = 0` for trial plans.
 
 ````sql
 SELECT
@@ -106,6 +106,7 @@ WHERE s.plan_id = 4;
 In order to identify which customer churned straight after the trial plan, I rank each customer's plans using a `ROW_NUMBER`. Remember to partition by unique customer.
 
 My understanding is that if a customer churned immediately after trial, the plan ranking would look like this.
+
 - Trial Plan - Rank 1
 - Churned - Rank 2
 
@@ -144,6 +145,13 @@ WHERE plan_id = 4 -- Filter to churn plan
 
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
+Question is asking for number and percentage of customers who converted to becoming paid customer after the trial. 
+
+**Steps:**
+- Find customer's next plan which is located in the next row using `LEAD()`. Run the `next_plan_cte` separately to view the next plan results and understand how `LEAD()` works.
+- Filter for `non-null next_plan`. Why? Because a next_plan with null values means that the customer has churned. 
+- Filter for `plan_id = 0` as every customer has to start from the trial plan at 0.
+
 ````sql
 -- To retrieve next plan's start date located in the next row based on current row
 WITH next_plan_cte AS (
@@ -170,6 +178,8 @@ ORDER BY next_plan;
 **Answer:**
 
 <img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/129843509-2cfb76ed-82cc-4291-a59f-a854580a115e.png">
+
+- More than 80% of customers are on paid plans with small 3.7% on plan 3 (pro annual $199). Foodie-Fi has to strategize on their customer acquisition who would be willing to spend more.
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
