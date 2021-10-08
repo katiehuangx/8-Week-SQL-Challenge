@@ -105,7 +105,7 @@ _(Assuming that distance is calculated from Pizza Runner HQ to customer’s plac
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
 
-_Edit 08/10/21: Thanks to my reader, Ankush Taneja on Medium who caught my mistake. I've amended to the correct solution. Also, I was doing this case study using SQL Server few months ago, but I'm using PostgreSQL on SQLpad now so there could be a slight difference to the syntax.
+_Edit 08/10/21: Thanks to my reader, Ankush Taneja on Medium who caught my mistake. I've amended to the correct solution. Also, I was doing this case study using SQL Server few months ago, but I'm using PostgreSQL on SQLpad now so there could be a slight difference to the syntax._
 
 Firstly, I'm going to filter results with non-null duration first just to have a feel. You can skip this step and go straight to the answer.
 
