@@ -44,6 +44,8 @@ These information would come from several tables
 
 Note 1 - In product_page_events CTE, we will find for the number of page views and cart adds for individual visit id
 
+# [IN PROGRESS]
+
 ```sql
 WITH product_page_events AS ( -- Note 1
   SELECT 
