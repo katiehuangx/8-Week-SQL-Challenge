@@ -105,32 +105,30 @@ _(Assuming that distance is calculated from Pizza Runner HQ to customer’s plac
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
 
-````sql
-WITH delivery_time_cte AS
-(
-  SELECT 
-    c.order_id, 
-    c.order_time, 
-    r.pickup_time, 
-    DATEDIFF(MINUTE, c.order_time, r.pickup_time) AS delivery_time
-  FROM #customer_orders AS c
-  JOIN #runner_orders AS r
-    ON c.order_id = r.order_id
- WHERE r.distance != 0
- GROUP BY c.order_id, c.order_time, r.pickup_time
-)
+_Edit 08/10/21: Thanks to my reader, Ankush Taneja on Medium who caught my mistake. I've amended to the correct solution. Also, I was doing this case study using SQL Server few months ago, but I'm using PostgreSQL on SQLpad now so there could be a slight difference to the syntax.
 
+Firstly, I'm going to filter results with non-null duration first just to have a feel. You can skip this step and go straight to the answer.
+
+````sql
 SELECT 
-  (MAX(delivery_time) - MIN(delivery_time)) AS delivery_time_difference
-FROM delivery_time_cte
-WHERE delivery_time > 1;
+  order_id, duration
+FROM #runner_orders
+WHERE duration not like ' ';
 ````
+
+<img width="269" alt="image" src="https://user-images.githubusercontent.com/81607668/136523519-98efb655-d144-496b-a946-42c1c5415403.png">
+
+```sql
+SELECT MAX(duration::NUMERIC) - MIN(duration::NUMERIC) AS delivery_time_difference
+FROM runner_orders2
+where duration not like ' ';
+```
 
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129739884-b79fac19-1d83-42ea-bf7d-1c031f6f05de.png)
+<img width="196" alt="image" src="https://user-images.githubusercontent.com/81607668/136523820-c4504a25-83f8-4236-b08e-37bf542caad0.png">
 
-- The difference between longest (30 minutes) and shortest (10 minutes) delivery time for all orders is 20 minutes.
+- The difference between longest (40 minutes) and shortest (10 minutes) delivery time for all orders is 30 minutes.
 
 ### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 
