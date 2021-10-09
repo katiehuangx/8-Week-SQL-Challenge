@@ -64,7 +64,7 @@ View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob
 
 ### B. Product Funnel Analysis
 
-View my solution [here].
+View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/B.%20Product%20Funnel%20Analysis.md).
 
 Using a single SQL query - create a new output table which has the following details:
 
