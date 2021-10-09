@@ -40,7 +40,9 @@ These information would come from several tables
 - `events` table - visit_id, page_id, event_type
 - `page_hierarchy` table - page_id, product_category
 
-**Solution for [Table 1]**
+***
+
+### Solution for [Table 1]
 
 - Note 1 - In `product_page_events` CTE, find page views and cart adds for individual visit ids by wrapping `SUM` around `CASE statements` so that we do not have to group the results by `event_type` as well.
 - Note 2 - In `purchase_events` CTE, get only visit ids that have made purchases.
@@ -99,7 +101,8 @@ ORDER BY product_id
 
 <kbd><img width="845" alt="image" src="https://user-images.githubusercontent.com/81607668/136649917-ff1f7daa-9fb6-4077-9196-8596cd6eb424.png"></kbd>
 
-**Solution for [Table 2]**
+### Solution for [Table 2]
+
 ```sql
 -- Run the `product_page_events`, `purchase_events`, and `combined_table` CTEs and query below concurrently
 SELECT 
@@ -114,5 +117,23 @@ GROUP BY product_category;
 
 <kbd><img width="661" alt="image" src="https://user-images.githubusercontent.com/81607668/136650026-e6817dd2-ab30-4d5f-ab06-0b431f087dad.png"></kbd>
 
+***
 
+1. Which product had the most views, cart adds and purchases?
+
+
+
+2. Which product was most likely to be abandoned?
+
+
+
+3. Which product had the highest view to purchase percentage?
+
+
+
+4. What is the average conversion rate from view to cart add?
+
+
+
+5. What is the average conversion rate from cart add to purchase?
 
