@@ -42,9 +42,9 @@ These information would come from several tables
 
 **Solution for [Table 1]**
 
-Note 1 - In product_page_events CTE, we will find for the number of page views and cart adds for individual visit id
-
-# [IN PROGRESS]
+- Note 1 - In `product_page_events` CTE, find page views and cart adds for individual visit ids by wrapping `SUM` around `CASE statements` so that we do not have to group the results by `event_type` as well.
+- Note 2 - In `purchase_events` CTE, get only visit ids that have made purchases.
+- Note 3 - In `combined_table` CTE, merge `product_page_events` and `purchase_events` using `LEFT JOIN`. Take note of the table sequence. In order to filter for visit ids with purchases, we use a `CASE statement` and where visit id is not null, it means the visit id is a purchase. 
 
 ```sql
 WITH product_page_events AS ( -- Note 1
@@ -61,13 +61,13 @@ WITH product_page_events AS ( -- Note 1
   WHERE product_id IS NOT NULL
   GROUP BY e.visit_id, ph.product_id, ph.page_name, ph.product_category
 ),
-purchase_events AS (
+purchase_events AS ( -- Note 2
   SELECT 
     DISTINCT visit_id
   FROM clique_bait.events
   WHERE event_type = 3 -- 3 for Purchase
 ),
-combined_table AS (
+combined_table AS ( -- Note 3
   SELECT 
     ppe.visit_id, 
     ppe.product_id, 
@@ -80,6 +80,11 @@ combined_table AS (
   LEFT JOIN purchase_events AS pe
     ON ppe.visit_id = pe.visit_id
 )
+```
+
+Before we move on the results table below, I'd like to touch on the logic behind `abandoned` column in which `cart_add = 1` where a customer adds an item into the cart, but `purchase = 0` customer did not purchase and abandoned the cart.
+
+```sql
 SELECT 
   product_name, 
   product_category, 
@@ -92,7 +97,22 @@ GROUP BY product_id, product_name, product_category
 ORDER BY product_id
 ```
 
+<kbd><img width="845" alt="image" src="https://user-images.githubusercontent.com/81607668/136649917-ff1f7daa-9fb6-4077-9196-8596cd6eb424.png"></kbd>
 
+**Solution for [Table 2]**
+```sql
+-- Run the `product_page_events`, `purchase_events`, and `combined_table` CTEs and query below concurrently
+SELECT 
+  product_category, 
+  SUM(page_view) AS views,
+  SUM(cart_add) AS cart_adds, 
+  SUM(CASE WHEN cart_add = 1 AND purchase = 0 THEN 1 ELSE 0 END) AS abandoned,
+  SUM(CASE WHEN cart_add = 1 AND purchase = 1 THEN 1 ELSE 0 END) AS purchases
+FROM combined_table
+GROUP BY product_category;
+```
+
+<kbd><img width="661" alt="image" src="https://user-images.githubusercontent.com/81607668/136650026-e6817dd2-ab30-4d5f-ab06-0b431f087dad.png"></kbd>
 
 
 
