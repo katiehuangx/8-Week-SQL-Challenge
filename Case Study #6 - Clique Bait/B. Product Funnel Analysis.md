@@ -36,7 +36,7 @@ Let us visualize the output table.
 | abandoned | Number of times product was added to a cart, but not purchased |
 | purchased | Number of times product was purchased |
 
-These information would come from several tables
+These information would come from these 2 tables.
 - `events` table - visit_id, page_id, event_type
 - `page_hierarchy` table - page_id, product_category
 
