@@ -88,14 +88,6 @@ ORDER BY product_id
 
 Additionally, create another table which further aggregates the data for the above points but this time for each product category instead of individual products.
 
-Use your 2 new output tables - answer the following questions:
-
-1. Which product had the most views, cart adds and purchases?
-2. Which product was most likely to be abandoned?
-3. Which product had the highest view to purchase percentage?
-4. What is the average conversion rate from view to cart add?
-5. What is the average conversion rate from cart add to purchase?
-
 **Solution**
 
 ```sql
@@ -113,6 +105,8 @@ GROUP BY product_category;
 <kbd><img width="661" alt="image" src="https://user-images.githubusercontent.com/81607668/136650026-e6817dd2-ab30-4d5f-ab06-0b431f087dad.png"></kbd>
 
 ***
+
+Use your 2 new output tables - answer the following questions:
 
 1. Which product had the most views, cart adds and purchases?
 
