@@ -144,8 +144,9 @@ FROM product_category
 ***
 
 Use your 2 new output tables - answer the following questions:
-1. Which product had the most views, cart adds and purchases?
-2. Which product was most likely to be abandoned?
+**1. Which product had the most views, cart adds and purchases?**
+
+**2. Which product was most likely to be abandoned?**
 
 **Solution**
 
@@ -155,7 +156,7 @@ Use your 2 new output tables - answer the following questions:
 - Lobster has the most cart adds and purchases.
 - Russian Caviar is most likely to be abandoned.
 
-3. Which product had the highest view to purchase percentage?
+**3. Which product had the highest view to purchase percentage?**
 
 ```sql
 SELECT 
@@ -172,8 +173,9 @@ ORDER BY purchase_per_view_percentage DESC
 
 - Lobster has the highest view to purchase percentage at 48.74%.
 
-4. What is the average conversion rate from view to cart add?
-5. What is the average conversion rate from cart add to purchase?
+**4. What is the average conversion rate from view to cart add?**
+
+**5. What is the average conversion rate from cart add to purchase?**
 
 ```sql
 SELECT 
