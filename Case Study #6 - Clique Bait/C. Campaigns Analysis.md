@@ -18,14 +18,14 @@ Generate a table that has 1 single row for every unique visit_id record and has 
 
 Steps:
 - We will merge multiple tables:
-  - 
-- 
+  - Using INNER JOIN for `users` and `events` table
+  - Joining `campaign_identifier` table using LEFT JOIN as we want all lines that have `event_time` between `start_date` and `end_date`. 
+  - Joining `page_hierachy` table using LEFT JOIN as we want all the rows in the `page_hierachy` table
 - To generate earliest `visit_start_time` for each unique `visit_id`, use `MIN()` to find the 1st `visit_time`. 
 - Wrap `SUM()` with CASE statement in order to find the total number of counts for `page_views`, `cart_adds`, `purchase`, ad `impression` and ad `click`.
 - To get a list of products added into cart sorted by sequence, 
 -   Firstly, use a CASE statement to only get cart add events. 
 -   Then, use `STRING_AGG()` to separate products by comma `,` and sort the sequence using `sequence_number`.
-
 
 ```sql
 SELECT 
@@ -40,7 +40,7 @@ SELECT
   STRING_AGG(CASE WHEN p.product_id IS NOT NULL AND e.event_type = 2 THEN p.page_name ELSE NULL END, 
     ', ' ORDER BY e.sequence_number) AS cart_products
 FROM clique_bait.users AS u
-JOIN clique_bait.events AS e
+INNER JOIN clique_bait.events AS e
   ON u.cookie_id = e.cookie_id
 LEFT JOIN clique_bait.campaign_identifier AS c
   ON e.event_time BETWEEN c.start_date AND c.end_date
