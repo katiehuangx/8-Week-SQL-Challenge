@@ -431,7 +431,7 @@ Do you have any further recommendations for Danny’s team at Data Mart or any i
 
 <img src="https://user-images.githubusercontent.com/81607668/134615258-d1108e0d-0816-4cd7-a972-d45580f82352.png" alt="Image" width="500" height="520">
 
-View the case study [here](https://8weeksqlchallenge.com/case-study-6/) and my **solution** [here]() and on [Medium].
+View the case study [here](https://8weeksqlchallenge.com/case-study-6/) and my **solution** [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%236%20-%20Clique%20Bait) and on [Medium].
 
 ### Business Task:
 Clique Bait is an online seafood store. In this case study - you are required to support the founder and CEO Danny’s vision and analyse his dataset and come up with creative solutions to calculate funnel fallout rates for the Clique Bait online store.
