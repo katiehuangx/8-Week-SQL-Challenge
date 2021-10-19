@@ -144,11 +144,10 @@ FROM product_category
 ***
 
 Use your 2 new output tables - answer the following questions:
+
 **1. Which product had the most views, cart adds and purchases?**
 
 **2. Which product was most likely to be abandoned?**
-
-**Solution**
 
 <kbd><img width="820" alt="Screenshot 2021-10-09 at 4 18 13 PM" src="https://user-images.githubusercontent.com/81607668/136650364-0f44ac58-8be7-4f4e-89a7-2598a24af5ce.png"></kbd>
 
@@ -167,8 +166,6 @@ FROM product_info
 ORDER BY purchase_per_view_percentage DESC
 ```
 
-**Solution**
-
 <kbd><img width="599" alt="image" src="https://user-images.githubusercontent.com/81607668/136650641-8baf945d-6dcf-4932-aa9e-0d6483325db6.png"></kbd>
 
 - Lobster has the highest view to purchase percentage at 48.74%.
@@ -183,8 +180,6 @@ SELECT
   ROUND(100*AVG(purchases/cart_adds),2) AS avg_cart_add_to_purchases_conversion_rate
 FROM product_info
 ```
-
-**Solution**
 
 <kbd><img width="624" alt="image" src="https://user-images.githubusercontent.com/81607668/136651154-c0151b34-189b-4978-92c6-b4c81955d94b.png"></kbd>
 
