@@ -87,7 +87,7 @@ Use your 2 new output tables - answer the following questions:
 
 ### C. Campaigns Analysis
 
-View my solution [here].
+View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/C.%20Campaigns%20Analysis.md).
 
 Generate a table that has 1 single row for every unique visit_id record and has the following columns:
 - user_id
