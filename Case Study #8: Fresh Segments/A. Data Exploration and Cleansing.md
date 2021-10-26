@@ -2,7 +2,7 @@
 
 ## 🧼 Solution - A. Data Exploration and Cleansing
 
-**1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a date data type with the start of the month**
+### 1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a date data type with the start of the month
 
 ```sql
 ALTER TABLE fresh_segments.interest_metrics
@@ -11,7 +11,7 @@ ALTER month_year TYPE DATE USING month_year::DATE;
 
 <kbd><img width="970" alt="image" src="https://user-images.githubusercontent.com/81607668/138912360-49996d84-23e4-40a7-98a1-9a8e9341b492.png"></kbd>
 
-**2. What is count of records in the `fresh_segments.interest_metrics` for each `month_year` value sorted in chronological order (earliest to latest) with the `null` values appearing first?**
+### 2. What is count of records in the `fresh_segments.interest_metrics` for each `month_year` value sorted in chronological order (earliest to latest) with the `null` values appearing first?
 
 ```sql
 SELECT 
@@ -23,7 +23,7 @@ ORDER BY month_year NULLS FIRST;
 
 <kbd><img width="291" alt="image" src="https://user-images.githubusercontent.com/81607668/138890088-7c376d99-d0dc-4a87-a605-bcbd05e12091.png"></kbd>
 
-**3. What do you think we should do with these `null` values in the `fresh_segments.interest_metrics`?**
+### 3. What do you think we should do with these `null` values in the `fresh_segments.interest_metrics`?
 
 The `null` values appear in `_month`, `_year`, `month_year`, and `interest_id`. The corresponding values in `composition`, `index_value`, `ranking`, and `percentile_ranking` fields are not meaningful without the specific information on `interest_id` and dates. 
 
@@ -55,7 +55,7 @@ FROM fresh_segments.interest_metrics
 
 Confirmed that there are no `null` values in `fresh_segments.interest_metrics`.
 
-**4. How many `interest_id` values exist in the `fresh_segments.interest_metrics` table but not in the `fresh_segments.interest_map` table? What about the other way around?**
+### 4. How many `interest_id` values exist in the `fresh_segments.interest_metrics` table but not in the `fresh_segments.interest_map` table? What about the other way around?
 
 ```sql
 SELECT 
@@ -75,7 +75,7 @@ FULL OUTER JOIN fresh_segments.interest_metrics metrics
 - There are no `interest_id` that did not appear in `interest_map`. All 1,202 ids were present in the `interest_metrics` table.
 - There are 7 `id`s that did not appear in `interest_metrics`. 
 
-**5. Summarise the id values in the `fresh_segments.interest_map` by its total record count in this table**
+### 5. Summarise the id values in the `fresh_segments.interest_map` by its total record count in this table
 
 I found the solution for this question to be strange - hence I came up with another summary of the id values too.
 
@@ -104,10 +104,10 @@ ORDER BY count DESC, id;
 
 <kbd><img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/138911619-24d6e402-d4f0-48cb-8fa6-9ebecb035e90.png"></kbd>
 
-**6. What sort of table join should we perform for our analysis and why? Check your logic by checking the rows where 'interest_id = 21246' in your joined output and include all columns from `fresh_segments.interest_metrics` and all columns from `fresh_segments.interest_map` except from the id column.**
+### 6. What sort of table join should we perform for our analysis and why? Check your logic by checking the rows where 'interest_id = 21246' in your joined output and include all columns from `fresh_segments.interest_metrics` and all columns from `fresh_segments.interest_map` except from the id column.
 
 
 
-**7. Are there any records in your joined table where the `month_year` value is before the `created_at` value from the `fresh_segments.interest_map` table? Do you think these values are valid and why?**
+### 7. Are there any records in your joined table where the `month_year` value is before the `created_at` value from the `fresh_segments.interest_map` table? Do you think these values are valid and why?
 
 ***
