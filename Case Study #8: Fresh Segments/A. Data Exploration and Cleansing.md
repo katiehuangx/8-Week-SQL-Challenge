@@ -9,13 +9,7 @@ ALTER TABLE fresh_segments.interest_metrics
 ALTER month_year TYPE DATE USING month_year::DATE;
 ```
 
-| _month | _year | month_year               | interest_id | composition | index_value | ranking | percentile_ranking |
-|--------|-------|--------------------------|-------------|-------------|-------------|---------|--------------------|
-| null   | null  | null                     | null        | 6.12        | 2.85        | 43      | 96.4               |
-| null   | null  | null                     | null        | 5.84        | 2.76        | 58      | 95.14              |
-| null   | null  | null                     | null        | 6.04        | 2.73        | 65      | 94.56              |
-| 7      | 2018  | 2018-07-01T00:00:00.000Z | 32486       | 11.89       | 6.19        | 1       | 99.86              |
-| 7      | 2018  | 2018-07-01T00:00:00.000Z | 6106        | 9.93        | 5.31        | 2       | 99.73              |
+<kbd><img width="970" alt="image" src="https://user-images.githubusercontent.com/81607668/138912360-49996d84-23e4-40a7-98a1-9a8e9341b492.png"></kbd>
 
 **2. What is count of records in the `fresh_segments.interest_metrics` for each `month_year` value sorted in chronological order (earliest to latest) with the `null` values appearing first?**
 
