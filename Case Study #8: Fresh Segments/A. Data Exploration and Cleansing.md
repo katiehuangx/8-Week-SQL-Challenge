@@ -27,7 +27,7 @@ GROUP BY month_year
 ORDER BY month_year NULLS FIRST;
 ```
 
-<img width="291" alt="image" src="https://user-images.githubusercontent.com/81607668/138890088-7c376d99-d0dc-4a87-a605-bcbd05e12091.png">
+<kbd><img width="291" alt="image" src="https://user-images.githubusercontent.com/81607668/138890088-7c376d99-d0dc-4a87-a605-bcbd05e12091.png"></kbd>
 
 **3. What do you think we should do with these `null` values in the `fresh_segments.interest_metrics`?**
 
@@ -42,7 +42,7 @@ SELECT
 FROM fresh_segments.interest_metrics
 ```
 
-<img width="112" alt="image" src="https://user-images.githubusercontent.com/81607668/138892507-5b89eba8-45c7-4edf-9c05-42347f47c746.png">
+<kbd><img width="112" alt="image" src="https://user-images.githubusercontent.com/81607668/138892507-5b89eba8-45c7-4edf-9c05-42347f47c746.png"></kbd>
 
 The percentage of null values is 8.36% which is less than 10%, hence I would suggest to drop all the `null` values.
 
@@ -57,7 +57,7 @@ SELECT
 FROM fresh_segments.interest_metrics
 ```
 
-<img width="120" alt="image" src="https://user-images.githubusercontent.com/81607668/138899920-52b8249c-ba52-4d47-b3b2-6d7c76558007.png">
+<kbd><img width="120" alt="image" src="https://user-images.githubusercontent.com/81607668/138899920-52b8249c-ba52-4d47-b3b2-6d7c76558007.png"></kbd>
 
 Confirmed that there are no `null` values in `fresh_segments.interest_metrics`.
 
@@ -74,7 +74,7 @@ FULL OUTER JOIN fresh_segments.interest_metrics metrics
   ON metrics.interest_id = map.id;
 ```
 
-<img width="617" alt="image" src="https://user-images.githubusercontent.com/81607668/138908809-72bef6fa-825e-40e5-a326-43e9bc56f24d.png">
+<kbd><img width="617" alt="image" src="https://user-images.githubusercontent.com/81607668/138908809-72bef6fa-825e-40e5-a326-43e9bc56f24d.png"></kbd>
 
 - There are 1,209 unique `id`s in `interest_map`.
 - There are 1,202 unique `interest_id`s in `interest_metrics`.
@@ -92,7 +92,7 @@ SELECT COUNT(*)
 FROM fresh_segments.interest_map
 ```
 
-<img width="97" alt="image" src="https://user-images.githubusercontent.com/81607668/138911356-34884a1e-2c84-4769-b3cc-7916776a044c.png">
+<kbd><img width="97" alt="image" src="https://user-images.githubusercontent.com/81607668/138911356-34884a1e-2c84-4769-b3cc-7916776a044c.png"></kbd>
 
 My solution:
 
@@ -108,8 +108,7 @@ GROUP BY id, interest_name
 ORDER BY count DESC, id;
 ```
 
-<img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/138911619-24d6e402-d4f0-48cb-8fa6-9ebecb035e90.png">
-
+<kbd><img width="589" alt="image" src="https://user-images.githubusercontent.com/81607668/138911619-24d6e402-d4f0-48cb-8fa6-9ebecb035e90.png"></kbd>
 
 **6. What sort of table join should we perform for our analysis and why? Check your logic by checking the rows where 'interest_id = 21246' in your joined output and include all columns from `fresh_segments.interest_metrics` and all columns from `fresh_segments.interest_map` except from the id column.**
 
