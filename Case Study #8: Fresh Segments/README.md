@@ -1,4 +1,4 @@
-## # Case Study #8: Fresh Segments
+# Case Study #8: Fresh Segments
 
 <img src="https://user-images.githubusercontent.com/81607668/138843936-d1741a39-9b87-4d5d-b09c-643600e28c92.png" alt="Image" width="500" height="520">
 
@@ -30,7 +30,7 @@ Danny has asked for your assistance to analyse aggregated metrics for an example
 
 ## Case Study Questions
 
-### A. Customer Nodes Exploration
+### A. Data Exploration and Cleansing
 <details>
 <summary>
 Click here to expand!
@@ -38,27 +38,66 @@ Click here to expand!
 
 View my solution [here]()
 
-1. How many unique nodes are there on the Data Bank system?
-2. What is the number of nodes per region?
-3. How many customers are allocated to each region?
-4. How many days on average are customers reallocated to a different node?
-5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
+1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a date data type with the start of the month
+2. What is count of records in the `fresh_segments.interest_metrics` for each `month_year` value sorted in chronological order (earliest to latest) with the `null` values appearing first?
+3. What do you think we should do with these `null` values in the `fresh_segments.interest_metrics`?
+4. How many `interest_id` values exist in the `fresh_segments.interest_metrics` table but not in the `fresh_segments.interest_map` table? What about the other way around?
+5. Summarise the id values in the `fresh_segments.interest_map` by its total record count in this table
+6. What sort of table join should we perform for our analysis and why? Check your logic by checking the rows where 'interest_id = 21246' in your joined output and include all columns from `fresh_segments.interest_metrics` and all columns from `fresh_segments.interest_map` except from the id column.
+7. Are there any records in your joined table where the `month_year` value is before the `created_at` value from the `fresh_segments.interest_map` table? Do you think these values are valid and why?
 
-### B. Customer Transactions
+</details>  
+  
+### B. Interest Analysis
+<details>
+<summary>
+Click here to expand!
+</summary>
+  
+View my solution [here]().
+  
+1. Which interests have been present in all `month_year` dates in our dataset?
+2. Using this same total_months measure - calculate the cumulative percentage of all records starting at 14 months - which total_months value passes the 90% cumulative percentage value?
+3. If we were to remove all `interest_id` values which are lower than the `total_months` value we found in the previous question - how many total data points would we be removing?
+4. Does this decision make sense to remove these data points from a business perspective? Use an example where there are all 14 months present to a removed interest example for your arguments - think about what it means to have less months present from a segment perspective. 
+5. If we include all of our interests regardless of their counts - how many unique interests are there for each month?
+  
+</details> 
 
-View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md).
+### C. Segment Analysis
+<details>
+<summary>
+Click here to expand!
+</summary>
   
-1. What is the unique count and total amount for each transaction type?
-2. What is the average total historical deposit counts and amounts for all customers?
-3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
-4. What is the closing balance for each customer at the end of the month?
-5. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:
-  - Have a negative first month balance?
-  - Have a positive first month balance?
-  - Increase their opening month’s positive closing balance by more than 5% in the following month?
-  - Reduce their opening month’s positive closing balance by more than 5% in the following month?
-  - Move from a positive balance in the first month to a negative balance in the second month?
+View my solution [here]().
   
+1. Using the complete dataset - which are the top 10 and bottom 10 interests which have the largest composition values in any month_year? Only use the maximum composition value for each interest but you must keep the corresponding month_year
+2. Which 5 interests had the lowest average ranking value?
+3. Which 5 interests had the largest standard deviation in their percentile_ranking value?
+4. For the 5 interests found in the previous question - what was minimum and maximum percentile_ranking values for each interest and its corresponding year_month value? Can you describe what is happening for these 5 interests?
+5. How would you describe our customers in this segment based off their composition and ranking values? What sort of products or services should we show to these customers and what should we avoid?
+
+</details>
+
+### D. Index Analysis
+<details>
+<summary>
+Click here to expand!
+</summary>
+  
+View my solution [here]().
+
+The `index_value` is a measure which can be used to reverse calculate the average composition for Fresh Segments’ clients. Average composition can be calculated by dividing the composition column by the index_value column rounded to 2 decimal places.
+
+1. What is the top 10 interests by the average composition for each month?
+2. For all of these top 10 interests - which interest appears the most often?
+3. What is the average of the average composition for the top 10 interests for each month?
+4. What is the 3 month rolling average of the max average composition value from September 2018 to August 2019 and include the previous top ranking interests in the same output shown below.
+5. Provide a possible reason why the max average composition might change from month to month? Could it signal something is not quite right with the overall business model for Fresh Segments?
+
+</details> 
+
 ***
 
 Do give me a 🌟 if you like what you're reading. Thank you! 🙆🏻‍♀️
