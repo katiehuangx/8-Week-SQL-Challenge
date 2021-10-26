@@ -154,6 +154,7 @@ Clique Bait is an online seafood store. In this case study - you are required to
 View the case study [here](https://8weeksqlchallenge.com/case-study-8/) and my **solution** [here] and on [Medium].
 
 ### Business Task
+
 Fresh Segments is a digital marketing agency that helps other businesses analyse trends in online ad click behaviour for their unique customer base.
 
 Clients share their customer lists with the Fresh Segments team who then aggregate interest metrics and generate a single dataset worth of metrics for further analysis.
