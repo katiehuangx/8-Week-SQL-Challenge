@@ -2,7 +2,7 @@
 
 ## 🧼 Solution - A. Data Exploration and Cleansing
 
-### 1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a date data type with the start of the month
+### 1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a `date` data type with the start of the month
 
 ```sql
 ALTER TABLE fresh_segments.interest_metrics
@@ -106,8 +106,53 @@ ORDER BY count DESC, id;
 
 ### 6. What sort of table join should we perform for our analysis and why? Check your logic by checking the rows where 'interest_id = 21246' in your joined output and include all columns from `fresh_segments.interest_metrics` and all columns from `fresh_segments.interest_map` except from the id column.
 
+We should be using `INNER JOIN` to perform our analysis.
 
+```sql
+SELECT *
+FROM fresh_segments.interest_map map
+INNER JOIN fresh_segments.interest_metrics metrics
+  ON map.id = metrics.interest_id
+WHERE metrics.interest_id = 21246   
+  AND metrics._month IS NOT NULL; -- There were instances when interest_id is available, however the date values were not - hence filter them out.
+```
+
+<kbd><img width="979" alt="image" src="https://user-images.githubusercontent.com/81607668/139016366-b6031eb7-3db9-4e1e-89a9-66136522fd4e.png"></kbd>
+
+The results should come up to 10 rows only. 
 
 ### 7. Are there any records in your joined table where the `month_year` value is before the `created_at` value from the `fresh_segments.interest_map` table? Do you think these values are valid and why?
+
+```sql
+SELECT 
+  COUNT(*)
+FROM fresh_segments.interest_map map
+INNER JOIN fresh_segments.interest_metrics metrics
+  ON map.id = metrics.interest_id
+WHERE metrics.month_year < map.created_at::DATE;
+```
+
+<kbd><img width="106" alt="image" src="https://user-images.githubusercontent.com/81607668/139017976-48aade91-969c-432f-83b3-a14436f66056.png"></kbd>
+
+There are 188 records where where the `month_year` date is before the `created_at` date. 
+
+However, it looks like these records are created in the same month as `month_year`. Do you remember that the `month_year` column's date is set to default on 1st day of the month? 
+
+<kbd><img width="761" alt="image" src="https://user-images.githubusercontent.com/81607668/139018053-f948b63a-d502-4337-b347-8c24f736f32f.png"></kbd>
+
+Running another test whether date in `month_year` and `created_at` are in the same month.
+
+```sql
+SELECT 
+  COUNT(*)
+FROM fresh_segments.interest_map map
+INNER JOIN fresh_segments.interest_metrics metrics
+  ON map.id = metrics.interest_id
+WHERE metrics.month_year < DATE_TRUNC('mon', map.created_at::DATE);
+```
+
+<kbd><img width="110" alt="image" src="https://user-images.githubusercontent.com/81607668/139018367-ab5b5148-a2e1-4b53-968e-eedb7eb717a3.png"></kbd>
+
+Seems like all the records' dates are in the same month, hence we will consider the records as valid. 
 
 ***
