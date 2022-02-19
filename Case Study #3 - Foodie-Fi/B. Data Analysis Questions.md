@@ -113,28 +113,63 @@ My understanding is that if a customer churned immediately after trial, the plan
 Using the CTE, I filtered for `plan id = 4` (churn plan) and `rank = 2` (being customers who churned immediately after trial) and find the percentage of churned customers.
 
 ````sql
--- To find ranking of the plans by customers and plans
-WITH ranking AS (
-SELECT 
-  s.customer_id, 
-  s.plan_id, 
-  p.plan_name,
-  -- Run a ROW_NUMBER() to rank the plans from 0 to 4
-  ROW_NUMBER() OVER (
-    PARTITION BY s.customer_id 
-    ORDER BY s.plan_id) AS plan_rank 
-FROM foodie_fi.subscriptions s
-JOIN foodie_fi.plans p
-  ON s.plan_id = p.plan_id)
-  
-SELECT 
-  COUNT(*) AS churn_count,
-  ROUND(100 * COUNT(*) / (
-    SELECT COUNT(DISTINCT customer_id) 
-    FROM foodie_fi.subscriptions),0) AS churn_percentage
-FROM ranking
-WHERE plan_id = 4 -- Filter to churn plan
-  AND plan_rank = 2 -- Filter to rank 2 as customers who churned immediately after trial have churn plan ranked as 2
+WITH churn_count AS 
+(
+  SELECT
+    COUNT(t.*) AS total_churned 
+  FROM
+    (
+      WITH ranking AS 
+      (
+        SELECT
+          s.*,
+          RANK() OVER (PARTITION BY customer_id 
+        ORDER BY
+          start_date) AS plan_rank 
+        FROM
+          subscriptions AS s
+      )
+,
+      conditions AS 
+      (
+        SELECT
+          r.*,
+          CASE
+            WHEN
+              plan_id = 0 
+              AND plan_rank = 1 
+            THEN
+              1 
+            WHEN
+              plan_id = 4 
+              AND plan_rank = 4 
+            THEN
+              1 
+            ELSE
+              0 
+          END
+          AS conditions 
+        FROM
+          ranking AS r
+      )
+      SELECT
+        customer_id,
+        SUM(conditions) AS s 
+      FROM
+        conditions 
+      GROUP BY
+        customer_id
+    )
+    t 
+  WHERE
+    s = 2
+)
+SELECT
+  churn_count.total_churned,
+  round((churn_count.total_churned::FLOAT / total_count.num::FLOAT)*100) AS perc 
+FROM
+  churn_count,
+  total_count;
 ````
 
 **Answer:**
