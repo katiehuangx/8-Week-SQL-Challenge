@@ -103,7 +103,7 @@ WHERE s.plan_id = 4;
 
 ### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
-In order to identify which customer churned straight after the trial plan, I rank each customer's plans using a `ROW_NUMBER`. Remember to partition by unique customer.
+In order to identify which customer churned straight after the trial plan, I rank each customer's plans using a `RANK`. Remember to partition by unique customer.
 
 My understanding is that if a customer churned immediately after trial, the plan ranking would look like this.
 
@@ -113,6 +113,12 @@ My understanding is that if a customer churned immediately after trial, the plan
 Using the CTE, I filtered for `plan id = 4` (churn plan) and `rank = 2` (being customers who churned immediately after trial) and find the percentage of churned customers.
 
 ````sql
+DROP TABLE IF EXISTS total_count;
+CREATE TEMP TABLE total_count AS (
+    SELECT COUNT(DISTINCT customer_id) AS num
+    FROM foodie_fi.subscriptions
+);
+
 WITH churn_count AS 
 (
   SELECT
