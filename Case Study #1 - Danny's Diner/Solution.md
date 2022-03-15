@@ -120,6 +120,20 @@ ORDER BY most_purchased DESC;
 
 - Most purchased item on the menu is ramen which is 8 times. Yummy!
 
+For question no. 4, after finding the most purchased item on the menu (RAMEN), we can find how many time it was purchased by all customers by running the below code:
+
+SELECT customer_id, COUNT(sales.product_id) AS product_count, menu.product_name
+FROM prismatic-grail-337610.dannys_diner.sales
+JOIN prismatic-grail-337610.dannys_diner.menu
+ON sales.product_id = menu.product_id
+WHERE menu.product_name = 'ramen'
+GROUP BY customer_id, menu.product_name
+
+OUTPUT - 
+Row	customer_id	product_count	product_name	
+1	      A             3          ramen
+2	      B             2          ramen
+3	      C             3          ramen
 ***
 
 ### 5. Which item was the most popular for each customer?
