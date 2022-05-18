@@ -6,10 +6,9 @@
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Case Study Solution](#case-study-solution)
-  - [A. Digital Analysis](#a-digital-analysis)
-  - [B. Product Funnel Analysis](#b-product-funnel-analysis)
-  - [C. Campaigns Analysis](#c-campaigns-analysis)
-  - [Complete SQL Syntax]
+  - [A. Digital Analysis](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/A.%20Digital%20Analysis.md)
+  - [B. Product Funnel Analysis](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/B.%20Product%20Funnel%20Analysis.md)
+  - [C. Campaigns Analysis](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/C.%20Campaigns%20Analysis.md)
 
 ***
 
