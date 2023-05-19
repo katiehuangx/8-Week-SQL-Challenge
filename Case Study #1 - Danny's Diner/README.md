@@ -78,7 +78,7 @@ GROUP BY customer_id;
 WITH ordered_sales_cte AS
 (
    SELECT customer_id, order_date, product_name,
-      DENSE_RANK() OVER(PARTITION BY s.customer_id
+      ROW_NUMBER() OVER(PARTITION BY s.customer_id
       ORDER BY s.order_date) AS rank
    FROM dbo.sales AS s
    JOIN dbo.menu AS m
@@ -92,20 +92,17 @@ GROUP BY customer_id, product_name;
 ````
 
 #### Steps:
-- Create a temp table ```order_sales_cte``` and use **Windows function** with **DENSE_RANK** to create a new column ```rank``` based on ```order_date```.
-- Instead of **ROW_NUMBER** or **RANK**, use **DENSE_RANK** as ```order_date``` is not time-stamped hence, there is no sequence as to which item is ordered first if 2 or more items are ordered on the same day.
+- Create a CTE called ```order_sales_cte``` and use **Windows function** with **ROW_NUMBER** to create a new column ```rank``` based on ```order_date```.
 - Subsequently, **GROUP BY** all columns to show ```rank = 1``` only.
 
 #### Answer:
 | customer_id | product_name | 
 | ----------- | ----------- |
 | A           | curry        | 
-| A           | sushi        | 
 | B           | curry        | 
 | C           | ramen        |
 
-- Customer A's first orders are curry and sushi.
-- Customer B's first order is curry.
+- Customer A and B's first order is curry.
 - Customer C's first order is ramen.
 
 ***
