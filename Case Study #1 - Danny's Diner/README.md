@@ -4,9 +4,11 @@
 ## 📚 Table of Contents
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
-- [Question and Solution](#question-and-solution)
+- [Solution](#question-and-solution)
 
 I also published this on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe)!
+
+You can join along and do the questions with me on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138).
 
 ***
 
@@ -17,22 +19,25 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ![image](https://user-images.githubusercontent.com/81607668/127271130-dca9aedd-4ca9-4ed8-b6ec-1e1920dca4a8.png)
 
-## Question and Solution
+## Solution
 
 ### 1. What is the total amount each customer spent at the restaurant?
 
 ````sql
-SELECT s.customer_id, SUM(price) AS total_sales
-FROM dbo.sales AS s
-JOIN dbo.menu AS m
-   ON s.product_id = m.product_id
-GROUP BY customer_id; 
+SELECT 
+   sales.customer_id, 
+   SUM(menu.price) AS total_sales
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+   ON sales.product_id = menu.product_id
+GROUP BY sales.customer_id
+ORDER BY sales.customer_id ASC; 
 ````
 
 #### Steps:
-- Use **SUM** and **GROUP BY** to find out ```total_sales``` contributed by each customer.
-- Use **JOIN** to merge ```sales``` and ```menu``` tables as ```customer_id``` and ```price``` are from both tables.
-
+- Use **JOIN** to merge `dannys_diner.sales` and `dannys_diner.menu` tables as `sales.customer_id` and `menu.price` are from both tables.
+- Use **SUM** to calculate the total sales contributed by each customer.
+- Group the aggregated results by `sales.customer_id`. 
 
 #### Answer:
 | customer_id | total_sales |
@@ -50,14 +55,16 @@ GROUP BY customer_id;
 ### 2. How many days has each customer visited the restaurant?
 
 ````sql
-SELECT customer_id, COUNT(DISTINCT(order_date)) AS visit_count
-FROM dbo.sales
+SELECT 
+   customer_id, 
+   COUNT(DISTINCT order_date) AS visit_count
+FROM dannys_diner.sales
 GROUP BY customer_id;
 ````
 
 #### Steps:
-- Use **DISTINCT** and wrap with **COUNT** to find out the ```visit_count``` for each customer.
-- If we do not use **DISTINCT** on ```order_date```, the number of days may be repeated. For example, if Customer A visited the restaurant twice on '2021–01–07', then number of days is counted as 2 days instead of 1 day.
+- To determine the unique number of visits for each customer, utilize **COUNT(DISTINCT `order_date`)**.
+- It's important to apply the **DISTINCT** keyword while calculating the visit count to avoid duplicate counting of days. For instance, if Customer A visited the restaurant twice on '2021–01–07', counting without **DISTINCT** would result in 2 days instead of the accurate count of 1 day.
 
 #### Answer:
 | customer_id | visit_count |
@@ -75,25 +82,31 @@ GROUP BY customer_id;
 ### 3. What was the first item from the menu purchased by each customer?
 
 ````sql
-WITH ordered_sales_cte AS
-(
-   SELECT customer_id, order_date, product_name,
-      ROW_NUMBER() OVER(PARTITION BY s.customer_id
-      ORDER BY s.order_date) AS rank
-   FROM dbo.sales AS s
-   JOIN dbo.menu AS m
-      ON s.product_id = m.product_id
+WITH ordered_sales AS (
+   SELECT 
+      sales.customer_id, 
+      sales.order_date, 
+      menu.product_name,
+      ROW_NUMBER() OVER(
+         PARTITION BY sales.customer_id 
+         ORDER BY sales.order_date) AS rank
+   FROM dannys_diner.sales
+   JOIN dannys_diner.menu
+      ON sales.product_id = menu.product_id
 )
 
-SELECT customer_id, product_name
-FROM ordered_sales_cte
+SELECT 
+   customer_id, 
+   product_name
+FROM ordered_sales
 WHERE rank = 1
 GROUP BY customer_id, product_name;
 ````
 
 #### Steps:
-- Create a CTE called ```order_sales_cte``` and use **Windows function** with **ROW_NUMBER** to create a new column ```rank``` based on ```order_date```.
-- Subsequently, **GROUP BY** all columns to show ```rank = 1``` only.
+- Create a Common Table Expression (CTE) named `ordered_sales_cte`. Within the CTE, create a new column `rank` and calculate the row number using **ROW_NUMBER()** window function. The **PARTITION BY** clause divides the data by `customer_id`, and the **ORDER BY** clause orders the rows within each partition by `order_date`.
+- In the outer query, select the appropriate columns and apply a filter in the **WHERE** clause to retrieve only the rows where the rank column equals 1, which represents the first row within each `customer_id` partition.
+- Use the GROUP BY clause to group the result by `customer_id` and `product_name`.
 
 #### Answer:
 | customer_id | product_name | 
@@ -110,17 +123,20 @@ GROUP BY customer_id, product_name;
 ### 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 ````sql
-SELECT TOP 1 (COUNT(s.product_id)) AS most_purchased, product_name
-FROM dbo.sales AS s
-JOIN dbo.menu AS m
-   ON s.product_id = m.product_id
-GROUP BY s.product_id, product_name
-ORDER BY most_purchased DESC;
+SELECT 
+   menu.product_name,
+   COUNT(sales.product_id) AS most_purchased_item
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+   ON sales.product_id = menu.product_id
+GROUP BY menu.product_name
+ORDER BY most_purchased_item DESC
+LIMIT 1;
 ````
 
 #### Steps:
-- **COUNT** number of ```product_id``` and **ORDER BY** ```most_purchased``` by descending order. 
-- Then, use **TOP 1** to filter highest number of purchased item.
+- Perform a **COUNT** aggregation on the `product_id` column and **ORDER BY** the result in descending order using `most_purchased` field.
+- Apply the **LIMIT** 1 clause to filter and retrieve the highest number of purchased items.
 
 #### Answer:
 | most_purchased | product_name | 
@@ -135,25 +151,35 @@ ORDER BY most_purchased DESC;
 ### 5. Which item was the most popular for each customer?
 
 ````sql
-WITH fav_item_cte AS
-(
-   SELECT s.customer_id, m.product_name, COUNT(m.product_id) AS order_count,
-      DENSE_RANK() OVER(PARTITION BY s.customer_id
-      ORDER BY COUNT(s.customer_id) DESC) AS rank
-   FROM dbo.menu AS m
-   JOIN dbo.sales AS s
-      ON m.product_id = s.product_id
-   GROUP BY s.customer_id, m.product_name
+WITH most_popular AS (
+   SELECT 
+      sales.customer_id, 
+      menu.product_name, 
+      COUNT(menu.product_id) AS order_count,
+      DENSE_RANK() OVER(
+         PARTITION BY sales.customer_id 
+         ORDER BY COUNT(sales.customer_id) DESC) AS rank
+   FROM dannys_diner.menu
+   JOIN dannys_diner.sales
+      ON menu.product_id = sales.product_id
+   GROUP BY sales.customer_id, menu.product_name
 )
 
-SELECT customer_id, product_name, order_count
-FROM fav_item_cte 
+SELECT 
+   customer_id, 
+   product_name, 
+   order_count
+FROM most_popular 
 WHERE rank = 1;
 ````
 
+*Each user may have more than 1 favourite item.*
+
 #### Steps:
-- Create a ```fav_item_cte``` and use **DENSE_RANK** to ```rank``` the ```order_count``` for each product by descending order for each customer.
-- Generate results where product ```rank = 1``` only as the most popular product for each customer.
+- Create a CTE named `fav_item_cte` and within the CTE, join the `menu` table and `sales` table using the `product_id` column.
+- Group results by `sales.customer_id` and `menu.product_name` and calculate the count of `menu.product_id` occurrences for each group. 
+- Utilize the **DENSE_RANK()** window function to calculate the ranking of each `sales.customer_id` partition based on the count of orders **COUNT(`sales.customer_id`)** in descending order.
+- In the outer query, select the appropriate columns and apply a filter in the **WHERE** clause to retrieve only the rows where the rank column equals 1, representing the rows with the highest order count for each customer.
 
 #### Answer:
 | customer_id | product_name | order_count |
@@ -165,65 +191,78 @@ WHERE rank = 1;
 | C           | ramen        |  3   |
 
 - Customer A and C's favourite item is ramen.
-- Customer B enjoys all items on the menu. He/she is a true foodie, sounds like me
+- Customer B enjoys all items on the menu. He/she is a true foodie, sounds like me.
 
 ***
 
 ### 6. Which item was purchased first by the customer after they became a member?
 
 ````sql
-WITH member_sales_cte AS 
-(
-   SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
-      DENSE_RANK() OVER(PARTITION BY s.customer_id
-      ORDER BY s.order_date) AS rank
-   FROM sales AS s
-   JOIN members AS m
-      ON s.customer_id = m.customer_id
-   WHERE s.order_date >= m.join_date
+WITH joined_as_member AS (
+   SELECT 	
+      members.customer_id, 
+      sales.product_id,
+      ROW_NUMBER() OVER(
+    	   PARTITION BY members.customer_id
+      	ORDER BY sales.order_date) AS row_num
+   FROM dannys_diner.members
+   JOIN dannys_diner.sales
+	   ON members.customer_id = sales.customer_id
+      AND sales.order_date >= members.join_date
 )
 
-SELECT s.customer_id, s.order_date, m2.product_name 
-FROM member_sales_cte AS s
-JOIN menu AS m2
-   ON s.product_id = m2.product_id
-WHERE rank = 1;
+SELECT 
+   customer_id, 
+   product_name 
+FROM joined_as_member
+JOIN dannys_diner.menu
+   ON joined_as_member.product_id = menu.product_id
+WHERE row_num = 1
+ORDER BY customer_id ASC;
 ````
 
 #### Steps:
-- Create ```member_sales_cte``` by using **windows function** and partitioning ```customer_id``` by ascending ```order_date```. Then, filter ```order_date``` to be on or after ```join_date```.
-- Then, filter table by ```rank = 1``` to show 1st item purchased by each customer.
+- Create a CTE named `joined_as_member` and within the CTE, select the appropriate columns and calculate the row number using the **ROW_NUMBER()** window function. The **PARTITION BY** clause divides the data by `members.customer_id` and the **ORDER BY** clause orders the rows within each `members.customer_id` partition by `sales.order_date`.
+- Join tables `dannys_diner.members` and `dannys_diner.sales` on `customer_id` column. Additionally, apply a condition to only include sales that occurred *after* the member's `join_date`.
+- In the outer query, join the `joined_as_member` CTE with the `dannys_diner.menu` on the `product_id` column.
+- In the **WHERE** clause, filter to retrieve only the rows where the row_num column equals 1, representing the first row within each `customer_id` partition.
+- Order result by `customer_id` in ascending order.
 
 #### Answer:
-| customer_id | order_date  | product_name |
-| ----------- | ---------- |----------  |
-| A           | 2021-01-07 | curry        |
-| B           | 2021-01-11 | sushi        |
+| customer_id | product_name |
+| ----------- | ---------- |
+| A           | curry        |
+| B           | sushi        |
 
-- Customer A's first order as member is curry.
-- Customer B's first order as member is sushi.
+- Customer A's first order as a member is curry.
+- Customer B's first order as a member is sushi.
 
 ***
 
 ### 7. Which item was purchased just before the customer became a member?
 
 ````sql
-WITH prior_member_purchased_cte AS 
-(
-   SELECT s.customer_id, m.join_date, s.order_date, s.product_id,
-         DENSE_RANK() OVER(PARTITION BY s.customer_id
-         ORDER BY s.order_date DESC) AS rank
-   FROM sales AS s
-   JOIN members AS m
-      ON s.customer_id = m.customer_id
-   WHERE s.order_date < m.join_date
+WITH purchased_prior_member AS (
+   SELECT 
+   	members.customer_id, 
+      sales.product_id,
+      ROW_NUMBER() OVER(
+         PARTITION BY members.customer_id
+         ORDER BY sales.order_date DESC) AS rank
+   FROM dannys_diner.members
+   JOIN dannys_diner.sales
+      ON members.customer_id = sales.customer_id
+   	AND sales.order_date < members.join_date
 )
 
-SELECT s.customer_id, s.order_date, m2.product_name 
-FROM prior_member_purchased_cte AS s
-JOIN menu AS m2
-   ON s.product_id = m2.product_id
-WHERE rank = 1;
+SELECT 
+   p_member.customer_id, 
+   menu.product_name 
+FROM purchased_prior_member AS p_member
+JOIN dannys_diner.menu
+   ON p_member.product_id = menu.product_id
+WHERE rank = 1
+ORDER BY p_member.customer_id ASC;
 ````
 
 #### Steps:
