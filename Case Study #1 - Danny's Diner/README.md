@@ -380,7 +380,7 @@ WITH dates_cte AS (
 )
 
 SELECT 
-	sales.customer_id, 
+	sales.customer_id,
   SUM(CASE
   	WHEN menu.product_name = 'sushi' THEN 2 * 10 * menu.price
     WHEN sales.order_date BETWEEN dates.join_date AND dates.valid_date THEN 2 * 10 * menu.price
