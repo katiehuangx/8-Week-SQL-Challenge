@@ -89,7 +89,7 @@ WITH ordered_sales AS (
         sales.customer_id, 
         sales.order_date, 
         menu.product_name,
-        ROW_NUMBER() OVER(
+        DENSE_RANK() OVER(
             PARTITION BY sales.customer_id 
             ORDER BY sales.order_date) AS rank
     FROM dannys_diner.sales
@@ -106,7 +106,7 @@ GROUP BY customer_id, product_name;
 ````
 
 #### Steps:
-- Create a Common Table Expression (CTE) named `ordered_sales_cte`. Within the CTE, create a new column `rank` and calculate the row number using **ROW_NUMBER()** window function. The **PARTITION BY** clause divides the data by `customer_id`, and the **ORDER BY** clause orders the rows within each partition by `order_date`.
+- Create a Common Table Expression (CTE) named `ordered_sales_cte`. Within the CTE, create a new column `rank` and calculate the row number using **DENSE_RANK()** window function. The **PARTITION BY** clause divides the data by `customer_id`, and the **ORDER BY** clause orders the rows within each partition by `order_date`.
 - In the outer query, select the appropriate columns and apply a filter in the **WHERE** clause to retrieve only the rows where the rank column equals 1, which represents the first row within each `customer_id` partition.
 - Use the GROUP BY clause to group the result by `customer_id` and `product_name`.
 
@@ -114,11 +114,19 @@ GROUP BY customer_id, product_name;
 | customer_id | product_name | 
 | ----------- | ----------- |
 | A           | curry        | 
+| A           | sushi        | 
 | B           | curry        | 
 | C           | ramen        |
 
-- Customer A and B's first order is curry.
+- Customer A placed an order for both curry and sushi simultaneously, making them the first items in the order.
+- Customer B's first order is curry.
 - Customer C's first order is ramen.
+
+I have received feedback suggesting the use of `ROW_NUMBER()` instead of `DENSE_RANK()` for determining the "first order" in this question. 
+
+However, since the `order_date` does not have a timestamp, it is impossible to determine the exact sequence of items ordered by the customer. 
+
+Therefore, it would be inaccurate to conclude that curry is the customer's first order purely based on the alphabetical order of the product names. For this reason, I maintain my solution of using `DENSE_RANK()` and consider both curry and sushi as Customer A's first order.
 
 ***
 
