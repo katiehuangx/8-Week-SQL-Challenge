@@ -371,9 +371,9 @@ Let's break down the question to understand the point calculation for each custo
 WITH dates_cte AS (
 	SELECT 
 		customer_id, 
-  	join_date,
-    join_date + 6 AS valid_date, 
-    DATE_TRUNC('month', '2021-01-31'::date)
+  		join_date,
+    		join_date + 6 AS valid_date, 
+    			DATE_TRUNC('month', '2021-01-31'::date)
   		+ interval '1 month' 
   		- interval '1 day' AS last_date
   FROM dannys_diner.members
