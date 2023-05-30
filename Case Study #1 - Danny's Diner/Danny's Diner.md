@@ -202,7 +202,7 @@ WHERE rank = 1;
 ```sql
 WITH joined_as_member AS (
     SELECT
-    members.customer_id, 
+    	members.customer_id, 
         sales.product_id,
         ROW_NUMBER() OVER(
             PARTITION BY members.customer_id
