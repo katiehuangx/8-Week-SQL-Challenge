@@ -9,8 +9,8 @@
   - [Data Cleaning and Transformation]
   - [A. Pizza Metrics]
   - [B. Runner and Customer Experience]
-  - [
-
+  - [C. Ingredient Optimisation]
+  - [D. Pricing and Ratings]
 
 I also published this on [Medium](https://medium.com/analytics-vidhya/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?source=friends_link&sk=5463dad7c9b0b1ba83d570f09e1fce90)!
 ***
@@ -119,9 +119,9 @@ This is how the clean `runner_orders_temp` table looks like and we will use this
 
 ***
 
-## Case Study Questions
+## Solution
 
-## 🍝 Solution - A. Pizza Metrics
+## A. Pizza Metrics
 
 ### 1. How many pizzas were ordered?
 
@@ -327,7 +327,7 @@ GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd');
 
 ***
 
-## Solution - B. Runner and Customer Experience
+## B. Runner and Customer Experience
 
 ### 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
@@ -508,7 +508,7 @@ _(It’s not right to attribute successful delivery to runners as order cancella
 
 ***
 
-## Solution - C. Ingredient Optimisation
+## C. Ingredient Optimisation
 
 ### 1. What are the standard ingredients for each pizza?
 
@@ -551,7 +551,7 @@ ORDER BY topping_count DESC;
 
 ***
 
-### D. Pricing and Ratings
+## D. Pricing and Ratings
 
 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
 2. What if there was an additional $1 charge for any pizza extras?
