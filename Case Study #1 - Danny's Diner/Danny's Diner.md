@@ -27,7 +27,7 @@ _Take note that I'm using PostgreSQL to execute the queries._
 
 ````sql
 SELECT 
-    sales.customer_id, 
+sales.customer_id, 
     SUM(menu.price) AS total_sales
 FROM dannys_diner.sales
 JOIN dannys_diner.menu
