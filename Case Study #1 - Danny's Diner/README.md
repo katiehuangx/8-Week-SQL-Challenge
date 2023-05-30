@@ -287,7 +287,7 @@ ORDER BY p_member.customer_id ASC;
 
 ### 8. What is the total items and amount spent for each member before they became a member?
 
-````sql
+```sql
 SELECT 
     sales.customer_id, 
     COUNT(sales.product_id) AS total_items, 
@@ -300,7 +300,7 @@ JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
 GROUP BY sales.customer_id
 ORDER BY sales.customer_id;
-````
+```
 
 #### Steps:
 - Select the columns `sales.customer_id` and calculate the count of `sales.product_id` as total_items for each customer and the sum of `menu.price` as total_sales.
@@ -393,9 +393,9 @@ JOIN dates_cte AS dates
 JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
 GROUP BY sales.customer_id;
-````
+```
 
-Assumptions::
+#### Assumptions:
 - On Day -X to Day 1 (the day a customer becomes a member), each $1 spent earns 10 points. However, for sushi, each $1 spent earns 20 points.
 - From Day 1 to Day 7 (the first week of membership), each $1 spent for any items earns 20 points.
 - From Day 8 to the last day of January 2021, each $1 spent earns 10 points. However, sushi continues to earn double the points at 20 points per $1 spent.
@@ -425,7 +425,7 @@ Assumptions::
 
 ### Join All The Things - Recreate the table with: customer_id, order_date, product_name, price, member (Y/N)
 
-````sql
+```sql
 SELECT 
     sales.customer_id, 
     sales.order_date,  
@@ -442,7 +442,7 @@ LEFT JOIN dannys_diner.members
 JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
 ORDER BY members.customer_id, sales.order_date
- ```
+```
  
 #### Answer: 
 | customer_id | order_date | product_name | price | member |
@@ -467,7 +467,7 @@ ORDER BY members.customer_id, sales.order_date
 
 ### Rank All The Things - Danny also requires further information about the ```ranking``` of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ```ranking``` values for the records when customers are not yet part of the loyalty program.
 
-````sql
+```sql
 WITH customers_data AS (
     SELECT 
         sales.customer_id, 
@@ -496,7 +496,7 @@ SELECT
             ORDER BY order_date
     ) END AS ranking
 FROM customers_data;
-````
+```
 
 #### Answer: 
 | customer_id | order_date | product_name | price | member | ranking | 
