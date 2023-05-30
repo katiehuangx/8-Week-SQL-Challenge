@@ -27,11 +27,11 @@ _Take note that I'm using PostgreSQL to execute the queries._
 
 ````sql
 SELECT 
-   sales.customer_id, 
-   SUM(menu.price) AS total_sales
+	sales.customer_id, 
+  SUM(menu.price) AS total_sales
 FROM dannys_diner.sales
 JOIN dannys_diner.menu
-   ON sales.product_id = menu.product_id
+	ON sales.product_id = menu.product_id
 GROUP BY sales.customer_id
 ORDER BY sales.customer_id ASC; 
 ````
@@ -98,8 +98,8 @@ WITH ordered_sales AS (
 )
 
 SELECT 
-   customer_id, 
-   product_name
+	customer_id, 
+	product_name
 FROM ordered_sales
 WHERE rank = 1
 GROUP BY customer_id, product_name;
