@@ -6,11 +6,11 @@
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - Solution
-  - [Data Cleaning and Transformation]
-  - [A. Pizza Metrics]
-  - [B. Runner and Customer Experience]
-  - [C. Ingredient Optimisation]
-  - [D. Pricing and Ratings]
+  - [Data Cleaning and Transformation](#-data-cleaning--transformation)
+  - [A. Pizza Metrics](#a-pizza-metrics)
+  - [B. Runner and Customer Experience](#b-runner-and-customer-experience)
+  - [C. Ingredient Optimisation](#c-ingredient-optimisation)
+  - [D. Pricing and Ratings](#d-pricing-and-ratings)
 
 I also published this on [Medium](https://medium.com/analytics-vidhya/8-week-sql-challenge-case-study-2-pizza-runner-ba32f0a6f9fb?source=friends_link&sk=5463dad7c9b0b1ba83d570f09e1fce90)!
 ***
@@ -569,9 +569,5 @@ ORDER BY topping_count DESC;
 - Average speed
 - Total number of pizzas
 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
-
-### E. Bonus Questions
-
-If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 
 ***
