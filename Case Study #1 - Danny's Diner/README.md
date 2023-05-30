@@ -85,16 +85,16 @@ GROUP BY customer_id;
 
 ````sql
 WITH ordered_sales AS (
-   SELECT 
-      sales.customer_id, 
-      sales.order_date, 
-      menu.product_name,
-      ROW_NUMBER() OVER(
-         PARTITION BY sales.customer_id 
-         ORDER BY sales.order_date) AS rank
-   FROM dannys_diner.sales
-   JOIN dannys_diner.menu
-      ON sales.product_id = menu.product_id
+    SELECT 
+        sales.customer_id, 
+        sales.order_date, 
+        menu.product_name,
+        ROW_NUMBER() OVER(
+            PARTITION BY sales.customer_id 
+            ORDER BY sales.order_date) AS rank
+    FROM dannys_diner.sales
+    JOIN dannys_diner.menu
+        ON sales.product_id = menu.product_id
 )
 
 SELECT 
@@ -126,11 +126,11 @@ GROUP BY customer_id, product_name;
 
 ````sql
 SELECT 
-   menu.product_name,
-   COUNT(sales.product_id) AS most_purchased_item
+    menu.product_name,
+    COUNT(sales.product_id) AS most_purchased_item
 FROM dannys_diner.sales
 JOIN dannys_diner.menu
-   ON sales.product_id = menu.product_id
+    ON sales.product_id = menu.product_id
 GROUP BY menu.product_name
 ORDER BY most_purchased_item DESC
 LIMIT 1;
@@ -155,22 +155,22 @@ LIMIT 1;
 ````sql
 WITH most_popular AS (
    SELECT 
-      sales.customer_id, 
-      menu.product_name, 
-      COUNT(menu.product_id) AS order_count,
-      DENSE_RANK() OVER(
-         PARTITION BY sales.customer_id 
-         ORDER BY COUNT(sales.customer_id) DESC) AS rank
-   FROM dannys_diner.menu
-   JOIN dannys_diner.sales
-      ON menu.product_id = sales.product_id
-   GROUP BY sales.customer_id, menu.product_name
+        sales.customer_id, 
+        menu.product_name, 
+        COUNT(menu.product_id) AS order_count,
+        DENSE_RANK() OVER(
+            PARTITION BY sales.customer_id 
+            ORDER BY COUNT(sales.customer_id) DESC) AS rank
+    FROM dannys_diner.menu
+    JOIN dannys_diner.sales
+        ON menu.product_id = sales.product_id
+    GROUP BY sales.customer_id, menu.product_name
 )
 
 SELECT 
-   customer_id, 
-   product_name, 
-   order_count
+    customer_id, 
+    product_name, 
+    order_count
 FROM most_popular 
 WHERE rank = 1;
 ````
