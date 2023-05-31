@@ -11,6 +11,8 @@
   - [B. Data Analysis Questions](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md)
   - [Complete SQL Syntax](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi/SQL%20Syntax)
 
+Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-3/). 
+
 ***
 
 ## Business Task
@@ -49,6 +51,12 @@ When customers churn — they will keep their access until the end of their curr
 ***
 
 ## Case Study Questions
+
+Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16). It would be great to work together on the questions!
+
+Additionally, I have also published this case study on [Medium](https://medium.com/analytics-vidhya/8-week-sql-challenge-case-study-3-foodie-fi-3d8497376ea9?sk=579afc01c30aa6149d85050f8a46ddef).
+
+If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
 ### A. Customer Journey
 
