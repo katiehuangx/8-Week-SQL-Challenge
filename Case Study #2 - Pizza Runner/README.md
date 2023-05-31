@@ -22,7 +22,7 @@ Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runn
 
 ## Entity Relationship Diagram
 
-![image](https://user-images.githubusercontent.com/81607668/127271531-0b4da8c7-8b24-4a14-9093-0795c4fa037e.png)
+![Pizza Runner](https://github.com/katiehuangx/8-Week-SQL-Challenge/assets/81607668/78099a4e-4d0e-421f-a560-b72e4321f530)
 
 ## 🧼 Data Cleaning & Transformation
 
@@ -127,7 +127,7 @@ This is how the clean `runner_orders_temp` table looks like and we will use this
 
 ````sql
 SELECT COUNT(*) AS pizza_order_count
-FROM #customer_orders;
+FROM customer_orders_temp;
 ````
 
 **Answer:**
@@ -139,9 +139,8 @@ FROM #customer_orders;
 ### 2. How many unique customer orders were made?
 
 ````sql
-SELECT 
-  COUNT(DISTINCT order_id) AS unique_order_count
-FROM #customer_orders;
+SELECT COUNT(DISTINCT order_id) AS unique_order_count
+FROM customer_orders_temp;
 ````
 
 **Answer:**
