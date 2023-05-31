@@ -8,8 +8,6 @@
 
 I also published this on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe)!
 
-You can join along and do the questions with me on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138).
-
 ***
 
 ## Business Task
@@ -22,6 +20,8 @@ Danny wants to use the data to answer a few simple questions about his customers
 ## Solution
 
 _Take note that I'm using PostgreSQL to execute the queries._
+
+You can join along and do the questions with me on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138).
 
 ### 1. What is the total amount each customer spent at the restaurant?
 
