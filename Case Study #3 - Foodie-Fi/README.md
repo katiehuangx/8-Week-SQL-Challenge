@@ -6,7 +6,7 @@
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Case Study Questions](#case-study-questions)
-- [Question and Solution]
+- [Question and Solution](#question-and-solution)
 
 Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-3/). 
 
@@ -21,7 +21,7 @@ This case study focuses on using subscription style digital data to answer impor
 
 ![image](https://user-images.githubusercontent.com/81607668/129744449-37b3229b-80b2-4cce-b8e0-707d7f48dcec.png)
 
-**Table 1: plans**
+**Table 1: `plans`**
 
 <img width="207" alt="image" src="https://user-images.githubusercontent.com/81607668/135704535-a82fdd2f-036a-443b-b1da-984178166f95.png">
 
@@ -33,17 +33,17 @@ There are 5 customer plans.
 
 When customers cancel their Foodie-Fi service — they will have a Churn plan record with a null price, but their plan will continue until the end of the billing period.
 
-**Table 2: subscriptions**
+**Table 2: `subscriptions`**
 
 <img width="245" alt="image" src="https://user-images.githubusercontent.com/81607668/135704564-30250dd9-6381-490a-82cf-d15e6290cf3a.png">
 
-Customer subscriptions show the **exact date** where their specific plan_id starts.
+Customer subscriptions show the **exact date** where their specific `plan_id` starts.
 
-If customers downgrade from a pro plan or cancel their subscription — the higher plan will remain in place until the period is over — the start_date in the subscriptionstable will reflect the date that the actual plan changes.
+If customers downgrade from a pro plan or cancel their subscription — the higher plan will remain in place until the period is over — the `start_date` in the subscriptions table will reflect the date that the actual plan changes.
 
 When customers upgrade their account from a basic plan to a pro or annual pro plan — the higher plan will take effect straightaway.
 
-When customers churn — they will keep their access until the end of their current billing period, but the start_date will be technically the day they decided to cancel their service.
+When customers churn, they will keep their access until the end of their current billing period, but the start_date will be technically the day they decided to cancel their service.
 
 ***
 
@@ -55,11 +55,12 @@ Additionally, I have also published this case study on [Medium](https://medium.c
 
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
-## A. Customer Journey
+## 🎞️ A. Customer Journey
 
 Based off the 8 sample customers provided in the sample subscriptions table below, write a brief description about each customer’s onboarding journey.
 
-**Table: Sample of subscriptions table**
+**Table: Sample of `subscriptions` table**
+
 <img width="261" alt="Screenshot 2021-08-17 at 11 36 10 PM" src="https://user-images.githubusercontent.com/81607668/129756709-75919d79-e1cd-4187-a129-bdf90a65e196.png">
 
 **Answer:**
@@ -78,7 +79,7 @@ WHERE sub.customer_id IN (1,2,11,13,15,16,18,19);
 
 <img width="556" alt="image" src="https://user-images.githubusercontent.com/81607668/129758340-b7cd527c-31f3-4f33-8d99-5b0a4baab378.png">
 
-Based on the sample results, I have selected three customers to focus on and will now share their onboarding journey.
+Based on the results above, I have selected three customers to focus on and will now share their onboarding journey.
 
 _(Refer to the table below)_
 
@@ -93,8 +94,6 @@ Customer 13: The onboarding journey for this customer began with a free trial on
 Customer 15: Initially, this customer commenced their onboarding journey with a free trial on 17 Mar 2020. Once the trial ended, on 24 Mar 2020, they upgraded to the pro monthly plan. However, the following month, on 29 Apr 2020, the customer decided to terminate their subscription and subsequently churned. The paid subscription continued until 24/25 May 2020 when it finally ended.
 
 <img width="549" alt="image" src="https://user-images.githubusercontent.com/81607668/129761434-39009802-c813-437d-a292-ddd26ac8ac29.png">
-
-These examples illustrate the varied onboarding paths taken by the selected customers, showcasing different subscription choices, upgrades, downgrades, and churn events.
 
 ***
 
@@ -117,31 +116,27 @@ FROM foodie_fi.subscriptions;
 
 ### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
-Question is asking for the monthly numbers of users on trial plan.
-- Firstly, I extract numerical month using `DATE_PART`.
-- Then, I use `TO_CHAR` to extract the string or name of the month.
-- `DATE_PART` is used to extract numerical values from a date, whereas `TO_CHAR` extracts the string value (i.e. January, Wednesday)
-- Filter for `plan_id = 0` for trial plans.
+In other words, the question is asking for the monthly count of users on the trial plan subscription.
+- To start, extract the numerical value of month from `start_date` column using the `DATE_PART()` function, specifying the 'month' part of a date. 
+- Filter the results to retrieve only users with trial plan subscriptions (`plan_id = 0). 
 
-````sql
+```sql
 SELECT
-  DATE_PART('month',start_date) AS month_date, -- Cast to month in numbers
-  TO_CHAR(start_date, 'Month') AS month_name, -- Cast to month in month's name
-  COUNT(*) AS trial_subscriptions
-FROM foodie_fi.subscriptions s
+  DATE_PART('month', start_date) AS month_date, -- Cast start_date as month in numerical format
+  COUNT(sub.customer_id) AS trial_plan_subscriptions
+FROM foodie_fi.subscriptions AS sub
 JOIN foodie_fi.plans p
   ON s.plan_id = p.plan_id
-WHERE s.plan_id = 0
-GROUP BY DATE_PART('month',start_date), 
-  TO_CHAR(start_date, 'Month')
+WHERE s.plan_id = 0 -- Trial plan ID is 0
+GROUP BY DATE_PART('month',start_date)
 ORDER BY month_date;
-````
+```
 
 **Answer:**
 
 <img width="366" alt="image" src="https://user-images.githubusercontent.com/81607668/129826377-f4da52b6-13de-4871-be98-bf438f2ac230.png">
 
-- March has the highest number of trial plans, whereas February has the lowest number of trial plans.
+Among all the months, March has the highest number of trial plans, while February has the lowest number of trial plans.
 
 ### 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name.
 
