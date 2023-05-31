@@ -6,7 +6,7 @@
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Solution](#question-and-solution)
 
-I also published this on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe)!
+Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-1/). 
 
 ***
 
@@ -19,9 +19,11 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ## Solution
 
-_Take note that I'm using PostgreSQL to execute the queries._
+Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138). It would be great to work together on the questions!
 
-You can join along and do the questions with me on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138).
+Additionally, I have also published this case study on [Medium](https://katiehuangx.medium.com/8-week-sql-challenge-case-study-week-1-dannys-diner-2ba026c897ab?source=friends_link&sk=ed355696f5a70ff8b3d5a1b905e5dabe).
+
+If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
 ### 1. What is the total amount each customer spent at the restaurant?
 
