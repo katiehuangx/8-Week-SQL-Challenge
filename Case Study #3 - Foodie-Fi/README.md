@@ -91,7 +91,7 @@ Customer 13: The onboarding journey for this customer began with a free trial on
 
 <img width="512" alt="image" src="https://user-images.githubusercontent.com/81607668/129761134-7fa840f5-673e-4ec6-8831-e3971c1fcd50.png">
 
-Customer 15: Initially, this customer commenced their onboarding journey with a free trial on 17 Mar 2020. Once the trial ended, on 24 Mar 2020, they upgraded to the pro monthly plan. However, the following month, on 29 Apr 2020, the customer decided to terminate their subscription and subsequently churned. The paid subscription continued until 24/25 May 2020 when it finally ended.
+Customer 15: Initially, this customer commenced their onboarding journey with a free trial on 17 Mar 2020. Once the trial ended, on 24 Mar 2020, they upgraded to the pro monthly plan. However, the following month, on 29 Apr 2020, the customer decided to terminate their subscription and subsequently churned until the paid subscription ends. 
 
 <img width="549" alt="image" src="https://user-images.githubusercontent.com/81607668/129761434-39009802-c813-437d-a292-ddd26ac8ac29.png">
 
@@ -140,100 +140,136 @@ Among all the months, March has the highest number of trial plans, while Februar
 
 ### 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name.
 
-Question is asking for the number of plans for start dates occurring on 1 Jan 2021 and after grouped by plan names.
-- Filter plans with start_dates occurring on 2021–01–01 and after.
-- Group and order results by plan.
-
-_Note: Question calls for events occuring after 1 Jan 2021, however I ran the query for events in 2020 as well as I was curious with the year-on-year results._
+To put it simply, we have to determine the count of plans with start dates on or after 1 January 2021 grouped by plan names. 
+1. Filter plans based on their start dates by including only the plans occurring on or after January 1, 2021.
+2. Calculate the number of customers as the number of events. 
+3. Group results based on the plan names. For better readability, order results in ascending order of the plan ID. 
 
 ````sql
 SELECT 
-  p.plan_id,
-  p.plan_name,
-  COUNT(*) AS events
-FROM foodie_fi.subscriptions s
-JOIN foodie_fi.plans p
-  ON s.plan_id = p.plan_id
-WHERE s.start_date >= '2021-01-01'
-GROUP BY p.plan_id, p.plan_name
-ORDER BY p.plan_id;
+  plans.plan_id,
+  plans.plan_name,
+  COUNT(sub.customer_id) AS num_of_events
+FROM foodie_fi.subscriptions AS sub
+JOIN foodie_fi.plans
+  ON sub.plan_id = plans.plan_id
+WHERE sub.start_date >= '2021-01-01'
+GROUP BY plans.plan_id, plans.plan_name
+ORDER BY plans.plan_id;
 ````
 
 **Answer:**
 
-<img width="592" alt="image" src="https://user-images.githubusercontent.com/81607668/129830050-4d345585-c8c5-4346-8b3b-9f718920c54b.png">
-
-- There were 0 customer on trial plan in 2021. Does it mean that there were no new customers in 2021, or did they jumped on basic monthly plan without going through the 7-week trial?
-- We should also look at the data and look at the customer proportion for 2020 and 2021.
+| plan_id | plan_name     | num_of_events |
+| ------- | ------------- | ------------- |
+| 1       | basic monthly | 8             |
+| 2       | pro monthly   | 60            |
+| 3       | pro annual    | 63            |
+| 4       | churn         | 71            |
 
 ### 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
-I like to write down the steps and breakdown the questions into parts.
+Let's analyze the question:
+- First, we need to determine
+  - The number of customers who have churned, meaning those who have discontinued their subscription.
+  - The total number of customers, including both active and churned ones.
 
-**Steps:**
-- Find the number of customers who churned.
-- Find the percentage of customers who churned and round it to 1 decimal place.
-- What's the churned plan_id? Filter to 4
+- To calculate the churn rate, we divide the number of churned customers by the total number of customers. The result should be rounded to one decimal place.
 
-````sql
-SELECT 
-  COUNT(*) AS churn_count,
-  ROUND(100 * COUNT(*)::NUMERIC / (
-    SELECT COUNT(DISTINCT customer_id) 
-    FROM foodie_fi.subscriptions),1) AS churn_percentage
-FROM foodie_fi.subscriptions s
-JOIN foodie_fi.plans p
-  ON s.plan_id = p.plan_id
-WHERE s.plan_id = 4;
-````
+```sql
+SELECT
+  COUNT(DISTINCT sub.customer_id) AS churned_customers,
+  ROUND(100.0 * COUNT(sub.customer_id)
+    / (SELECT COUNT(DISTINCT customer_id) 
+    	FROM foodie_fi.subscriptions)
+  ,1) AS churn_percentage
+FROM foodie_fi.subscriptions AS sub
+JOIN foodie_fi.plans
+  ON sub.plan_id = plans.plan_id
+WHERE plans.plan_id = 4; -- Filter results to customers with churn plan only
+```
 
 **Answer:**
 
 <img width="368" alt="image" src="https://user-images.githubusercontent.com/81607668/129840630-adebba8c-9219-4816-bba6-ba8119f298d9.png">
 
-- There are 307 customers who have churned, which is 30.7% of Foodie-Fi customer base.
+- Out of the total customer base of Foodie-Fi, 307 customers have churned. This represents approximately 30.7% of the overall customer count.
 
 ### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
-In order to identify which customer churned straight after the trial plan, I rank each customer's plans using a `ROW_NUMBER`. Remember to partition by unique customer.
+Within a CTE called `ranked_cte`, determine which customers churned immediately after the trial plan by utilizing `ROW_NUMBER()` function to assign rankings to each customer's plans. 
 
-My understanding is that if a customer churned immediately after trial, the plan ranking would look like this.
-
+In this scenario, if a customer churned right after the trial plan, the plan rankings would appear as follows:
 - Trial Plan - Rank 1
 - Churned - Rank 2
 
-Using the CTE, I filtered for `plan id = 4` (churn plan) and `rank = 2` (being customers who churned immediately after trial) and find the percentage of churned customers.
+In the outer query:
+- Apply 2 conditions in the WHERE clause:
+  - Filter `plan_id = 4`. 
+  - Filter for customers who have churned immediately after their trial with `row_num = 2`.
+- Count the number of customers who have churned immediately after their trial period using a `CASE` statement by checking if the row number is 2 (`row_num = 2`) and the plan name is 'churn' (`plan_name = 'churn'`). 
+- Calculate the churn percentage by dividing the `churned_customers` count by the total count of distinct customer IDs in the `subscriptions` table. Round percentage to a whole number.
 
-````sql
--- To find ranking of the plans by customers and plans
-WITH ranking AS (
-SELECT 
-  s.customer_id, 
-  s.plan_id, 
-  p.plan_name,
-  -- Run a ROW_NUMBER() to rank the plans from 0 to 4
-  ROW_NUMBER() OVER (
-    PARTITION BY s.customer_id 
-    ORDER BY s.plan_id) AS plan_rank 
-FROM foodie_fi.subscriptions s
-JOIN foodie_fi.plans p
-  ON s.plan_id = p.plan_id)
+```sql
+WITH ranked_cte AS (
+  SELECT 
+    sub.customer_id, 
+    plans.plan_id, 
+	  ROW_NUMBER() OVER (
+      PARTITION BY sub.customer_id 
+      ORDER BY sub.start_date) AS row_num
+  FROM foodie_fi.subscriptions AS sub
+  JOIN foodie_fi.plans 
+    ON sub.plan_id = plans.plan_id
+)
   
 SELECT 
-  COUNT(*) AS churn_count,
-  ROUND(100 * COUNT(*) / (
-    SELECT COUNT(DISTINCT customer_id) 
-    FROM foodie_fi.subscriptions),0) AS churn_percentage
-FROM ranking
-WHERE plan_id = 4 -- Filter to churn plan
-  AND plan_rank = 2 -- Filter to rank 2 as customers who churned immediately after trial have churn plan ranked as 2
-````
+	COUNT(CASE 
+    WHEN row_num = 2 AND plan_name = 'churn' THEN 1 
+    ELSE 0 END) AS churned_customers,
+	ROUND(100.0 * COUNT(
+    CASE 
+      WHEN row_num = 2 AND plan_name = 'churn' THEN 1 
+      ELSE 0 END) 
+	  / (SELECT COUNT(DISTINCT customer_id) 
+      FROM foodie_fi.subscriptions)
+  ) AS churn_percentage
+FROM ranked_cte
+WHERE plan_id = 4 -- Filter to churn plan.
+  AND row_num = 2; -- Customers who have churned immediately after trial have churn plan ranked as 2.
+```
+
+Here's another solution using the `LEAD()` window function:
+```sql
+WITH summary AS (
+  SELECT 
+    sub.customer_id,  
+    plans.plan_name, 
+	  LEAD(plans.plan_name) OVER ( 
+      PARTITION BY sub.customer_id
+      ORDER BY sub.start_date) AS next_plan
+  FROM foodie_fi.subscriptions AS sub
+  JOIN foodie_fi.plans 
+    ON sub.plan_id = plans.plan_id
+)
+  
+SELECT 
+  COUNT(customer_id) AS churned_customers,
+  ROUND(100.0 * 
+    COUNT(customer_id) 
+    / (SELECT COUNT(DISTINCT customer_id) 
+      FROM foodie_fi.subscriptions)
+  ) AS churn_percentage
+FROM summary
+WHERE plan_name = 'trial' 
+  AND next_plan = 'churn;
+```
 
 **Answer:**
 
 <img width="378" alt="image" src="https://user-images.githubusercontent.com/81607668/129834269-98ab360b-985a-4c25-9d42-c89b97ba6ba8.png">
 
-- There are 92 customers who churned straight after the initial free trial which is at 9% of entire customer base.
+- A total of 92 customers churned immediately after the initial free trial period, representing approximately 9% of the entire customer base.
 
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
