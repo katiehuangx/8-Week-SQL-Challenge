@@ -241,7 +241,7 @@ WHERE plan_id = 4 -- Filter to churn plan.
 
 Here's another solution using the `LEAD()` window function:
 ```sql
-WITH summary AS (
+WITH ranked_cte AS (
   SELECT 
     sub.customer_id,  
     plans.plan_name, 
@@ -260,7 +260,7 @@ SELECT
     / (SELECT COUNT(DISTINCT customer_id) 
       FROM foodie_fi.subscriptions)
   ) AS churn_percentage
-FROM summary
+FROM ranked_cte
 WHERE plan_name = 'trial' 
   AND next_plan = 'churn;
 ```
@@ -281,27 +281,36 @@ Question is asking for number and percentage of customers who converted to becom
 - Filter for `plan_id = 0` as every customer has to start from the trial plan at 0.
 
 ````sql
--- To retrieve next plan's start date located in the next row based on current row
-WITH next_plan_cte AS (
-SELECT 
-  customer_id, 
-  plan_id, 
-  LEAD(plan_id, 1) OVER( -- Offset by 1 to retrieve the immediate row's value below 
-    PARTITION BY customer_id 
-    ORDER BY plan_id) as next_plan
-FROM foodie_fi.subscriptions)
+WITH summary AS (
+	SELECT 
+	sub.customer_id, 
+  	plans.plan_id, 
+  plans.plan_name, 
+  sub.start_date,
+	LEAD(plans.plan_id) OVER ( 
+      PARTITION BY sub.customer_id
+      ORDER BY sub.start_date) AS next_plan_id
+FROM foodie_fi.subscriptions AS sub
+JOIN foodie_fi.plans 
+  ON sub.plan_id = plans.plan_id
+ )
+  
+SELECT
+    next_plan_id AS plan_id,
+COUNT(DISTINCT customer_id) AS paid_customers,
+	ROUND(100.0 * 
+	COUNT(customer_id) 
+	/ (SELECT COUNT(DISTINCT customer_id) 
+	FROM foodie_fi.subscriptions)
+	,1) AS paid_percentage
+FROM summary
+WHERE next_plan_id IS NOT NULL -- To avoid double counting
+GROUP BY plan_id, next_plan_id;
 
-SELECT 
-  next_plan, 
-  COUNT(*) AS conversions,
-  ROUND(100 * COUNT(*)::NUMERIC / (
-    SELECT COUNT(DISTINCT customer_id) 
-    FROM foodie_fi.subscriptions),1) AS conversion_percentage
-FROM next_plan_cte
-WHERE next_plan IS NOT NULL 
-  AND plan_id = 0
-GROUP BY next_plan
-ORDER BY next_plan;
+
+
+
+
 ````
 **Answer:**
 
