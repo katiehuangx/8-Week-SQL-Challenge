@@ -6,10 +6,7 @@
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Case Study Questions](#case-study-questions)
-- Solution
-  - [A. Customer Journey](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/A.%20Customer%20Journey.md)
-  - [B. Data Analysis Questions](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md)
-  - [Complete SQL Syntax](https://github.com/katiehuangx/8-Week-SQL-Challenge/tree/main/Case%20Study%20%233%20-%20Foodie-Fi/SQL%20Syntax)
+- [Question and Solution]
 
 Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-3/). 
 
@@ -50,7 +47,7 @@ When customers churn — they will keep their access until the end of their curr
 
 ***
 
-## Case Study Questions
+## Question and Solution
 
 Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16). It would be great to work together on the questions!
 
@@ -58,60 +55,59 @@ Additionally, I have also published this case study on [Medium](https://medium.c
 
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
-### A. Customer Journey
-
-View my solution [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/A.%20Customer%20Journey.md).
-  
-Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey.
-
-## 🎞 Solution - A. Customer Journey
+## A. Customer Journey
 
 Based off the 8 sample customers provided in the sample subscriptions table below, write a brief description about each customer’s onboarding journey.
 
+**Table: Sample of subscriptions table**
 <img width="261" alt="Screenshot 2021-08-17 at 11 36 10 PM" src="https://user-images.githubusercontent.com/81607668/129756709-75919d79-e1cd-4187-a129-bdf90a65e196.png">
 
 **Answer:**
 
-````sql
+```sql
 SELECT
-  s.customer_id,f.plan_id, f.plan_name,  s.start_date
-FROM foodie_fi.plans f
-JOIN foodie_fi.subscriptions s
-  ON f.plan_id = s.plan_id
-WHERE s.customer_id IN (1,2,11,13,15,16,18,19)
-````
+  sub.customer_id,
+  plans.plan_id, 
+  plans.plan_name,  
+  sub.start_date
+FROM foodie_fi.plans
+JOIN foodie_fi.subscriptions AS sub
+  ON plans.plan_id = sub.plan_id
+WHERE sub.customer_id IN (1,2,11,13,15,16,18,19);
+```
 
 <img width="556" alt="image" src="https://user-images.githubusercontent.com/81607668/129758340-b7cd527c-31f3-4f33-8d99-5b0a4baab378.png">
 
-From the sample results, I will choose 3 customers and write about their onboarding journey.
+Based on the sample results, I have selected three customers to focus on and will now share their onboarding journey.
+
+_(Refer to the table below)_
+
+Customer 1: This customer initiated their journey by starting the free trial on 1 Aug 2020. After the trial period ended, on 8 Aug 2020, they subscribed to the basic monthly plan.
 
 <img width="560" alt="image" src="https://user-images.githubusercontent.com/81607668/129757897-df606bb6-aeb8-4235-8244-d61a3952a84a.png">
 
-Customer 1 started the free trial on 1 Aug 2020 and subsequently subscribed to the basic monthly plan on 8 Aug 2020 after the 7-days trial has ended.
+Customer 13: The onboarding journey for this customer began with a free trial on 15 Dec 2020. Following the trial period, on 22 Dec 2020, they subscribed to the basic monthly plan. After three months, on 29 Mar 2021, they upgraded to the pro monthly plan.
 
 <img width="512" alt="image" src="https://user-images.githubusercontent.com/81607668/129761134-7fa840f5-673e-4ec6-8831-e3971c1fcd50.png">
 
-Customer 13 started the free trial on 15 Dec 2020, then subscribed to the basic monthly plan on 22 Dec 2020. 3 months later on 29 Mar 2021, customer upgraded to the pro monthly plan.
+Customer 15: Initially, this customer commenced their onboarding journey with a free trial on 17 Mar 2020. Once the trial ended, on 24 Mar 2020, they upgraded to the pro monthly plan. However, the following month, on 29 Apr 2020, the customer decided to terminate their subscription and subsequently churned. The paid subscription continued until 24/25 May 2020 when it finally ended.
 
 <img width="549" alt="image" src="https://user-images.githubusercontent.com/81607668/129761434-39009802-c813-437d-a292-ddd26ac8ac29.png">
 
-Customer 15 commenced free trial on 17 Mar 2020, then upgraded to pro monthly plan on 24 Mar 2020 after the trial ended. In the following month on 29 Apr 2020, the customer terminated subscription and churned until the paid subscription ended on 24/25 May 2020.
+These examples illustrate the varied onboarding paths taken by the selected customers, showcasing different subscription choices, upgrades, downgrades, and churn events.
 
 ***
 
-### B. Data Analysis Questions
-
-## 🎞 Solution - B. Data Analysis Questions
+## B. Data Analysis Questions
 
 ### 1. How many customers has Foodie-Fi ever had?
 
-To find the number of Foodie-Fi's unique customers, I use `DISTINCT` and wrap `COUNT` around it.
+To determine the count of unique customers for Foodie-Fi, I utilize the `COUNT()` function wrapped around `DISTINCT`.
 
-````sql
-SELECT 
-  COUNT(DISTINCT customer_id) AS unique_customer
+```sql
+SELECT COUNT(DISTINCT customer_id) AS num_of_customers
 FROM foodie_fi.subscriptions;
-````
+```
 
 **Answer:**
 
