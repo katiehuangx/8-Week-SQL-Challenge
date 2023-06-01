@@ -5,7 +5,6 @@
 ## 📚 Table of Contents
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
-- [Case Study Questions](#case-study-questions)
 - [Question and Solution](#question-and-solution)
 
 Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-3/). 
@@ -273,14 +272,7 @@ WHERE plan_name = 'trial'
 
 ### 6. What is the number and percentage of customer plans after their initial free trial?
 
-Question is asking for number and percentage of customers who converted to becoming paid customer after the trial. 
-
-**Steps:**
-- Find customer's next plan which is located in the next row using `LEAD()`. Run the `next_plan_cte` separately to view the next plan results and understand how `LEAD()` works.
-- Filter for `non-null next_plan`. Why? Because a next_plan with null values means that the customer has churned. 
-- Filter for `plan_id = 0` as every customer has to start from the trial plan at 0.
-
-````sql
+```sql
 WITH next_plans AS (
   SELECT 
     customer_id, 
@@ -304,7 +296,8 @@ WHERE next_plan_id IS NOT NULL
   AND plan_id = 0
 GROUP BY next_plan_id
 ORDER BY next_plan_id;
-````
+```
+
 **Answer:**
 
 | plan_id | converted_customers | conversion_percentage |
@@ -410,7 +403,7 @@ JOIN annual_plan AS annual
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
-Refer to this StackOverflow to understand how the `WIDTH_BUCKET()` function works to create buckets of 30-day periods.
+To understand how the `WIDTH_BUCKET()` function works in creating buckets of 30-day periods, you can refer to this [StackOverflow](https://stackoverflow.com/questions/50518548/creating-a-bin-column-in-postgres-to-check-an-integer-and-return-a-string) answer.
 
 ```sql
 WITH trial_plan AS (
@@ -442,31 +435,7 @@ SELECT
 FROM bins
 GROUP BY avg_days_to_upgrade
 ORDER BY avg_days_to_upgrade;
-````
-
-**Answer:**
-
-<img width="399" alt="image" src="https://user-images.githubusercontent.com/81607668/130019061-d2b54041-83ff-4a92-b30e-f519fb904d91.png">
-
-### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
-
-````sql
--- To retrieve next plan's start date located in the next row based on current row
-WITH next_plan_cte AS (
-SELECT 
-  customer_id, 
-  plan_id, 
-  start_date,
-  LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY plan_id) as next_plan
-FROM foodie_fi.subscriptions)
-
-SELECT 
-  COUNT(*) AS downgraded
-FROM next_plan_cte
-WHERE start_date <= '2020-12-31'
-  AND plan_id = 2 
-  AND next_plan = 1;
-````
+```
 
 **Answer:**
 
@@ -485,15 +454,32 @@ WHERE start_date <= '2020-12-31'
 | 300 - 330 days | 1                |
 | 330 - 360 days | 1                |
 
-***
+### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
-## C. Challenge Payment Question
+```sql
+WITH ranked_cte AS (
+  SELECT 
+    sub.customer_id,  
+  	plans.plan_id,
+    plans.plan_name, 
+	  LEAD(plans.plan_id) OVER ( 
+      PARTITION BY sub.customer_id
+      ORDER BY sub.start_date) AS next_plan_id
+  FROM foodie_fi.subscriptions AS sub
+  JOIN foodie_fi.plans 
+    ON sub.plan_id = plans.plan_id
+ WHERE DATE_PART('year', start_date) = 2020
+)
   
-The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:
+SELECT 
+  COUNT(customer_id) AS churned_customers
+FROM ranked_cte
+WHERE plan_id = 2
+  AND next_plan_id = 1;
+```
 
-- monthly payments always occur on the same day of month as the original start_date of any monthly paid plan
-- upgrades from basic to monthly or pro plans are reduced by the current paid amount in that month and start immediately
-- upgrades from pro monthly to pro annual are paid at the end of the current billing period and also starts at the end of the month period
-- once a customer churns they will no longer make payments
+**Answer:**
+
+In 2020, there were no instances where customers downgraded from a pro monthly plan to a basic monthly plan.
 
 ***
