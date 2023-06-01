@@ -24,13 +24,13 @@ This case study is all about calculating metrics, growth and helping the busines
 
 <img width="631" alt="image" src="https://user-images.githubusercontent.com/81607668/130343339-8c9ff915-c88c-4942-9175-9999da78542c.png">
 
-**Table 1: Regions**
+**Table 1: `regions`**
 
-This regions table contains the region_id and their respective region_name values.
+This regions table contains the `region_id` and their respective `region_name` values.
 
 <img width="176" alt="image" src="https://user-images.githubusercontent.com/81607668/130551759-28cb434f-5cae-4832-a35f-0e2ce14c8811.png">
 
-**Table 2: Customer Nodes**
+**Table 2: `customer_nodes`**
 
 Customers are randomly distributed across the nodes according to their region. This random distribution changes frequently to reduce the risk of hackers getting into Data Bank’s system and stealing customer’s money and data!
 
@@ -50,15 +50,12 @@ Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://
 
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
-## A. Customer Nodes Exploration
-
-## 🏦 Solution - A. Customer Nodes Exploration
+## 🏦 A. Customer Nodes Exploration
 
 **1. How many unique nodes are there on the Data Bank system?**
 
 ````sql
-SELECT 
-  COUNT(DISTINCT node_id)
+SELECT COUNT(DISTINCT node_id)
 FROM data_bank.customer_nodes;
 ````
 
@@ -66,27 +63,31 @@ FROM data_bank.customer_nodes;
 
 <img width="97" alt="image" src="https://user-images.githubusercontent.com/81607668/130343558-c73b2bd4-d799-4506-9d9f-2fe0125f9c8f.png">
 
-- There are 5 unique nodes on Data Bank system.
+- There are 5 unique nodes on the Data Bank system.
 
 ***
 
 **2. What is the number of nodes per region?**
 
 ````sql
-SELECT 
-  r.region_id, 
-  r.region_name, 
-  COUNT(*) AS node_count
-FROM data_bank.regions r
-JOIN data_bank.customer_nodes n
-  ON r.region_id = n.region_id
-GROUP BY r.region_id, r.region_name
-ORDER BY region_id;
+SELECT
+  regions.region_name, 
+  COUNT(DISTINCT customers.node_id) AS node_count
+FROM data_bank.regions
+JOIN data_bank.customer_nodes AS customers
+  ON regions.region_id = customers.region_id
+GROUP BY regions.region_name;
 ````
 
 **Answer:**
 
-<img width="391" alt="image" src="https://user-images.githubusercontent.com/81607668/130343679-c49a7b82-bef5-4242-a6ec-b449f643f656.png">
+|region_name|node_count|
+|:----|:----|
+|Africa|5|
+|America|5|
+|Asia|5|
+|Australia|5|
+|Europe|5|
 
 ***
 
@@ -103,36 +104,46 @@ ORDER BY region_id;
 
 **Answer:**
 
-<img width="296" alt="image" src="https://user-images.githubusercontent.com/81607668/130344283-5c675490-b8b1-46ea-93df-0683ff87243b.png">
+|region_id|customer_count|
+|:----|:----|
+|1|770|
+|2|735|
+|3|714|
+|4|665|
+|5|616|
 
 ***
 
 **5. How many days on average are customers reallocated to a different node?**
 
 ````sql
-WITH node_diff AS (
+WITH node_days AS (
   SELECT 
-    customer_id, node_id, start_date, end_date,
-    end_date - start_date AS diff
+    customer_id, 
+    node_id,
+    end_date - start_date AS days_in_node
   FROM data_bank.customer_nodes
   WHERE end_date != '9999-12-31'
   GROUP BY customer_id, node_id, start_date, end_date
-  ORDER BY customer_id, node_id
-  ),
-sum_diff_cte AS (
+) 
+, total_node_days AS (
   SELECT 
-    customer_id, node_id, SUM(diff) AS sum_diff
-  FROM node_diff
-  GROUP BY customer_id, node_id)
+    customer_id,
+    node_id,
+    SUM(days_in_node) AS total_days_in_node
+  FROM node_days
+  GROUP BY customer_id, node_id
+)
 
-SELECT 
-  ROUND(AVG(sum_diff),2) AS avg_reallocation_days
-FROM sum_diff_cte;
+SELECT ROUND(AVG(total_days_in_node)) AS avg_node_reallocation_days
+FROM total_node_days;
 ````
 
 **Answer:**
 
-<img width="178" alt="image" src="https://user-images.githubusercontent.com/81607668/130345231-fd91f86f-1a2a-466a-b5b4-ccee80d15c92.png">
+|avg_node_reallocation_days|
+|:----|
+|24|
 
 - On average, customers are reallocated to a different node every 24 days.
 
@@ -140,7 +151,7 @@ FROM sum_diff_cte;
 
 **5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?**
 
-_Updating_
+
 
 ***
 
@@ -151,46 +162,49 @@ _Updating_
 **1. What is the unique count and total amount for each transaction type?**
 
 ````sql
-SELECT 
+SELECT
   txn_type, 
-  COUNT(*), 
+  COUNT(customer_id) AS transaction_count, 
   SUM(txn_amount) AS total_amount
 FROM data_bank.customer_transactions
-GROUP BY txn_type
+GROUP BY txn_type;
 ````
 
 **Answer:**
 
-<img width="479" alt="image" src="https://user-images.githubusercontent.com/81607668/130349158-acb36028-df02-472a-bd34-15856f93b2b8.png">
+|txn_type|transaction_count|total_amount|
+|:----|:----|:----|
+|purchase|1617|806537|
+|deposit|2671|1359168|
+|withdrawal|1580|793003|
 
 ***
 
 **2. What is the average total historical deposit counts and amounts for all customers?**
 
-- Firstly, find the count of transaction and average transaction amount for each customer.
-- Then, find the average of both columns where the transaction type is deposit.
-
 ````sql
 WITH deposits AS (
   SELECT 
     customer_id, 
-    txn_type, 
-    COUNT(*) AS txn_count, 
+    COUNT(customer_id) AS txn_count, 
     AVG(txn_amount) AS avg_amount
   FROM data_bank.customer_transactions
-  GROUP BY customer_id, txn_type)
+  WHERE txn_type = 'deposit'
+  GROUP BY customer_id
+)
 
 SELECT 
-  ROUND(AVG(txn_count),0) AS avg_deposit, 
-  ROUND(AVG(avg_amount),2) AS avg_amount
-FROM deposits
-WHERE txn_type = 'deposit';
+  ROUND(AVG(txn_count)) AS avg_deposit_count, 
+  ROUND(AVG(avg_amount)) AS avg_deposit_amt
+FROM deposits;
 ````
 **Answer:**
 
-<img width="325" alt="image" src="https://user-images.githubusercontent.com/81607668/130349626-97309a3e-790b-47a9-b9bf-32e7f6f078e7.png">
+|avg_deposit_count|avg_deposit_amt|
+|:----|:----|
+|5|509|
 
-- The average historical deposit count is 5 and average historical deposit amounts are 508.61.
+- The average historical deposit count is 5 and the average historical deposit amount is $ 509.
 
 ***
 
