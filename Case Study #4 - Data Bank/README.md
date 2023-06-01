@@ -155,9 +155,7 @@ FROM total_node_days;
 
 ***
 
-### B. Customer Transactions
-
-## 🏦 Solution - B. Customer Transactions
+## 🏦 B. Customer Transactions
 
 **1. What is the unique count and total amount for each transaction type?**
 
