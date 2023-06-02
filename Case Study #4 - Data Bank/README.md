@@ -430,7 +430,7 @@ SELECT
     FROM customer_monthly_balances),1) AS positive_first_month_percentage
 FROM ranked_monthly_balances
 WHERE ranked_row = 1
-	AND ending_balance::TEXT LIKE '-%';
+  AND ending_balance::TEXT LIKE '-%';
 ```
 
 **Answer:**
@@ -463,19 +463,20 @@ WITH following_month_cte AS (
     customer_id, 
     ending_month, 
     ROUND(100.0 * 
-    	(following_balance - ending_balance) / ending_balance,1) AS variance
+      (following_balance - ending_balance) / ending_balance,1) AS variance
   FROM following_month_cte  
   WHERE ending_month = '2020-01-31'
     AND following_balance::TEXT NOT LIKE '-%'
   GROUP BY 
-  	customer_id, ending_month, ending_balance, following_balance
+    customer_id, ending_month, ending_balance, following_balance
   HAVING ROUND(100.0 * (following_balance - ending_balance) / ending_balance,1) > 5.0
 )
 
 SELECT 
   ROUND(100.0 * 
     COUNT(customer_id)
-    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS increase_5_percentage
+    / (SELECT COUNT(DISTINCT customer_id) 
+    FROM ranked_monthly_balances),1) AS increase_5_percentage
 FROM variance_cte; 
 ````
 
@@ -517,7 +518,8 @@ WITH following_month_cte AS (
 SELECT 
   ROUND(100.0 * 
     COUNT(customer_id)
-    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS reduce_5_percentage
+    / (SELECT COUNT(DISTINCT customer_id) 
+    FROM ranked_monthly_balances),1) AS reduce_5_percentage
 FROM variance_cte; 
 ````
 
@@ -553,7 +555,8 @@ WITH following_month_cte AS (
 SELECT 
   ROUND(100.0 * 
     COUNT(customer_id) 
-    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS positive_to_negative_percentage
+    / (SELECT COUNT(DISTINCT customer_id) 
+    FROM ranked_monthly_balances),1) AS positive_to_negative_percentage
 FROM variance_cte;
 ````
 
