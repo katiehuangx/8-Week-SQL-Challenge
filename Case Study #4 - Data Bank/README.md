@@ -55,13 +55,15 @@ If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.co
 **1. How many unique nodes are there on the Data Bank system?**
 
 ````sql
-SELECT COUNT(DISTINCT node_id)
+SELECT COUNT(DISTINCT node_id) AS unique_nodes
 FROM data_bank.customer_nodes;
 ````
 
 **Answer:**
 
-<img width="97" alt="image" src="https://user-images.githubusercontent.com/81607668/130343558-c73b2bd4-d799-4506-9d9f-2fe0125f9c8f.png">
+|unique_nodes|
+|:----|
+|5|
 
 - There are 5 unique nodes on the Data Bank system.
 
