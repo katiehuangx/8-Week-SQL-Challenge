@@ -406,24 +406,28 @@ SELECT
   ROUND(100.0 * 
     SUM(CASE 
       WHEN ending_balance::TEXT LIKE '-%' THEN 1 ELSE 0 END)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS negative_first_month_percentage,
+    /(SELECT COUNT(DISTINCT customer_id) 
+    FROM customer_monthly_balances),1) AS negative_first_month_percentage,
   ROUND(100.0 * 
     SUM(CASE 
       WHEN ending_balance::TEXT NOT LIKE '-%' THEN 1 ELSE 0 END)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
+    /(SELECT COUNT(DISTINCT customer_id) 
+    FROM customer_monthly_balances),1) AS positive_first_month_percentage
 FROM ranked_monthly_balances
 WHERE ranked_row = 1;
 ````
 
 A cheeky solution would be to simply calculate one of the percentages requested and then deducting it from 100%.
--- Method 2
 ```sql
+-- Method 2
 SELECT 
   ROUND(100.0 * 
     COUNT(customer_id)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS negative_first_month_percentage,
+    /(SELECT COUNT(DISTINCT customer_id) 
+    FROM customer_monthly_balances),1) AS negative_first_month_percentage,
   100 - ROUND(100.0 * COUNT(customer_id)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
+    /(SELECT COUNT(DISTINCT customer_id) 
+    FROM customer_monthly_balances),1) AS positive_first_month_percentage
 FROM ranked_monthly_balances
 WHERE ranked_row = 1
 	AND ending_balance::TEXT LIKE '-%';
