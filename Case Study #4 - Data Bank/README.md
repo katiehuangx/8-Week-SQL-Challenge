@@ -114,7 +114,7 @@ ORDER BY region_id;
 
 ***
 
-**5. How many days on average are customers reallocated to a different node?**
+**4. How many days on average are customers reallocated to a different node?**
 
 ````sql
 WITH node_days AS (
@@ -293,8 +293,6 @@ WITH monthly_balances_cte AS (
   LEFT JOIN monthly_balances_cte
     ON monthend_series_cte.ending_month = monthly_balances_cte.closing_month
     AND monthend_series_cte.customer_id = monthly_balances_cte.customer_id
- ORDER BY 
-  monthend_series_cte.customer_id, monthend_series_cte.ending_month
 )
 
  SELECT 
@@ -335,134 +333,105 @@ For this question, I created 2 temp tables
   - Create `temp table #1` from Q4's solution. All you have to do is copy + paste the Q4 syntax and create a temp table.
   - Then, using temp table #1, create `temp table #2` by running a `ROW_NUMBER` function to rank records for individual customer.
 
-````sql
--- Create temp table #1 using solution from Question 4
-CREATE TEMP TABLE q5 AS (
+```sql
+-- Temp table #1: Create a temp table using Q4 solution
+CREATE TEMP TABLE customer_monthly_balances AS (
   WITH monthly_balances_cte AS (
-    SELECT 
-      customer_id, 
-      (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
-      SUM(CASE 
-        WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN -txn_amount
-        ELSE txn_amount END) AS transaction_balance
-    FROM data_bank.customer_transactions
-    GROUP BY 
-      customer_id, 
-      txn_date 
-  )
-  , monthend_series_cte AS (
-    SELECT
-      DISTINCT customer_id,
-      ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
-    FROM data_bank.customer_transactions
-  )
-  , monthly_changes_cte AS (
-    SELECT 
-      monthend_series_cte.customer_id, 
-      monthend_series_cte.ending_month,
-      COALESCE(monthly_balances_cte.transaction_balance, 0) AS monthly_change,
-      SUM(monthly_balances_cte.transaction_balance) OVER 
-        (PARTITION BY monthend_series_cte.customer_id 
-        ORDER BY monthend_series_cte.ending_month
-        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
-    FROM monthend_series_cte
-    LEFT JOIN monthly_balances_cte
-      ON monthend_series_cte.ending_month = monthly_balances_cte.closing_month
-      AND monthend_series_cte.customer_id = monthly_balances_cte.customer_id
-  )
-  , ranked_transactions_cte AS (
-    SELECT 
-      customer_id, 
-      ending_month, 
-      monthly_change, 
-      closing_balance,
-      ROW_NUMBER() OVER 
-        (PARTITION BY customer_id, ending_month 
-        ORDER BY ending_month) AS ranked_transaction
-    FROM monthly_changes_cte
-  )
-  , temp_cte AS (
-    SELECT 
-      customer_id, 
-      ending_month, 
-      monthly_change, 
-      closing_balance, 
-      LEAD(ranked_transaction) OVER 
-        (PARTITION BY customer_id, ending_month 
-        ORDER BY ending_month) AS temp_field_to_remove_null
-    FROM ranked_transactions_cte
-  )
-
   SELECT 
     customer_id, 
-    ending_month, 
-    monthly_change, 
-    closing_balance
-  FROM temp_cte
-  WHERE temp_field_to_remove_null IS NULL;
+    (DATE_TRUNC('month', txn_date) + INTERVAL '1 MONTH - 1 DAY') AS closing_month, 
+    SUM(CASE 
+      WHEN txn_type = 'withdrawal' OR txn_type = 'purchase' THEN -txn_amount
+      ELSE txn_amount END) AS transaction_balance
+  FROM data_bank.customer_transactions
+  GROUP BY 
+    customer_id, txn_date 
+), monthend_series_cte AS (
+  SELECT
+    DISTINCT customer_id,
+    ('2020-01-31'::DATE + GENERATE_SERIES(0,3) * INTERVAL '1 MONTH') AS ending_month
+  FROM data_bank.customer_transactions
+), monthly_changes_cte AS (
+  SELECT 
+    monthend_series_cte.customer_id, 
+    monthend_series_cte.ending_month,
+    SUM(monthly_balances_cte.transaction_balance) OVER (
+      PARTITION BY monthend_series_cte.customer_id, monthend_series_cte.ending_month
+      ORDER BY monthend_series_cte.ending_month
+    ) AS total_monthly_change,
+    SUM(monthly_balances_cte.transaction_balance) OVER (
+      PARTITION BY monthend_series_cte.customer_id 
+      ORDER BY monthend_series_cte.ending_month
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS ending_balance
+  FROM monthend_series_cte
+  LEFT JOIN monthly_balances_cte
+    ON monthend_series_cte.ending_month = monthly_balances_cte.closing_month
+    AND monthend_series_cte.customer_id = monthly_balances_cte.customer_id 
+)
+
+ SELECT 
+  customer_id, 
+  ending_month, 
+  COALESCE(total_monthly_change, 0) AS total_monthly_change, 
+  MIN(ending_balance) AS ending_balance
+ FROM monthly_changes_cte
+ GROUP BY 
+  customer_id, ending_month, total_monthly_change
+ ORDER BY 
+  customer_id, ending_month;
 );
 
--- Create temp table #2
-CREATE TEMP TABLE q5_sequence AS (
+-- Temp table #2: Create a temp table using temp table #1 `customer_monthly_balances`
+CREATE TEMP TABLE ranked_monthly_balances AS (
   SELECT 
     customer_id, 
     ending_month, 
-    closing_balance,
-    ROW_NUMBER() OVER 
-      (PARTITION BY customer_id 
+    ending_balance,
+    ROW_NUMBER() OVER (
+      PARTITION BY customer_id 
       ORDER BY ending_month) AS sequence
-  FROM q5
-)
-````
+  FROM customer_monthly_balances
+);
+```
 
 **- What percentage of customers have a negative first month balance?**
-
-````sql
-SELECT *
-FROM q5_sequence
-WHERE sequence = 1 AND
-  closing_balance::TEXT LIKE '-%';
-````
-
-I run the syntax above to get output below where it confirmed that I am getting only records with negative first month balances.
-
-<img width="604" alt="image" src="https://user-images.githubusercontent.com/81607668/130543803-5755f638-9cdd-4454-9c91-1e20d275365c.png">
-
-````sql
-SELECT 
-  ROUND(100 * COUNT(*)::NUMERIC / 
-    (SELECT COUNT(DISTINCT customer_id)
-    FROM q5_sequence),2) AS negative_first_month_percentage
-FROM q5_sequence
-WHERE sequence = 1 AND
--- Take note that the condition is asking for closing balance with a negative integer.
-  closing_balance::TEXT LIKE '-%';
-````
-
-**Answer:**
-
-<img width="263" alt="image" src="https://user-images.githubusercontent.com/81607668/130543862-6c38d5a3-22a3-4333-bac7-844a1c608ae7.png">
-
-- 31.4% of customers have a negative first month balance.
-
 **- What percentage of customers have a positive first month balance?**
 
 ````sql
 SELECT 
-  ROUND(100 * COUNT(*)::NUMERIC / 
-    (SELECT COUNT(DISTINCT customer_id)
-    FROM q5_sequence),2) AS positive_first_month_percentage
-FROM q5_sequence
-WHERE sequence = 1 AND
--- Take note that the condition below is asking for closing balance that is NOT with a negative integer.
-  closing_balance::TEXT NOT LIKE '-%';
+  ROUND(100.0 * 
+    SUM(CASE 
+      WHEN ending_balance::TEXT LIKE '-%' THEN 1 ELSE 0 END)
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS negative_first_month_percentage,
+  ROUND(100.0 * 
+    SUM(CASE 
+      WHEN ending_balance::TEXT NOT LIKE '-%' THEN 1 ELSE 0 END)
+  /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
+FROM ranked_monthly_balances
+WHERE ranked_row = 1;
 ````
+
+A cheeky solution would be to simply calculate one of the percentage and deducting from 100%.
+```sql
+SELECT 
+  ROUND(100.0 * 
+    COUNT(customer_id)
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances)
+  ,1) AS negative_first_month_percentage,
+  100 - ROUND(100.0 * COUNT(customer_id)
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances)
+    ,1) AS positive_first_month_percentage
+FROM ranked_monthly_balances
+WHERE ranked_row = 1
+	AND ending_balance::TEXT LIKE '-%';
+```
 
 **Answer:**
 
-<img width="261" alt="image" src="https://user-images.githubusercontent.com/81607668/130544192-1f1b663b-9a31-43bd-9218-d1e4827a9961.png">
-
-- 68.6% of customers have a positive first month balance.
+|negative_first_month_percentage|positive_first_month_percentage|
+|:----|:----|
+|44.8|55.2|
 
 **- What percentage of customers increase their opening month’s positive closing balance by more than 5% in the following month?**
 
@@ -472,7 +441,7 @@ WHERE sequence = 1 AND
 
 ````sql
 WITH next_balance_cte AS (
-  SELECT 
+  SELECT
     customer_id, ending_month, closing_balance, 
     LEAD(closing_balance) OVER 
       (PARTITION BY customer_id ORDER BY ending_month) AS next_balance
