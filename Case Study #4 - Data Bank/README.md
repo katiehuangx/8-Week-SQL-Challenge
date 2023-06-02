@@ -208,38 +208,42 @@ FROM deposits;
 
 **3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?**
 
-- First, create a `CTE` with output counting the number of deposits, purchases and withdrawals for each customer grouped by month.
-- Then, filter the results to 
-  - 2 or more deposits AND
-    - 1 or more purchase(s) OR
-    - 1 or more withdrawal(s) 
-in a single month.
+First, create a CTE called `monthly_transactions` to determine the count of deposit, purchase and withdrawal for each customer categorised by month using `CASE` statement and `SUM()`. 
+
+In the main query, select the `mth` column and count the number of unique customers where:
+- `deposit_count` is greater than 1, indicating more than one deposit (`deposit_count > 1`).
+- Either `purchase_count` is greater than or equal to 1 (`purchase_count >= 1`) OR `withdrawal_count` is greater than or equal to 1 (`withdrawal_count >= 1`).
 
 ````sql
 WITH monthly_transactions AS (
   SELECT 
     customer_id, 
-    DATE_PART('month', txn_date) AS month,
+    DATE_PART('month', txn_date) AS mth,
     SUM(CASE WHEN txn_type = 'deposit' THEN 0 ELSE 1 END) AS deposit_count,
     SUM(CASE WHEN txn_type = 'purchase' THEN 0 ELSE 1 END) AS purchase_count,
     SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal_count
   FROM data_bank.customer_transactions
-  GROUP BY customer_id, month
- )
+  GROUP BY customer_id, DATE_PART('month', txn_date)
+)
 
 SELECT
-  month,
+  mth,
   COUNT(DISTINCT customer_id) AS customer_count
 FROM monthly_transactions
-WHERE deposit_count >= 2 
-  AND (purchase_count > 1 OR withdrawal_count > 1)
-GROUP BY month
-ORDER BY month;
+WHERE deposit_count > 1 
+  AND (purchase_count >= 1 OR withdrawal_count >= 1)
+GROUP BY mth
+ORDER BY mth;
 ````
 
 **Answer:**
 
-<img width="305" alt="image" src="https://user-images.githubusercontent.com/81607668/130412903-8b6686b4-c591-4154-be30-fa34e9e93e53.png">
+|month|customer_count|
+|:----|:----|
+|1|170|
+|2|277|
+|3|292|
+|4|103|
 
 ***
 
@@ -263,7 +267,7 @@ WITH monthly_balances AS (
   GROUP BY customer_id, txn_date, txn_type, txn_amount
 ),
 
--- CTE 2 - To generate txn_date as a series of last day of month for each customer
+-- CTE 2 - Use GENERATE_SERIES() to generate as a series of last day of the month for each customer.
 last_day AS (
   SELECT
     DISTINCT customer_id,
