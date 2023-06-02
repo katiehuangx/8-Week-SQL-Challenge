@@ -251,7 +251,7 @@ ORDER BY mth;
 
 Update Jun 2, 2023: Even after 2 years, I continue to find this question incredibly challenging. I have cleaned up the code and provided additional explanations. 
 
-The key aspect to understanding the solution is to build up the tabele and run the CTEs cumulatively (run CTE 1, then CTE 1 & 2, and so on). This approach allows for a better understanding of why specific columns were created or how the information in the tables progressed. 
+The key aspect to understanding the solution is to build up the tabele and run the CTEs cumulatively (run CTE 1 first, then run CTE 1 & 2, and so on). This approach allows for a better understanding of why specific columns were created or how the information in the tables progressed. 
 
 ```sql
 -- CTE 1 - To identify transaction amount as an inflow (+) or outflow (-)
@@ -329,10 +329,6 @@ Showing results for customers ID 1, 2 and 3 only:
 ***
 
 **5. Comparing the closing balance of a customer’s first month and the closing balance from their second nth, what percentage of customers:**
-
-For this question, I created 2 temp tables
-  - Create `temp table #1` from Q4's solution. All you have to do is copy + paste the Q4 syntax and create a temp table.
-  - Then, using temp table #1, create `temp table #2` by running a `ROW_NUMBER` function to rank records for individual customer.
 
 For this question, I have created 2 temporary tables to solve the questions below:
 - Create temp table #1 `customer_monthly_balances` by copying and pasting the code from the solution to Question 4. 
