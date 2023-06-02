@@ -310,7 +310,7 @@ customer_id,
 
 **Answer:**
 
-Sample for customers ID 1, 2 and 3:
+Showing results for customers ID 1, 2 and 3 only:
 |customer_id|ending_month|total_monthly_change|ending_balance|
 |:----|:----|:----|:----|
 |1|2020-01-31T00:00:00.000Z|312|312|
@@ -334,8 +334,12 @@ For this question, I created 2 temp tables
   - Create `temp table #1` from Q4's solution. All you have to do is copy + paste the Q4 syntax and create a temp table.
   - Then, using temp table #1, create `temp table #2` by running a `ROW_NUMBER` function to rank records for individual customer.
 
+For this question, I have created 2 temporary tables to solve the questions below:
+- Create temp table #1 `customer_monthly_balances` by copying and pasting the code from the solution to Question 4. 
+- Use temp table #1 `ranked_monthly_balances` to create temp table #2 by applying the `ROW_NUMBER()` function. 
+
 ```sql
--- Temp table #1: Create a temp table using Q4 solution
+-- Temp table #1: Create a temp table using Question 4 solution
 CREATE TEMP TABLE customer_monthly_balances AS (
   WITH monthly_balances_cte AS (
   SELECT 
@@ -371,15 +375,15 @@ CREATE TEMP TABLE customer_monthly_balances AS (
     AND monthend_series_cte.customer_id = monthly_balances_cte.customer_id 
 )
 
- SELECT 
+SELECT 
   customer_id, 
   ending_month, 
   COALESCE(total_monthly_change, 0) AS total_monthly_change, 
   MIN(ending_balance) AS ending_balance
- FROM monthly_changes_cte
- GROUP BY 
+FROM monthly_changes_cte
+GROUP BY 
   customer_id, ending_month, total_monthly_change
- ORDER BY 
+ORDER BY 
   customer_id, ending_month;
 );
 
@@ -398,8 +402,7 @@ CREATE TEMP TABLE ranked_monthly_balances AS (
 
 **- What percentage of customers have a negative first month balance? What percentage of customers have a positive first month balance?**
 
-I combined both questions into one solution since it's basically asking for the opposite spectrum of the other.  
-
+To address both questions, I'm using one solution since the questions are asking opposite spectrums of each other.  
 
 ````sql
 -- Method 1
@@ -411,22 +414,20 @@ SELECT
   ROUND(100.0 * 
     SUM(CASE 
       WHEN ending_balance::TEXT NOT LIKE '-%' THEN 1 ELSE 0 END)
-  /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
 FROM ranked_monthly_balances
 WHERE ranked_row = 1;
 ````
 
-A cheeky solution would be to simply calculate one of the percentage and deducting it from 100%.
--- (Cheeky :P) Method 2
+A cheeky solution would be to simply calculate one of the percentages requested and then deducting it from 100%.
+-- Method 2
 ```sql
 SELECT 
   ROUND(100.0 * 
     COUNT(customer_id)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances)
-  ,1) AS negative_first_month_percentage,
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS negative_first_month_percentage,
   100 - ROUND(100.0 * COUNT(customer_id)
-    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances)
-    ,1) AS positive_first_month_percentage
+    /(SELECT COUNT(DISTINCT customer_id) FROM customer_monthly_balances),1) AS positive_first_month_percentage
 FROM ranked_monthly_balances
 WHERE ranked_row = 1
 	AND ending_balance::TEXT LIKE '-%';
@@ -440,9 +441,11 @@ WHERE ranked_row = 1
 
 **- What percentage of customers increase their opening month’s positive closing balance by more than 5% in the following month?**
 
-- Use `LEAD()` function to query the following month's balances and, then filter to select records with 1st month and 2nd month balances only. 
-- Also, filter for `next_balance` with positive balances only. 
-- We must exclude negative balances from the results because a higher negative balance in the following month does not represent an increase in balances and could mispresent our answer as the percentage of variance would still result in a positive percentage. 
+I'm using `LEAD()` window function to query the balances for the following month and then, filtering the results to select only the records with balances for the 1st and 2nd month. 
+
+Important assumptions:
+- Negative balances in the `following_balance` field have been excluded from the results. This is because a higher negative balance in the following month does not represent a true increase in balances. 
+- Including negative balances could lead to a misrepresentation of the answer as the percentage of variance would still appear as a positive percentage. 
 
 ````sql
 WITH following_month_cte AS (
@@ -470,9 +473,9 @@ WITH following_month_cte AS (
 )
 
 SELECT 
-    ROUND(100.0 * COUNT(customer_id)
-    	/ (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances)
-    ,1) AS increase_5_percentage
+  ROUND(100.0 * 
+    COUNT(customer_id)
+    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS increase_5_percentage
 FROM variance_cte; 
 ````
 
@@ -482,34 +485,39 @@ FROM variance_cte;
 |:----|
 |20.0|
 
-- 20.0% of customers increase their opening month's positive closing balance by more than 5% in the following month.
+- Among the customers, 20% experience a growth of more than 5% in their positive closing balance from the opening month to the following month.
 
 **- What percentage of customers reduce their opening month’s positive closing balance by more than 5% in the following month?**
 
 ````sql
 WITH following_month_cte AS (
   SELECT
-    customer_id, ending_month, ending_balance, 
-    LEAD(ending_balance) OVER 
-      (PARTITION BY customer_id ORDER BY ending_month) AS following_balance
+    customer_id, 
+    ending_month, 
+    ending_balance, 
+    LEAD(ending_balance) OVER (
+      PARTITION BY customer_id 
+      ORDER BY ending_month) AS following_balance
   FROM ranked_monthly_balances
 )
-,variance_cte AS (
+, variance_cte AS (
   SELECT 
-    customer_id, ending_month, 
-    
-    ROUND((100.0 * (following_balance - ending_balance)) / ending_balance,2) AS variance
+    customer_id, 
+    ending_month, 
+    ROUND((100.0 * 
+      following_balance - ending_balance) / ending_balance,1) AS variance
   FROM following_month_cte  
   WHERE ending_month = '2020-01-31'
     AND following_balance::TEXT NOT LIKE '-%'
-  GROUP BY customer_id, ending_month, ending_balance, following_balance
+  GROUP BY 
+    customer_id, ending_month, ending_balance, following_balance
   HAVING ROUND((100.0 * (following_balance - ending_balance)) / ending_balance,2) < 5.0
 )
 
 SELECT 
-    ROUND(100.0 * COUNT(customer_id) / 
-      (SELECT COUNT(DISTINCT customer_id)
-      FROM ranked_monthly_balances),1) AS reduce_5_percentage
+  ROUND(100.0 * 
+    COUNT(customer_id)
+    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS reduce_5_percentage
 FROM variance_cte; 
 ````
 
@@ -519,29 +527,33 @@ FROM variance_cte;
 |:----|
 |25.6|
 
-- 25.6% of customers reduce their opening month's positive closing balance by more than 5% in the following month.
+- Among the customers, 25.6% experience a drop of more than 5% in their positive closing balance from the opening month to the following month.
 
 **- What percentage of customers move from a positive balance in the first month to a negative balance in the second month?**
 
 ````sql
 WITH following_month_cte AS (
   SELECT
-    customer_id, ending_month, ending_balance, 
-    LEAD(ending_balance) OVER 
-      (PARTITION BY customer_id ORDER BY ending_month) AS following_balance
+    customer_id, 
+    ending_month, 
+    ending_balance, 
+    LEAD(ending_balance) OVER (
+      PARTITION BY customer_id 
+      ORDER BY ending_month) AS following_balance
   FROM ranked_monthly_balances
-),
-variance_cte AS (
+)
+, variance_cte AS (
   SELECT *
   FROM following_month_cte
   WHERE ending_month = '2020-01-31'
     AND ending_balance::TEXT NOT LIKE '-%'
-    AND following_balance::TEXT LIKE '-%')
+    AND following_balance::TEXT LIKE '-%'
+)
 
 SELECT 
-  ROUND(100.0 * COUNT(customer_id) / 
-    (SELECT COUNT(DISTINCT customer_id)
-    FROM ranked_monthly_balances),1) AS positive_to_negative_percentage
+  ROUND(100.0 * 
+    COUNT(customer_id) 
+    / (SELECT COUNT(DISTINCT customer_id) FROM ranked_monthly_balances),1) AS positive_to_negative_percentage
 FROM variance_cte;
 ````
 
@@ -551,7 +563,7 @@ FROM variance_cte;
 |:----|
 |20.2|
 
-- 20.2% of customers move from a positive balance `ending_balance` in the first month to a negative balance `following_balance` in the following month.
+- Among the customers, 20.2% transitioned from having a positive balance (`ending_balance`) in the first month to having a negative balance (`following_balance`) in the following month.
 
 ***
 
