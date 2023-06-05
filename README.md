@@ -14,5 +14,3 @@ Please find the solution links for the case studies below. Simply click on the l
 - [Case Study #5: Data Mart](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/README.md)
 - [Case Study #6: Clique Bait](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/README.md)
 - [Case Study #8: Fresh Segments](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%238%3A%20Fresh%20Segments/README.md)
-
-***
