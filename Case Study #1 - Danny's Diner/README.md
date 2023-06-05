@@ -25,7 +25,7 @@ Additionally, I have also published this case study on [Medium](https://katiehua
 
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
-### 1. What is the total amount each customer spent at the restaurant?
+**1. What is the total amount each customer spent at the restaurant?**
 
 ````sql
 SELECT 
@@ -56,7 +56,7 @@ ORDER BY sales.customer_id ASC;
 
 ***
 
-### 2. How many days has each customer visited the restaurant?
+**2. How many days has each customer visited the restaurant?**
 
 ````sql
 SELECT 
@@ -83,7 +83,7 @@ GROUP BY customer_id;
 
 ***
 
-### 3. What was the first item from the menu purchased by each customer?
+**3. What was the first item from the menu purchased by each customer?**
 
 ````sql
 WITH ordered_sales AS (
@@ -132,7 +132,7 @@ Therefore, it would be inaccurate to conclude that curry is the customer's first
 
 ***
 
-### 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+**4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
 
 ````sql
 SELECT 
@@ -160,7 +160,7 @@ LIMIT 1;
 
 ***
 
-### 5. Which item was the most popular for each customer?
+**5. Which item was the most popular for each customer?**
 
 ````sql
 WITH most_popular AS (
@@ -207,7 +207,7 @@ WHERE rank = 1;
 
 ***
 
-### 6. Which item was purchased first by the customer after they became a member?
+**6. Which item was purchased first by the customer after they became a member?**
 
 ```sql
 WITH joined_as_member AS (
@@ -251,7 +251,7 @@ ORDER BY customer_id ASC;
 
 ***
 
-### 7. Which item was purchased just before the customer became a member?
+**7. Which item was purchased just before the customer became a member?**
 
 ````sql
 WITH purchased_prior_member AS (
@@ -295,7 +295,7 @@ ORDER BY p_member.customer_id ASC;
 
 ***
 
-### 8. What is the total items and amount spent for each member before they became a member?
+**8. What is the total items and amount spent for each member before they became a member?**
 
 ```sql
 SELECT 
@@ -331,7 +331,7 @@ Before becoming members,
 
 ***
 
-### 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier — how many points would each customer have?
+**9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier — how many points would each customer have?**
 
 ```sql
 WITH points_cte AS (
@@ -375,7 +375,7 @@ Let's break down the question to understand the point calculation for each custo
 
 ***
 
-### 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi — how many points do customer A and B have at the end of January?
+**10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi — how many points do customer A and B have at the end of January?**
 
 ```sql
 WITH dates_cte AS (
@@ -433,7 +433,9 @@ GROUP BY sales.customer_id;
 
 ## BONUS QUESTIONS
 
-### Join All The Things - Recreate the table with: customer_id, order_date, product_name, price, member (Y/N)
+**Join All The Things**
+
+**Recreate the table with: customer_id, order_date, product_name, price, member (Y/N)**
 
 ```sql
 SELECT 
@@ -475,7 +477,9 @@ ORDER BY members.customer_id, sales.order_date
 
 ***
 
-### Rank All The Things - Danny also requires further information about the ```ranking``` of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ```ranking``` values for the records when customers are not yet part of the loyalty program.
+**Rank All The Things**
+
+**Danny also requires further information about the ```ranking``` of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ```ranking``` values for the records when customers are not yet part of the loyalty program.**
 
 ```sql
 WITH customers_data AS (
