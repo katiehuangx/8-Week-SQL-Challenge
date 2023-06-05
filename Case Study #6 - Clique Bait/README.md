@@ -20,23 +20,23 @@ In this case study - you are required to support the founder and CEO Danny’s v
 
 <img width="825" alt="image" src="https://user-images.githubusercontent.com/81607668/134619326-f560a7b0-23b2-42ba-964b-95b3c8d55c76.png">
 
-**users table**
+**Table: `users`**
 
 <img width="366" alt="image" src="https://user-images.githubusercontent.com/81607668/134623074-7c51d63a-c0a4-41e0-a6fc-257e4ca3997d.png">
 
-**events table**
+**Table: `events`**
 
 <img width="849" alt="image" src="https://user-images.githubusercontent.com/81607668/134623132-dfa2acd3-60c9-4305-9bea-6b39a9403c14.png">
 
-**event_identifier table**
+**Table: `event_identifier`**
 
 <img width="273" alt="image" src="https://user-images.githubusercontent.com/81607668/134623311-1ad16fe7-36e3-45b6-9dc6-8114333cf473.png">
 
-**page_hierarchy table**
+**Table: `page_hierarchy`**
 
 <img width="576" alt="image" src="https://user-images.githubusercontent.com/81607668/134623202-3158ca06-6f04-4b67-91f1-e184761e885c.png">
 
-**campaign_identifier table**
+**Table: `campaign_identifier`**
 
 <img width="792" alt="image" src="https://user-images.githubusercontent.com/81607668/134623354-0977d67c-fc61-4e61-90ee-f24a29682a9b.png">
 
@@ -46,9 +46,7 @@ In this case study - you are required to support the founder and CEO Danny’s v
 
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
-### A. Digital Analysis
-
-## 👩🏻‍💻 Solution - A. Digital Analysis
+## 👩🏻‍💻 A. Digital Analysis
 
 **1. How many users are there?**
 
@@ -190,7 +188,7 @@ ORDER BY page_views DESC;
 
 ***
 
-## 👩🏻‍💻 Solution - B. Product Funnel Analysis
+## 👩🏻‍💻 B. Product Funnel Analysis
 
 Using a single SQL query - create a new output table which has the following details:
 
@@ -375,11 +373,10 @@ FROM product_info
 
 - Average views to cart adds rate is 60.95% and average cart adds to purchases rate is 75.93%.
 - Although the cart add rate is lower, but the conversion of potential customer to the sales funnel is at least 15% higher.
+
 ***
 
-### C. Campaigns Analysis
-
-## 👩🏻‍💻 Solution - C. Campaigns Analysis
+## 👩🏻‍💻 C. Campaigns Analysis
 
 Generate a table that has 1 single row for every unique visit_id record and has the following columns:
 - `user_id`
