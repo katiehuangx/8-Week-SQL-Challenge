@@ -5,12 +5,9 @@
 ## 📚 Table of Contents
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
-- [Case Study Questions](#case-study-questions)
-- Solution
-  - [A. Data Exploration and Cleansing]()
-  - [B. Interest Analysis]()
-  - [C. Segment Analysis]()
-  - [SQL Syntax]()
+- [Question and Solution](#question-and-solution)
+
+Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-8/). 
 
 ***
 
@@ -23,6 +20,8 @@ Clients share their customer lists with the Fresh Segments team who then aggrega
 In particular - the composition and rankings for different interests are provided for each client showing the proportion of their customer list who interacted with online assets related to each interest for each month.
 
 Danny has asked for your assistance to analyse aggregated metrics for an example client and provide some high level insights about the customer list and their interests.
+
+***
 
 ## Entity Relationship Diagram
 
@@ -60,12 +59,12 @@ Danny has asked for your assistance to analyse aggregated metrics for an example
 
 ## Question and Solution
 
+Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/jmnwogTsUE8hGqkZv9H7E8/17). It would be great to work together on the questions!
+
+If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
+
 ## 🧼 A. Data Exploration and Cleansing
-<details>
-<summary>
-Click here to expand!
-</summary>
-  
+
 **1. Update the `fresh_segments.interest_metrics` table by modifying the `month_year` column to be a `date` data type with the start of the month**
 
 ```sql
@@ -229,15 +228,9 @@ WHERE metrics.month_year < DATE_TRUNC('mon', map.created_at::DATE);
 
 Seems like all the records' dates are in the same month, hence we will consider the records as valid. 
 
-</details>  
-
 ***
 
 ## 📚 B. Interest Analysis
-<details>
-<summary>
-Click here to expand!
-</summary>
   
 **1. Which interests have been present in all `month_year` dates in our dataset?**
 
@@ -312,34 +305,31 @@ FROM cte_interest_counts;
 
 Interests with total months of 6 and above received a 90% and above percentage. Interests below this mark should be investigated to improve their clicks and customer interactions. 
 ***
+
 **3. If we were to remove all `interest_id` values which are lower than the `total_months` value we found in the previous question - how many total data points would we be removing?**
+
 ***
+
 **4. Does this decision make sense to remove these data points from a business perspective? Use an example where there are all 14 months present to a removed interest example for your arguments - think about what it means to have less months present from a segment perspective. **
+
 ***
+
 **5. If we include all of our interests regardless of their counts - how many unique interests are there for each month?**
   
-</details> 
+***
 
-## C. Segment Analysis
-<details>
-<summary>
-Click here to expand!
-</summary>
-   
+## 🧩 C. Segment Analysis
+ 
 1. Using the complete dataset - which are the top 10 and bottom 10 interests which have the largest composition values in any month_year? Only use the maximum composition value for each interest but you must keep the corresponding month_year
 2. Which 5 interests had the lowest average ranking value?
 3. Which 5 interests had the largest standard deviation in their percentile_ranking value?
 4. For the 5 interests found in the previous question - what was minimum and maximum percentile_ranking values for each interest and its corresponding year_month value? Can you describe what is happening for these 5 interests?
 5. How would you describe our customers in this segment based off their composition and ranking values? What sort of products or services should we show to these customers and what should we avoid?
 
-</details>
 ***
-## D. Index Analysis
-<details>
-<summary>
-Click here to expand!
-</summary>
-  
+
+## 👆🏻 D. Index Analysis
+
 The `index_value` is a measure which can be used to reverse calculate the average composition for Fresh Segments’ clients. Average composition can be calculated by dividing the composition column by the index_value column rounded to 2 decimal places.
 
 1. What is the top 10 interests by the average composition for each month?
@@ -347,8 +337,6 @@ The `index_value` is a measure which can be used to reverse calculate the averag
 3. What is the average of the average composition for the top 10 interests for each month?
 4. What is the 3 month rolling average of the max average composition value from September 2018 to August 2019 and include the previous top ranking interests in the same output shown below.
 5. Provide a possible reason why the max average composition might change from month to month? Could it signal something is not quite right with the overall business model for Fresh Segments?
-
-</details> 
 
 ***
 
