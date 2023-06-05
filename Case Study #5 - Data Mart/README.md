@@ -14,7 +14,7 @@ Please note that all the information regarding the case study has been sourced f
 ## Business Task
 Data Mart is an online supermarket that specialises in fresh produce.
 
-In June 2020 - large scale supply changes were made at Data Mart. All Data Mart products now use sustainable packaging methods in every single step from the farm all the way to the customer.
+In June 2020, large scale supply changes were made at Data Mart. All Data Mart products now use sustainable packaging methods in every single step from the farm all the way to the customer.
 
 Danny needs your help to analyse and quantify the impact of this change on the sales performance for Data Mart and it’s separate business areas.
 
