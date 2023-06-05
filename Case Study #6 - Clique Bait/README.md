@@ -44,6 +44,8 @@ In this case study - you are required to support the founder and CEO Danny’s v
 
 ## Question and Solution
 
+Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/jmnwogTsUE8hGqkZv9H7E8/17). It would be great to work together on the questions!
+
 If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
 
 ## 👩🏻‍💻 A. Digital Analysis
