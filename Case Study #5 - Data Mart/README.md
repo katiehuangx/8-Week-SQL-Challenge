@@ -146,8 +146,7 @@ FROM clean_weekly_sales;
 
 ````sql
 WITH week_number_cte AS (
-  SELECT 
-  	GENERATE_SERIES(1,52) AS week_number
+  SELECT GENERATE_SERIES(1,52) AS week_number
 )
   
 SELECT DISTINCT week_no.week_number
