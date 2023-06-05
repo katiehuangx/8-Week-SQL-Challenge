@@ -1,6 +1,6 @@
 ## 🌲 Case Study #7: Balanced Tree
 
-![7](https://github.com/katiehuangx/8-Week-SQL-Challenge/assets/81607668/8ada3c0c-e90a-47a7-9a5c-8ffd6ee3eef8)
+<img src="https://github.com/katiehuangx/8-Week-SQL-Challenge/assets/81607668/8ada3c0c-e90a-47a7-9a5c-8ffd6ee3eef8" alt="Image" width="500" height="520">
 
 ## 📚 Table of Contents
 - [Business Task](#business-task)
