@@ -73,13 +73,13 @@ In a single query, perform the following operations and generate a new table in 
 
 **Answer:**
 
-## Create New Table `clean_weekly_sales`
+### Create New Table `clean_weekly_sales`
 
 Let's construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
 
 _`*` represent new columns_
 
-| Columns | Actions to take |
+| Column Name | Action to take |
 | ------- | --------------- |
 | week_date | Convert to `DATE` using `TO_DATE`
 | week_number* | Extract number of week using `DATE_PART` 
@@ -88,8 +88,8 @@ _`*` represent new columns_
 | region | No changes
 | platform | No changes
 | segment | No changes
-| age_band* | Use `CASE WHEN` and based on `segment`, 1 = `Young Adults`, 2 = `Middle Aged`, 3/4 = `Retirees` and null = `Unknown`
-| demographic* | Use `CASE WHEN` and based on `segment`, C = `Couples` and F = `Families` and null = `Unknown`
+| age_band* | Use `CASE` statement and apply conditional logic on `segment` with 1 = `Young Adults`, 2 = `Middle Aged`, 3/4 = `Retirees` and null = `Unknown`
+| demographic* | Use `CASE WHEN` and apply conditional logic on based on `segment`, C = `Couples` and F = `Families` and null = `Unknown`
 | transactions | No changes
 | avg_transaction* | Divide `sales` with `transactions` and round up to 2 decimal places
 | sales | No changes
@@ -107,17 +107,20 @@ SELECT
   region, 
   platform, 
   segment,
-  CASE WHEN RIGHT(segment,1) = '1' THEN 'Young Adults'
+  CASE 
+    WHEN RIGHT(segment,1) = '1' THEN 'Young Adults'
     WHEN RIGHT(segment,1) = '2' THEN 'Middle Aged'
     WHEN RIGHT(segment,1) in ('3','4') THEN 'Retirees'
     ELSE 'unknown' END AS age_band,
-  CASE WHEN LEFT(segment,1) = 'C' THEN 'Couples'
+  CASE 
+    WHEN LEFT(segment,1) = 'C' THEN 'Couples'
     WHEN LEFT(segment,1) = 'F' THEN 'Families'
     ELSE 'unknown' END AS demographic,
   transactions,
   ROUND((sales::NUMERIC/transactions),2) AS avg_transaction,
   sales
-FROM data_mart.weekly_sales);
+FROM data_mart.weekly_sales
+);
 ````
 
 <img width="1148" alt="image" src="https://user-images.githubusercontent.com/81607668/131474035-528e0af6-d848-427b-bbd9-73956a775f86.png">
@@ -129,40 +132,48 @@ FROM data_mart.weekly_sales);
 **1. What day of the week is used for each week_date value?**
 
 ````sql
-SELECT 
-  DISTINCT(TO_CHAR(week_date, 'day')) AS week_day 
+SELECT DISTINCT(TO_CHAR(week_date, 'day')) AS week_day 
 FROM clean_weekly_sales;
 ````
 
 **Answer:**
 
-<img width="110" alt="image" src="https://user-images.githubusercontent.com/81607668/131616348-81580d0e-b919-439a-821d-7997d958f59e.png">
+|week_day|
+|:----|
+|monday|
 
-- Monday is used for each `week_date` value.
+- Monday is used for the `week_date` value.
 
 **2. What range of week numbers are missing from the dataset?**
-- First, generate the full range of week numbers for the entire year from 1st week to 52nd week.
-- Then, do a LEFT OUTER JOIN of `week_number_cte` with `clean_weekly_sales` - make sure that the join sequence is CTE followed by the temp table as doing this on reverse would result in null result (unless you run a RIGHT OUTER JOIN instead!).
+- First, generate a range of week numbers for the entire year from 1st week to the 52nd week using the `GENERATE_SERIES()` function.
+- Then, perform a `LEFT JOIN` with the `clean_weekly_sales`. Ensure that the join sequence is the CTE followed by the `clean_weekly_sales` as reversing the sequence would result in null results (unless you opt for a `RIGHT JOIN` instead!).
 
 ````sql
 WITH week_number_cte AS (
-  SELECT GENERATE_SERIES(1,52) AS week_number)
+  SELECT 
+  	GENERATE_SERIES(1,52) AS week_number
+)
   
-SELECT 
-  DISTINCT c.week_number
-FROM week_number_cte c
-LEFT OUTER JOIN clean_weekly_sales s
-  ON c.week_number = s.week_number
-WHERE s.week_number IS NULL; -- Filter for the missing week numbers whereby the values would be `null`
+SELECT DISTINCT week_no.week_number
+FROM week_number_cte AS week_no
+LEFT JOIN clean_weekly_sales AS sales
+  ON week_no.week_number = sales.week_number
+WHERE sales.week_number IS NULL; -- Filter to identify the missing week numbers where the values are `NULL`.
 ````
 
 **Answer:**
 
-_I'm posting only 5 rows here - ensure that you retrieved 28 rows!_
+_I'm posting only the results of 5 rows here. Ensure that you have retrieved 28 rows!_
 
-<img width="239" alt="image" src="https://user-images.githubusercontent.com/81607668/131644275-6a91200f-61fe-4b71-83d4-7b51945e4531.png">
+|week_number|
+|:----|
+|1|
+|2|
+|3|
+|37|
+|41|
 
-- 28 `week_number`s are missing from the dataset.
+- The dataset is missing a total of 28 `week_number` records.
 
 **3. How many total transactions were there for each year in the dataset?**
 
@@ -177,25 +188,37 @@ ORDER BY calendar_year;
 
 **Answer:**
 
-<img width="318" alt="image" src="https://user-images.githubusercontent.com/81607668/131616261-82cb0fca-2d55-4bd0-8859-508e0fda23ec.png">
+|calendar_year|total_transactions|
+|:----|:----|
+|2018|346406460|
+|2019|365639285|
+|2020|375813651|
 
 **4. What is the total sales for each region for each month?**
 
 ````sql
 SELECT 
-  region, 
   month_number, 
+  region, 
   SUM(sales) AS total_sales
 FROM clean_weekly_sales
-GROUP BY region, month_number
-ORDER BY region, month_number;
+GROUP BY month_number, region
+ORDER BY month_number, region;
 ````
 
 **Answer:**
 
-_As there are 7 regions and results came up to 49 rows, I'm only showing solution for AFRICA and ASIA._
+I'm only showing the results for the month of March. 
 
-<img width="641" alt="image" src="https://user-images.githubusercontent.com/81607668/131622450-4bb787d6-8481-4798-acda-67db888e925b.png">
+|month_number|region|total_sales|
+|:----|:----|:----|
+|3|AFRICA|567767480|
+|3|ASIA|529770793|
+|3|CANADA|144634329|
+|3|EUROPE|35337093|
+|3|OCEANIA|783282888|
+|3|SOUTH AMERICA|71023109|
+|3|USA|225353043|
 
 **5. What is the total count of transactions for each platform?**
 
@@ -204,18 +227,20 @@ SELECT
   platform, 
   SUM(transactions) AS total_transactions
 FROM clean_weekly_sales
-GROUP BY platform
-ORDER BY platform;
+GROUP BY platform;
 ````
 
 **Answer:**
 
-<img width="319" alt="image" src="https://user-images.githubusercontent.com/81607668/131622827-35d01869-ab06-45f9-b5ac-6e9b6be8d74e.png">
+|platform|total_transactions|
+|:----|:----|
+|Retail|1081934227|
+|Shopify|5925169|
 
 **6. What is the percentage of sales for Retail vs Shopify for each month?**
 
 ````sql
-WITH transactions_cte AS (
+WITH monthly_transactions AS (
   SELECT 
     calendar_year, 
     month_number, 
@@ -229,21 +254,31 @@ SELECT
   calendar_year, 
   month_number, 
   ROUND(100 * MAX 
-    (CASE WHEN platform = 'Retail' THEN monthly_sales ELSE NULL END) / 
-      SUM(monthly_sales),2) AS retail_percentage,
+    (CASE 
+      WHEN platform = 'Retail' THEN monthly_sales ELSE NULL END) 
+    / SUM(monthly_sales),2) AS retail_percentage,
   ROUND(100 * MAX 
-    (CASE WHEN platform = 'Shopify' THEN monthly_sales ELSE NULL END) / 
-      SUM(monthly_sales),2) AS shopify_percentage
-  FROM transactions_cte
-  GROUP BY calendar_year, month_number
-  ORDER BY calendar_year, month_number;
+    (CASE 
+      WHEN platform = 'Shopify' THEN monthly_sales ELSE NULL END)
+    / SUM(monthly_sales),2) AS shopify_percentage
+FROM monthly_transactions
+GROUP BY calendar_year, month_number
+ORDER BY calendar_year, month_number;
 ````
 
 **Answer:**
 
-_The results came up to 20 rows, so I'm only showing solution year 2018._
+_Although I am only displaying the rows for the year 2018, please note that the overall results consist of 20 rows._
 
-<img width="628" alt="image" src="https://user-images.githubusercontent.com/81607668/131631945-ea79d106-e848-4008-b70f-9dedd73ba0dd.png">
+|calendar_year|month_number|retail_percentage|shopify_percentage|
+|:----|:----|:----|:----|
+|2018|3|97.92|2.08|
+|2018|4|97.93|2.07|
+|2018|5|97.73|2.27|
+|2018|6|97.76|2.24|
+|2018|7|97.75|2.25|
+|2018|8|97.71|2.29|
+|2018|9|97.68|2.32|
 
 **7. What is the percentage of sales by demographic for each year in the dataset?**
 
@@ -260,22 +295,28 @@ WITH demographic_sales AS (
 SELECT 
   calendar_year, 
   ROUND(100 * MAX 
-    (CASE WHEN demographic = 'Couples' THEN yearly_sales ELSE NULL END) / 
-      SUM(yearly_sales),2) AS couples_percentage,
+    (CASE 
+      WHEN demographic = 'Couples' THEN yearly_sales ELSE NULL END)
+    / SUM(yearly_sales),2) AS couples_percentage,
   ROUND(100 * MAX 
-    (CASE WHEN demographic = 'Families' THEN yearly_sales ELSE NULL END) / 
-      SUM(yearly_sales),2) AS families_percentage,
+    (CASE 
+      WHEN demographic = 'Families' THEN yearly_sales ELSE NULL END)
+    / SUM(yearly_sales),2) AS families_percentage,
   ROUND(100 * MAX 
-    (CASE WHEN demographic = 'unknown' THEN yearly_sales ELSE NULL END) / 
-      SUM(yearly_sales),2) AS unknown_percentage
+    (CASE 
+      WHEN demographic = 'unknown' THEN yearly_sales ELSE NULL END)
+    / SUM(yearly_sales),2) AS unknown_percentage
 FROM demographic_sales
-GROUP BY calendar_year
-ORDER BY calendar_year;
+GROUP BY calendar_year;
 ````
 
 **Answer:**
 
-<img width="755" alt="image" src="https://user-images.githubusercontent.com/81607668/131632947-ba6d9444-73e2-4ecd-9ff2-5bd6ab78f66d.png">
+|calendar_year|couples_percentage|families_percentage|unknown_percentage|
+|:----|:----|:----|:----|
+|2019|27.28|32.47|40.25|
+|2018|26.38|31.99|41.63|
+|2020|28.72|32.73|38.55|
 
 **8. Which age_band and demographic values contribute the most to Retail sales?**
 
@@ -284,7 +325,10 @@ SELECT
   age_band, 
   demographic, 
   SUM(sales) AS retail_sales,
-  ROUND(100 * SUM(sales)::NUMERIC / SUM(SUM(sales)) OVER (),2) AS contribution_percentage
+  ROUND(100 * 
+    SUM(sales)::NUMERIC 
+    / SUM(SUM(sales)) OVER (),
+  1) AS contribution_percentage
 FROM clean_weekly_sales
 WHERE platform = 'Retail'
 GROUP BY age_band, demographic
@@ -293,11 +337,19 @@ ORDER BY retail_sales DESC;
 
 **Answer:**
 
-<img width="650" alt="image" src="https://user-images.githubusercontent.com/81607668/131634091-bc09c295-f880-4ec1-ad2f-d503bb3b04b9.png">
+|age_band|demographic|retail_sales|contribution_percentage|
+|:----|:----|:----|:----|
+|unknown|unknown|16067285533|40.5|
+|Retirees|Families|6634686916|16.7|
+|Retirees|Couples|6370580014|16.1|
+|Middle Aged|Families|4354091554|11.0|
+|Young Adults|Couples|2602922797|6.6|
+|Middle Aged|Couples|1854160330|4.7|
+|Young Adults|Families|1770889293|4.5|
 
-The highest retail sales are contributed by unknown `age_band` and `demographic` at 42% followed by retired families at 16.73% and retired couples at 16.07%.
+The majority of the highest retail sales accounting for 42% are contributed by unknown `age_band` and `demographic`. This is followed by retired families at 16.73% and retired couples at 16.07%.
 
-**9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?**
+**9. Can we use the `avg_transaction` column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?**
 
 ````sql
 SELECT 
@@ -312,13 +364,20 @@ ORDER BY calendar_year, platform;
 
 **Answer:**
 
-<img width="636" alt="image" src="https://user-images.githubusercontent.com/81607668/131635398-0d54f57b-b813-4a2f-9d9c-320cf033ff97.png">
+|calendar_year|platform|avg_transaction_row|avg_transaction_group|
+|:----|:----|:----|:----|
+|2018|Retail|43|36|
+|2018|Shopify|188|192|
+|2019|Retail|42|36|
+|2019|Shopify|178|183|
+|2020|Retail|41|36|
+|2020|Shopify|175|179|
 
-What's the difference between `avg_transaction_row` and `avg_transaction_group`?
-- `avg_transaction_row` is the average transaction in dollars by taking each row's sales divided by the row's number of transactions.
-- `avg_transaction_group` is the average transaction in dollars by taking total sales divided by total number of transactions for the entire data set.
+The difference between `avg_transaction_row` and `avg_transaction_group` is as follows:
+- `avg_transaction_row` calculates the average transaction size by dividing the sales of each row by the number of transactions in that row.
+- On the other hand, `avg_transaction_group` calculates the average transaction size by dividing the total sales for the entire dataset by the total number of transactions.
 
-The more accurate answer to find average transaction size for each year by platform would be `avg_transaction_group`.
+For finding the average transaction size for each year by platform accurately, it is recommended to use `avg_transaction_group`.
 
 ***
 
@@ -332,24 +391,25 @@ Using this analysis approach - answer the following questions:
 
 **1. What is the total sales for the 4 weeks before and after `2020-06-15`? What is the growth or reduction rate in actual values and percentage of sales?**
 
-Before we start, we find out the week_number of `'2020-06-15'` so that we can use it for filtering. 
+Before we proceed, we determine the the week_number corresponding to '2020-06-15' to use it as a filter in our analysis. 
 
 ````sql
-SELECT 
-  DISTINCT week_number
+SELECT DISTINCT week_number
 FROM clean_weekly_sales
 WHERE week_date = '2020-06-15' 
-  AND calendar_year = '2020'
+  AND calendar_year = '2020';
 ````
 
-<img width="138" alt="image" src="https://user-images.githubusercontent.com/81607668/131943472-5de6c243-c8e9-490d-8a4d-7bf990b4fd21.png">
+|week_number|
+|:----|
+|25|
  
-The week_number is 25. Then, I created 2 CTEs
-- `changes` CTE: Filter to 4 weeks before and after `'2020-06-15` and `SUM` up the sales
-- `changes_2` CTE: Run a `CASE WHEN` for 4 weeks before and after `'2020-06-15'` and wrap with `SUM` as we only want the total sales for the period.
+The `week_number` is 25. I created 2 CTEs:
+- `packaging_sales` CTE: Filter the dataset for 4 weeks before and after `2020-06-15` and calculate the sum of sales within the period.
+- `before_after_changes` CTE: Utilize a `CASE` statement to capture the sales for 4 weeks before and after `2020-06-15` and then calculate the total sales for the specified period.
 
 ````sql
-WITH changes AS (
+WITH packaging_sales AS (
   SELECT 
     week_date, 
     week_number, 
@@ -358,35 +418,40 @@ WITH changes AS (
   WHERE (week_number BETWEEN 21 AND 28) 
     AND (calendar_year = 2020)
   GROUP BY week_date, week_number
-),
-changes_2 AS (
+)
+, before_after_changes AS (
   SELECT 
-    SUM(CASE WHEN week_number BETWEEN 21 AND 24 THEN total_sales END) AS before_change,
-    SUM(CASE WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_change
-  FROM changes)
+    SUM(CASE 
+      WHEN week_number BETWEEN 21 AND 24 THEN total_sales END) AS before_packaging_sales,
+    SUM(CASE 
+      WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_packaging_sales
+  FROM packaging_sales
+)
 
 SELECT 
-  before_change, 
-  after_change, 
-  after_change - before_change AS variance, 
-  ROUND(100 * (after_change - before_change) / before_change,2) AS percentage
-FROM changes_2
+  after_packaging_sales - before_packaging_sales AS sales_variance, 
+  ROUND(100 * 
+    (after_packaging_sales - before_packaging_sales) 
+    / before_packaging_sales,2) AS variance_percentage
+FROM before_after_changes;
 ````
 
 **Answer:**
 
-<img width="528" alt="image" src="https://user-images.githubusercontent.com/81607668/131943973-1406a95d-8fde-4b12-9390-d91c22d7ddff.png">
+|sales_variance|variance_percentage|
+|:----|:----|
+|-26884188|-1.15|
 
-Since the new sustainable packaging came into effect, the sales has dropped by $26,884,188 at a negative 1.15%. A new packaging isn't always the best idea - as customers may not recognise your product's new packaging on the shelves!
+Since the implementation of the new sustainable packaging, there has been a decrease in sales amounting by $26,884,188 reflecting a negative change at 1.15%. Introducing a new packaging does not always guarantee positive results as customers may not readily recognise your product on the shelves due to the change in packaging.
 
 ***
 
 **2. What about the entire 12 weeks before and after?**
 
-We can apply the same logic and solution to this question. 
+We can apply a similar approach and solution to address this question. 
 
 ````sql
-WITH changes AS (
+WITH packaging_sales AS (
   SELECT 
     week_date, 
     week_number, 
@@ -395,26 +460,30 @@ WITH changes AS (
   WHERE (week_number BETWEEN 13 AND 37) 
     AND (calendar_year = 2020)
   GROUP BY week_date, week_number
-),
-changes_2 AS (
+)
+, before_after_changes AS (
   SELECT 
-    SUM(CASE WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_change,
-    SUM(CASE WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_change
-  FROM changes)
+    SUM(CASE 
+      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+    SUM(CASE 
+      WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_packaging_sales
+  FROM packaging_sales
+)
 
 SELECT 
-  before_change, 
-  after_change, 
-  after_change - before_change AS variance, 
-  ROUND(100 * (after_change - before_change) / before_change,2) AS percentage
-FROM changes_2
+  after_packaging_sales - before_packaging_sales AS sales_variance, 
+  ROUND(100 * 
+    (after_packaging_sales - before_packaging_sales) / before_packaging_sales,2) AS variance_percentage
+FROM before_after_changes;
 ````
 
 **Answer:**
 
-<img width="582" alt="image" src="https://user-images.githubusercontent.com/81607668/131946233-45fa874e-0632-462d-9451-5ed4299b6183.png">
+|sales_variance|variance_percentage|
+|:----|:----|
+|-152325394|-2.14|
 
-Looks like the sales has gone down even more with a negative 2.14%! I won't be happy if I'm Danny's boss 😆
+Looks like the sales have experienced a further decline, now at a negative 2.14%! If I'm Danny's boss, I wouldn't be too happy with the results.
 
 ***
 
@@ -427,79 +496,93 @@ I'm breaking down this question to 2 parts.
 - We can apply the same solution as above and add `calendar_year` into the syntax. 
 
 ````sql
-WITH summary AS (
+WITH changes AS (
   SELECT 
-    calendar_year, -- added new column
+    calendar_year,
     week_number, 
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE (week_number BETWEEN 21 AND 28) 
+  WHERE week_number BETWEEN 21 AND 28
   GROUP BY calendar_year, week_number
-),
-summary_2 AS (
+)
+, before_after_changes AS (
   SELECT 
     calendar_year,
-    SUM(CASE WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_sales,
-    SUM(CASE WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_sales
-  FROM summary
+    SUM(CASE 
+      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+    SUM(CASE 
+      WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_packaging_sales
+  FROM changes
   GROUP BY calendar_year
 )
 
 SELECT 
   calendar_year, 
-  before_sales, 
-  after_sales, 
-  after_sales - before_sales AS sales_variance, 
-  ROUND(100 * (after_sales - before_sales) / before_sales,2) AS percentage
-FROM summary_2
+  after_packaging_sales - before_packaging_sales AS sales_variance, 
+  ROUND(100 * 
+    (after_packaging_sales - before_packaging_sales) 
+    / before_packaging_sales,2) AS variance_percentage
+FROM before_after_changes;
 ````
 
 **Answer:**
 
-<img width="735" alt="image" src="https://user-images.githubusercontent.com/81607668/131950161-371052e1-ad8b-4fe7-a1a1-97b968416d1d.png">
+|calendar_year|sales_variance|variance_percentage|
+|:----|:----|:----|
+|2018|4102105|0.19|
+|2019|2336594|0.10|
+|2020|-26884188|-1.15|
 
-Let's a do some analysis with the results. 
+In 2018, there was a sales variance of $4,102,105, indicating a positive change of 0.19% compared to the period before the packaging change.
 
-We can see that in previous years in 2018 and 2019, there's a sort of consistent increase in sales in week 25 to 28 at an average of 0.15%. 
+Similarly, in 2019, there was a sales variance of $2,336,594, corresponding to a positive change of 0.10% when comparing the period before and after the packaging change.
 
-However, after the new packaging was implemented in 2020's week 25, there was a significant drop in sales at 1.15% and compared to the previous years, it's a reduction by 6.7%!
+However, in 2020, there was a substantial decrease in sales following the packaging change. The sales variance amounted to $26,884,188, indicating a significant negative change of -1.15%. This reduction represents a considerable drop compared to the previous years.
 
 **Part 2: How do the sale metrics for 12 weeks before and after compare with the previous years in 2018 and 2019?**
 - Use the same solution above and change to week 13 to 24 for before and week 25 to 37 for after.
 
 ````sql
-WITH summary AS (
+WITH changes AS (
   SELECT 
-    calendar_year, -- added new column
+    calendar_year, 
     week_number, 
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE (week_number BETWEEN 13 AND 37) 
+  WHERE week_number BETWEEN 13 AND 37
   GROUP BY calendar_year, week_number
-),
-summary_2 AS (
+)
+, before_after_changes AS (
   SELECT 
     calendar_year,
-    SUM(CASE WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_sales,
-    SUM(CASE WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_sales
-  FROM summary
+    SUM(CASE 
+      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+    SUM(CASE 
+      WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_packaging_sales
+  FROM changes
   GROUP BY calendar_year
 )
 
 SELECT 
   calendar_year, 
-  before_sales, 
-  after_sales, 
-  after_sales - before_sales AS sales_variance, 
-  ROUND(100 * (after_sales - before_sales) / before_sales,2) AS percentage
-FROM summary_2
+  after_packaging_sales - before_packaging_sales AS sales_variance, 
+  ROUND(100 * 
+    (after_packaging_sales - before_packaging_sales) 
+    / before_packaging_sales,2) AS variance_percentage
+FROM before_after_changes;
 ````
 
 **Answer:**
 
-<img width="719" alt="image" src="https://user-images.githubusercontent.com/81607668/131950689-0241db95-6e4b-4b86-80cb-5cd2eada23cc.png">
+|calendar_year|sales_variance|variance_percentage|
+|:----|:----|:----|
+|2018|104256193|1.63|
+|2019|-20740294|-0.30|
+|2020|-152325394|-2.14|
 
 There was a fair bit of percentage differences in all 3 years. However, now when you compare the worst year to their best year in 2018, the sales percentage difference is even more stark at a difference of 3.77% (1.63% + 2.14%).
+
+When comparing the sales performance across all three years, there were noticeable variations in the percentage differences. However, the most significant contrast emerges when comparing the worst-performing year in 2020 to the best-performing year in 2018. In this comparison, the sales percentage difference becomes even more apparent with a significant gap of 3.77% (1.63% + 2.14%).
 
 ***
 
