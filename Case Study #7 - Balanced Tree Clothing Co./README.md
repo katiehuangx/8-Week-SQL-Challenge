@@ -19,7 +19,7 @@ Danny, the CEO of this trendy fashion company has asked you to assist the teamâ€
 
 ## Entity Relationship Diagram
 
-
+<img width="932" alt="image" src="https://github.com/katiehuangx/8-Week-SQL-Challenge/assets/81607668/2ce4df84-2b05-4fe9-a50c-47c903b392d5">
 
 **Table 1: `product_details`**
 
