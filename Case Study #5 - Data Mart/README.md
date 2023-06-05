@@ -73,8 +73,6 @@ In a single query, perform the following operations and generate a new table in 
 
 **Answer:**
 
-### Create New Table `clean_weekly_sales`
-
 Let's construct the structure of `clean_weekly_sales` table and lay out the actions to be taken.
 
 _`*` represent new columns_
@@ -93,8 +91,6 @@ _`*` represent new columns_
 | transactions | No changes
 | avg_transaction* | Divide `sales` with `transactions` and round up to 2 decimal places
 | sales | No changes
-
-**Answer:**
 
 ````sql
 DROP TABLE IF EXISTS clean_weekly_sales;
