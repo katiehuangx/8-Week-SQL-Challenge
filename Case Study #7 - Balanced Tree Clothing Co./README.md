@@ -187,12 +187,34 @@ GROUP BY product.product_name;
 
 ## 🧾 B. Transaction Analysis
 
-1. How many unique transactions were there?
+**1. How many unique transactions were there?**
+
+```sql
+SELECT COUNT(DISTINCT txn_id) AS transaction_count
+FROM balanced_tree.sales;
+```
+
+**Answer:**
+
+|transaction_count|
+|:----|
+|2500|
+
+***
+
 2. What is the average unique products purchased in each transaction?
-3. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
-4. What is the average discount value per transaction?
-5. What is the percentage split of all transactions for members vs non-members?
-6. What is the average revenue for member transactions and non-member transactions?
+
+SELECT ROUND(AVG(total_quantity)) AS avg_unique_products
+FROM (
+SELECT txn_id, SUM(qty) AS total_quantity
+FROM balanced_tree.sales
+GROUP BY txn_id
+) AS total_quantities
+
+4. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
+5. What is the average discount value per transaction?
+6. What is the percentage split of all transactions for members vs non-members?
+7. What is the average revenue for member transactions and non-member transactions?
 
 ***
 
