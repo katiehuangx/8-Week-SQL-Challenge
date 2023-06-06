@@ -4,7 +4,7 @@
 ## 📚 Table of Contents
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
-- [Solution](#question-and-solution)
+- [Question and Solution](#question-and-solution)
 
 Please note that all the information regarding the case study has been sourced from the following link: [here](https://8weeksqlchallenge.com/case-study-1/). 
 
@@ -21,7 +21,7 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ***
 
-## Solution
+## Question and Solution
 
 Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138). It would be great to work together on the questions!
 
