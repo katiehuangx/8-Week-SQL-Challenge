@@ -202,34 +202,319 @@ FROM balanced_tree.sales;
 
 ***
 
-2. What is the average unique products purchased in each transaction?
+**2. What is the average unique products purchased in each transaction?**
 
+```sql
 SELECT ROUND(AVG(total_quantity)) AS avg_unique_products
 FROM (
-SELECT txn_id, SUM(qty) AS total_quantity
-FROM balanced_tree.sales
-GROUP BY txn_id
-) AS total_quantities
+  SELECT 
+    txn_id, 
+    SUM(qty) AS total_quantity
+  FROM balanced_tree.sales
+  GROUP BY txn_id
+) AS total_quantities;
+```
 
-4. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
-5. What is the average discount value per transaction?
-6. What is the percentage split of all transactions for members vs non-members?
-7. What is the average revenue for member transactions and non-member transactions?
+**Answer:**
+
+|avg_unique_products|
+|:----|
+|18|
+
+***
+
+**3. What are the 25th, 50th and 75th percentile values for the revenue per transaction?**
+
+```sql
+WITH revenue_cte AS (
+  SELECT 
+    txn_id, 
+    SUM(price * qty) AS revenue
+  FROM balanced_tree.sales
+  GROUP BY txn_id
+)
+
+SELECT
+  PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY revenue) AS median_25th,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue) AS median_50th,
+PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY revenue) AS median_75th
+FROM revenue_cte;
+```
+
+**Answer:**
+
+|median_25th|median_50th|median_75th|
+|:----|:----|:----|
+|375.75|509.5|647|
+
+***
+
+**4. What is the average discount value per transaction?**
+
+```sql
+SELECT ROUND(AVG(discount_amt)) AS avg_discount
+FROM (
+  SELECT 
+	  txn_id,
+    SUM(qty * price * discount/100) AS discount_amt
+  FROM balanced_tree.sales
+  GROUP BY txn_id
+) AS discounted_value
+```
+
+**Answer:**
+
+|avg_discount|
+|:----|
+|60|
+
+**5. What is the percentage split of all transactions for members vs non-members?**
+
+```sql
+WITH transactions_cte AS (
+  SELECT
+    member,
+    COUNT(DISTINCT txn_id) AS transactions
+  FROM balanced_tree.sales
+  GROUP BY member
+)
+
+SELECT
+	member,
+  transactions,
+  ROUND(100 * transactions
+    /(SELECT SUM(transactions) 
+      FROM transactions_cte)) AS percentage
+FROM transactions_cte
+GROUP BY member, transactions;
+```
+
+**Answer:**
+
+Members have a transaction count at 60% compared to than non-members who account for only 40% of the transactions.
+
+|member|transactions|percentage|
+|:----|:----|:----|
+|false|995|40|
+|true|1505|60|
+
+***
+
+**6. What is the average revenue for member transactions and non-member transactions?**
+
+```sql
+WITH revenue_cte AS (
+  SELECT
+    member,
+  	txn_id,
+    SUM(price * qty) AS revenue
+  FROM balanced_tree.sales
+  GROUP BY member, txn_id
+)
+
+SELECT
+	member,
+  ROUND(AVG(revenue),2) AS avg_revenue
+FROM revenue_cte
+GROUP BY member;
+```
+
+**Answer:**
+
+The average revenue per transaction for members is only $1.23 higher compared to non-members.
+
+|member|avg_revenue|
+|:----|:----|
+|false|515.04|
+|true|516.27|
 
 ***
 
 ## 👚 C. Product Analysis
 
-1. What are the top 3 products by total revenue before discount?
-2. What is the total quantity, revenue and discount for each segment?
-3. What is the top selling product for each segment?
-4. What is the total quantity, revenue and discount for each category?
-5. What is the top selling product for each category?
-6. What is the percentage split of revenue by product for each segment?
-7. What is the percentage split of revenue by segment for each category?
-8. What is the percentage split of total revenue by category?
-9. What is the total transaction “penetration” for each product? (hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
-10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
+**1. What are the top 3 products by total revenue before discount?**
+
+```sql
+SELECT 
+  product.product_id,
+  product.product_name, 
+  SUM(sales.qty) * SUM(sales.price) AS total_revenue
+FROM balanced_tree.sales
+INNER JOIN balanced_tree.product_details AS product
+	ON sales.prod_id = product.product_id
+GROUP BY product.product_id, product.product_name
+ORDER BY total_revenue DESC
+LIMIT 3;
+```
+
+**Answer:**
+
+|product_id|product_name|total_revenue|
+|:----|:----|:----|
+|2a2353|Blue Polo Shirt - Mens|276022044|
+|9ec847|Grey Fashion Jacket - Womens|266862600|
+|5d267b|White Tee Shirt - Mens|192736000|
+
+***
+
+**2. What is the total quantity, revenue and discount for each segment?**
+
+```sql
+SELECT 
+  product.segment_id,
+  product.segment_name, 
+  SUM(sales.qty) AS total_quantity,
+  SUM(sales.qty * sales.price) AS total_revenue,
+  SUM((sales.qty * sales.price) * sales.discount/100) AS total_discount
+FROM balanced_tree.sales
+INNER JOIN balanced_tree.product_details AS product
+	ON sales.prod_id = product.product_id
+GROUP BY product.segment_id, product.segment_name;
+```
+
+**Answer:**
+
+|segment_id|segment_name|total_quantity|total_revenue|total_discount|
+|:----|:----|:----|:----|:----|
+|4|Jacket|11385|366983|42451|
+|6|Socks|11217|307977|35280|
+|5|Shirt|11265|406143|48082|
+|3|Jeans|11349|208350|23673|
+
+***
+
+**3. What is the top selling product for each segment?**
+
+```sql
+WITH top_selling_cte AS ( 
+  SELECT 
+    product.segment_id,
+    product.segment_name, 
+    product.product_id,
+    product.product_name,
+    SUM(sales.qty) AS total_quantity,
+    RANK() OVER (
+      PARTITION BY segment_id 
+      ORDER BY SUM(sales.qty) DESC) AS ranking
+  FROM balanced_tree.sales
+  INNER JOIN balanced_tree.product_details AS product
+    ON sales.prod_id = product.product_id
+  GROUP BY 
+    product.segment_id, product.segment_name, product.product_id, product.product_name
+)
+
+SELECT 
+  segment_id,
+  segment_name, 
+  product_id,
+  product_name,
+  total_quantity
+FROM top_selling_cte
+WHERE ranking = 1;
+```
+
+**Answer:**
+
+|segment_id|segment_name|product_id|product_name|total_quantity|
+|:----|:----|:----|:----|:----|
+|3|Jeans|c4a632|Navy Oversized Jeans - Womens|3856|
+|4|Jacket|9ec847|Grey Fashion Jacket - Womens|3876|
+|5|Shirt|2a2353|Blue Polo Shirt - Mens|3819|
+|6|Socks|f084eb|Navy Solid Socks - Mens|3792|
+
+***
+
+**4. What is the total quantity, revenue and discount for each category?**
+
+```sql
+SELECT 
+  product.category_id,
+  product.category_name, 
+  SUM(sales.qty) AS total_quantity,
+  SUM(sales.qty * sales.price) AS total_revenue,
+  SUM((sales.qty * sales.price) * sales.discount/100) AS total_discount
+FROM balanced_tree.sales
+INNER JOIN balanced_tree.product_details AS product
+	ON sales.prod_id = product.product_id
+GROUP BY product.category_id, product.category_name
+ORDER BY product.category_id;
+```
+
+**Answer:**
+
+|category_id|category_name|total_quantity|total_revenue|total_discount|
+|:----|:----|:----|:----|:----|
+|1|Womens|22734|575333|66124|
+|2|Mens|22482|714120|83362|
+
+***
+
+**5. What is the top selling product for each category?**
+
+```sql
+WITH top_selling_cte AS ( 
+  SELECT 
+    product.category_id,
+    product.category_name, 
+    product.product_id,
+    product.product_name,
+    SUM(sales.qty) AS total_quantity,
+    RANK() OVER (
+      PARTITION BY product.category_id 
+      ORDER BY SUM(sales.qty) DESC) AS ranking
+  FROM balanced_tree.sales
+  INNER JOIN balanced_tree.product_details AS product
+    ON sales.prod_id = product.product_id
+  GROUP BY 
+    product.category_id, product.category_name, product.product_id, product.product_name
+)
+
+SELECT 
+  category_id,
+  category_name, 
+  product_id,
+  product_name,
+  total_quantity
+FROM top_selling_cte
+WHERE ranking = 1;
+```
+
+**Answer:**
+
+|category_id|category_name|product_id|product_name|total_quantity|
+|:----|:----|:----|:----|:----|
+|1|Womens|9ec847|Grey Fashion Jacket - Womens|3876|
+|2|Mens|2a2353|Blue Polo Shirt - Mens|3819|
+
+***
+
+**6. What is the percentage split of revenue by product for each segment?**
+
+**Answer:**
+
+***
+
+**7. What is the percentage split of revenue by segment for each category?**
+
+**Answer:**
+
+***
+
+**8. What is the percentage split of total revenue by category?**
+
+**Answer:**
+
+***
+
+**9. What is the total transaction “penetration” for each product? (hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)**
+
+**Answer:**
+
+***
+
+**10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?**
+
+**Answer:**
 
 ***
 
