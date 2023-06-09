@@ -22,7 +22,7 @@ Please find the solution links for the case studies below. Simply click on the l
 
 Hello visitors,
 
-I wanted to address a concerning issue. It has come to my attention that some of the SQL case study solutions on this repository have been copied word-for-word without proper attribution or permission. I want to emphasize that this behavior goes against the principles of academic integrity and intellectual honesty.
+I wanted to address a concerning issue. It has come to my attention that some of the SQL case study solutions on this repository have been copied without proper attribution or permission. I want to emphasize that this behavior goes against the principles of academic integrity and intellectual honesty.
 
 Creating these solutions has been a labor of love, involving substantial time and effort. Therefore, I kindly ask that you avoid copying them word for word. Instead, I encourage you to utilize them as a reference and derive inspiration from the underlying concepts, applying them in your own unique way.
 
