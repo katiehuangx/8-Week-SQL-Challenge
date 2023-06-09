@@ -31,4 +31,5 @@ If you have any questions or need assistance, please feel free to reach out to m
 Thank you for your understanding and for being a part of this community.
 
 Best wishes,
+
 Katie
