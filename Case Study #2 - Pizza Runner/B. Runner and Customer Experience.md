@@ -85,23 +85,36 @@ GROUP BY pizza_order;
 ### 4. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
 ````sql
+WITH travels AS (
+  SELECT 
+    c.customer_id,
+    c.order_id
+    distance
+  FROM #customer_orders AS c
+  JOIN #runner_orders AS r
+    ON c.order_id = r.order_id
+  WHERE r.duration != 0
+  GROUP BY c.customer_id
+)
+
 SELECT 
-  c.customer_id, 
-  AVG(r.distance) AS avg_distance
-FROM #customer_orders AS c
-JOIN #runner_orders AS r
-  ON c.order_id = r.order_id
-WHERE r.duration != 0
-GROUP BY c.customer_id;
+  customer_id,
+  AVG(distance) AS avg_dist
+FROM travels
+GROUP BY customer_id
 ````
 
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129739847-5e338f4f-b42c-4531-9685-e2e822063183.png)
+| customer_id | avg_dist |
+|-------------|----------|
+| 101         | 20       |
+| 102         | 18.4     |
+| 103         | 23.4     |
+| 104         | 10       |
+| 105         | 25       |
 
-_(Assuming that distance is calculated from Pizza Runner HQ to customer’s place)_
-
-- Customer 104 stays the nearest to Pizza Runner HQ at average distance of 10km, whereas Customer 105 stays the furthest at 25km.
+- ppreviously, customer__id 102 had an order double counted; it was under the same order id, order id 3. Now, only two of his orders are taken into account, with distances 13.4 and 23.4 only. then (13.4 + 23.4)/2 = 18.4
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
 
