@@ -22,24 +22,11 @@ GROUP BY DATEPART(WEEK, registration_date);
 ### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
 ````sql
-WITH time_taken_cte AS
-(
-  SELECT 
-    c.order_id, 
-    c.order_time, 
-    r.pickup_time, 
-    DATEDIFF(MINUTE, c.order_time, r.pickup_time) AS pickup_minutes
-  FROM #customer_orders AS c
-  JOIN #runner_orders AS r
-    ON c.order_id = r.order_id
-  WHERE r.distance != 0
-  GROUP BY c.order_id, c.order_time, r.pickup_time
-)
+select r.runner_id, avg(DATEDIFF(MINUTE,order_time,pickup_time)) as time_taken
+	 from runner_orders r join  customer_orders c on r.order_id = c.order_id
+	 where pickup_time is not null 
+	 group by r.runner_id
 
-SELECT 
-  AVG(pickup_minutes) AS avg_pickup_minutes
-FROM time_taken_cte
-WHERE pickup_minutes > 1;
 ````
 
 **Answer:**
