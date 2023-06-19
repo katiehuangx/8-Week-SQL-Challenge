@@ -87,7 +87,7 @@ GROUP BY pizza_order;
 ````sql
 SELECT 
   c.customer_id, 
-  AVG(r.distance) AS avg_distance
+  ROUND(AVG(r.distance),2) AS avg_distance
 FROM #customer_orders AS c
 JOIN #runner_orders AS r
   ON c.order_id = r.order_id
