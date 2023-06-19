@@ -402,6 +402,7 @@ SELECT
 FROM dannys_diner.sales
 INNER JOIN dates_cte AS dates
   ON sales.customer_id = dates.customer_id
+  AND dates.join_date <= sales.order_date
   AND sales.order_date <= dates.last_date
 INNER JOIN dannys_diner.menu
   ON sales.product_id = menu.product_id
@@ -416,7 +417,7 @@ GROUP BY sales.customer_id;
 #### Steps:
 - Create a CTE called `dates_cte`. 
 - In `dates_cte`, calculate the `valid_date` by adding 6 days to the `join_date` and determine the `last_date` of the month by subtracting 1 day from the last day of January 2021.
-- From `dannys_diner.sales` table, join `dates_cte` on `customer_id` column, ensuring that the `order_date` of the sale is not later than the `last_date` (`sales.order_date <= dates.last_date`).
+- From `dannys_diner.sales` table, join `dates_cte` on `customer_id` column, ensuring that the `order_date` of the sale is after the `join_date` (`dates.join_date <= sales.order_date`) and not later than the `last_date` (`sales.order_date <= dates.last_date`).
 - Then, join `dannys_diner.menu` table based on the `product_id` column.
 - In the outer query, calculate the points by using a `CASE` statement to determine the points based on our assumptions above. 
     - If the `product_name` is 'sushi', multiply the price by 2 and then by 10. For orders placed between `join_date` and `valid_date`, also multiply the price by 2 and then by 10. 
@@ -426,11 +427,11 @@ GROUP BY sales.customer_id;
 #### Answer:
 | customer_id | total_points | 
 | ----------- | ---------- |
-| A           | 1370 |
-| B           | 820 |
+| A           | 1020 |
+| B           | 320 |
 
-- Total points for Customer A is 1,370.
-- Total points for Customer B is 820.
+- Total points for Customer A is 1,020.
+- Total points for Customer B is 320.
 
 ***
 
