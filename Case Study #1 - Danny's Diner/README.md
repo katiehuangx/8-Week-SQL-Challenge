@@ -118,7 +118,7 @@ GROUP BY customer_id, product_name;
 
 #### Answer:
 | customer_id | product_name | 
-| ----------- | ----------- |
+| ----------- | -----------  |
 | A           | curry        | 
 | A           | sushi        | 
 | B           | curry        | 
@@ -156,8 +156,8 @@ LIMIT 1;
 
 #### Answer:
 | most_purchased | product_name | 
-| ----------- | ----------- |
-| 8       | ramen |
+| -----------    | -----------  |
+| 8              |    ramen     |
 
 
 - Most purchased item on the menu is ramen which is 8 times. Yummy!
