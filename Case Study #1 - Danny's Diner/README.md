@@ -118,7 +118,7 @@ GROUP BY customer_id, product_name;
 
 #### Answer:
 | customer_id | product_name | 
-| ----------- | ----------- |
+| ----------- | -----------  |
 | A           | curry        | 
 | A           | sushi        | 
 | B           | curry        | 
