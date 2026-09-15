@@ -122,12 +122,13 @@ In other words, the question is asking for the monthly count of users on the tri
 ```sql
 SELECT
   DATE_PART('month', start_date) AS month_date, -- Cast start_date as month in numerical format
+  TO_CHAR(start_date, 'Month') AS month_name, -- Cast start_date as month in string format
   COUNT(sub.customer_id) AS trial_plan_subscriptions
 FROM foodie_fi.subscriptions AS sub
-JOIN foodie_fi.plans p
-  ON s.plan_id = p.plan_id
-WHERE s.plan_id = 0 -- Trial plan ID is 0
-GROUP BY DATE_PART('month',start_date)
+WHERE sub.plan_id = 0 -- Trial plan ID is 0
+GROUP BY 
+  DATE_PART('month',start_date), 
+  TO_CHAR(start_date, 'Month')
 ORDER BY month_date;
 ```
 
