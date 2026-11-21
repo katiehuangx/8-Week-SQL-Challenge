@@ -176,33 +176,49 @@ SELECT
   DATEPART(HOUR, [order_time]) AS hour_of_day, 
   COUNT(order_id) AS pizza_count
 FROM #customer_orders
-GROUP BY DATEPART(HOUR, [order_time]);
+GROUP BY DATEPART(HOUR, [order_time])
+ORDER BY hour_of_day;
 ````
 
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129738302-573430e9-1785-4c71-adc1-464ffa94de8a.png)
+| hour_of_day | pizza_count |
+|:----|:----|
+| 11 | 1 |
+| 13 | 3 |
+| 18 | 3 |
+| 19 | 1 |
+| 21 | 3 |
+| 23 | 3 |
 
-- Highest volume of pizza ordered is at 13 (1:00 pm), 18 (6:00 pm) and 21 (9:00 pm).
-- Lowest volume of pizza ordered is at 11 (11:00 am), 19 (7:00 pm) and 23 (11:00 pm).
+- Highest volume of pizza ordered is at 13 (1:00 pm), 18 (6:00 pm), 21 (9:00 pm) and 23 (11:00 pm) with 3 pizzas each.
+- Lowest volume of pizza ordered is at 11 (11:00 am) and 19 (7:00 pm) with 1 pizza each.
+- Only hours with at least one order appear in the result (there are no orders placed at hour 12 or at any other missing hour in this dataset), so the list goes straight from 11 to 13.
 
 ### 10. What was the volume of orders for each day of the week?
 
 ````sql
 SELECT 
-  FORMAT(DATEADD(DAY, 2, order_time),'dddd') AS day_of_week, -- add 2 to adjust 1st day of the week as Monday
+  DATENAME(WEEKDAY, order_time) AS day_of_week,
   COUNT(order_id) AS total_pizzas_ordered
 FROM #customer_orders
-GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd');
+GROUP BY DATENAME(WEEKDAY, order_time), DATEPART(WEEKDAY, order_time)
+ORDER BY DATEPART(WEEKDAY, order_time);
 ````
 
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129738331-233744f6-3b57-4f4f-9a51-f7a699a9eb2e.png)
+| day_of_week | total_pizzas_ordered |
+|:----|:----|
+| Wednesday | 5 |
+| Thursday | 3 |
+| Friday | 1 |
+| Saturday | 5 |
 
-- There are 5 pizzas ordered on Friday and Monday.
-- There are 3 pizzas ordered on Saturday.
-- There is 1 pizza ordered on Sunday.
+- There are 5 pizzas ordered on Wednesday and Saturday.
+- There are 3 pizzas ordered on Thursday.
+- There is 1 pizza ordered on Friday.
+- Note: an earlier version of this answer shifted every date by 2 days (`DATEADD(DAY, 2, order_time)`), which mislabelled the weekdays (e.g. 2020-01-01 is a Wednesday, not a Friday). The weekday is now read directly from `order_time`.
 
 ***Click [here](https://github.com/katiehuangx/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/B.%20Runner%20and%20Customer%20Experience.md) for solution for B. Runner and Customer Experience!***
 

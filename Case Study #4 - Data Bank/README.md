@@ -221,8 +221,8 @@ WITH monthly_transactions AS (
   SELECT 
     customer_id, 
     DATE_PART('month', txn_date) AS mth,
-    SUM(CASE WHEN txn_type = 'deposit' THEN 0 ELSE 1 END) AS deposit_count,
-    SUM(CASE WHEN txn_type = 'purchase' THEN 0 ELSE 1 END) AS purchase_count,
+    SUM(CASE WHEN txn_type = 'deposit' THEN 1 ELSE 0 END) AS deposit_count,
+    SUM(CASE WHEN txn_type = 'purchase' THEN 1 ELSE 0 END) AS purchase_count,
     SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal_count
   FROM data_bank.customer_transactions
   GROUP BY customer_id, DATE_PART('month', txn_date)
@@ -240,12 +240,14 @@ ORDER BY mth;
 
 **Answer:**
 
+> ⚠️ The `deposit_count` and `purchase_count` logic was corrected (each `CASE` now counts 1 for its own transaction type). The result table below was produced with the previous logic and needs to be re-run on the dataset and refreshed.
+
 |month|customer_count|
 |:----|:----|
-|1|170|
-|2|277|
-|3|292|
-|4|103|
+|1|_re-run_|
+|2|_re-run_|
+|3|_re-run_|
+|4|_re-run_|
 
 ***
 
