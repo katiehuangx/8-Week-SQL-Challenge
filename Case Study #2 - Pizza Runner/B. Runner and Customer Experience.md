@@ -21,32 +21,40 @@ GROUP BY DATEPART(WEEK, registration_date);
 
 ### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
+The question asks for the average pickup time **for each runner**, so the result is grouped by `runner_id`. An order with several pizzas has one pickup, so the CTE keeps one row per order (otherwise a runner's average would be skewed towards orders with more pizzas).
+
 ````sql
 WITH time_taken_cte AS
 (
   SELECT 
     c.order_id, 
-    c.order_time, 
-    r.pickup_time, 
-    DATEDIFF(MINUTE, c.order_time, r.pickup_time) AS pickup_minutes
+    r.runner_id,
+    DATEDIFF(SECOND, c.order_time, r.pickup_time) / 60.0 AS pickup_minutes
   FROM #customer_orders AS c
   JOIN #runner_orders AS r
     ON c.order_id = r.order_id
   WHERE r.distance != 0
-  GROUP BY c.order_id, c.order_time, r.pickup_time
+  GROUP BY c.order_id, r.runner_id, c.order_time, r.pickup_time
 )
 
 SELECT 
-  AVG(pickup_minutes) AS avg_pickup_minutes
+  runner_id,
+  ROUND(AVG(pickup_minutes), 2) AS avg_pickup_minutes
 FROM time_taken_cte
-WHERE pickup_minutes > 1;
+GROUP BY runner_id
+ORDER BY runner_id;
 ````
 
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129739701-e94b75e9-7193-4cf3-8e77-3c76be8b638d.png)
+| runner_id | avg_pickup_minutes |
+|:----|:----|
+| 1 | 14.33 |
+| 2 | 20.01 |
+| 3 | 10.47 |
 
-- The average time taken in minutes by runners to arrive at Pizza Runner HQ to pick up the order is 15 minutes.
+- Runner 1 takes about 14.3 minutes on average to arrive at Pizza Runner HQ to pick up an order, runner 2 about 20 minutes and runner 3 about 10.5 minutes.
+- Across all delivered orders, the overall average is about 16 minutes.
 
 ### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 

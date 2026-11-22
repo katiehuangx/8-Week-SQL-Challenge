@@ -316,6 +316,8 @@ In the cte called `next_dates`, we begin by filtering the results to include onl
 
 In the outer query,  we filter the results where the `next_date` is NULL. This step helps us identify the most recent plan that each customer subscribed to as of '2020-12-31'. 
 
+> Why `IS NULL` and not `IS NOT NULL`: the `WHERE start_date <= '2020-12-31'` filter is applied *before* `LEAD()` runs, so `LEAD()` only ever sees plans that started on or before 2020-12-31. A row whose `next_date` is NULL therefore has no later plan inside that window, which makes it the customer's plan *as of* 2020-12-31. Rows with a non-NULL `next_date` are plans that were already replaced by a newer one before the cut-off date, so keeping them would count customers under plans they had already left (and count a customer more than once).
+
 Lastly, we perform calculations to determine the total count of customers and the percentage of customers associated with each trial plan. 
 
 ```sql

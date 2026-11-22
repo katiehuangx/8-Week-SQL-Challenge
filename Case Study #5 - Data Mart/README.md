@@ -386,40 +386,26 @@ Using this analysis approach - answer the following questions:
 
 **1. What is the total sales for the 4 weeks before and after `2020-06-15`? What is the growth or reduction rate in actual values and percentage of sales?**
 
-Before we proceed, we determine the the week_number corresponding to '2020-06-15' to use it as a filter in our analysis. 
-
-````sql
-SELECT DISTINCT week_number
-FROM clean_weekly_sales
-WHERE week_date = '2020-06-15' 
-  AND calendar_year = '2020';
-````
-
-|week_number|
-|:----|
-|25|
- 
-The `week_number` is 25. I created 2 CTEs:
-- `packaging_sales` CTE: Filter the dataset for 4 weeks before and after `2020-06-15` and calculate the sum of sales within the period.
-- `before_after_changes` CTE: Utilize a `CASE` statement to capture the sales for 4 weeks before and after `2020-06-15` and then calculate the total sales for the specified period.
+Instead of filtering on `week_number` (which is not aligned to the same calendar date from year to year, e.g. `2020-06-15` is week 25 in 2020 but the equivalent week is 24 in 2018 and 2019), we filter on the actual `week_date` values by adding/subtracting an `INTERVAL` from `2020-06-15`. I created 2 CTEs:
+- `packaging_sales` CTE: Filter the dataset for the 4 weeks before (`week_date` from `2020-06-15` minus 4 weeks, up to but not including `2020-06-15`) and the 4 weeks after (`week_date` from `2020-06-15` up to but not including `2020-06-15` plus 4 weeks) and calculate the sum of sales within each period. `2020-06-15` itself is part of the "after" period, as per the case study.
+- `before_after_changes` CTE: Utilize a `CASE` statement to capture the sales for the 4 weeks before and after `2020-06-15`.
 
 ````sql
 WITH packaging_sales AS (
   SELECT 
     week_date, 
-    week_number, 
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE (week_number BETWEEN 21 AND 28) 
-    AND (calendar_year = 2020)
-  GROUP BY week_date, week_number
+  WHERE week_date >= '2020-06-15'::DATE - INTERVAL '4 weeks'
+    AND week_date <  '2020-06-15'::DATE + INTERVAL '4 weeks'
+  GROUP BY week_date
 )
 , before_after_changes AS (
   SELECT 
     SUM(CASE 
-      WHEN week_number BETWEEN 21 AND 24 THEN total_sales END) AS before_packaging_sales,
+      WHEN week_date < '2020-06-15' THEN total_sales END) AS before_packaging_sales,
     SUM(CASE 
-      WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_packaging_sales
+      WHEN week_date >= '2020-06-15' THEN total_sales END) AS after_packaging_sales
   FROM packaging_sales
 )
 
@@ -449,19 +435,18 @@ We can apply a similar approach and solution to address this question.
 WITH packaging_sales AS (
   SELECT 
     week_date, 
-    week_number, 
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE (week_number BETWEEN 13 AND 37) 
-    AND (calendar_year = 2020)
-  GROUP BY week_date, week_number
+  WHERE week_date >= '2020-06-15'::DATE - INTERVAL '12 weeks'
+    AND week_date <  '2020-06-15'::DATE + INTERVAL '12 weeks'
+  GROUP BY week_date
 )
 , before_after_changes AS (
   SELECT 
     SUM(CASE 
-      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+      WHEN week_date < '2020-06-15' THEN total_sales END) AS before_packaging_sales,
     SUM(CASE 
-      WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_packaging_sales
+      WHEN week_date >= '2020-06-15' THEN total_sales END) AS after_packaging_sales
   FROM packaging_sales
 )
 
@@ -494,19 +479,21 @@ I'm breaking down this question to 2 parts.
 WITH changes AS (
   SELECT 
     calendar_year,
-    week_number, 
+    week_date,
+    MAKE_DATE(calendar_year::INT, 6, 15) AS baseline_date,
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE week_number BETWEEN 21 AND 28
-  GROUP BY calendar_year, week_number
+  GROUP BY calendar_year, week_date
 )
 , before_after_changes AS (
   SELECT 
     calendar_year,
     SUM(CASE 
-      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+      WHEN week_date >= baseline_date - INTERVAL '4 weeks' 
+        AND week_date < baseline_date THEN total_sales END) AS before_packaging_sales,
     SUM(CASE 
-      WHEN week_number BETWEEN 25 AND 28 THEN total_sales END) AS after_packaging_sales
+      WHEN week_date >= baseline_date 
+        AND week_date < baseline_date + INTERVAL '4 weeks' THEN total_sales END) AS after_packaging_sales
   FROM changes
   GROUP BY calendar_year
 )
@@ -535,25 +522,27 @@ Similarly, in 2019, there was a sales variance of $2,336,594, corresponding to a
 However, in 2020, there was a substantial decrease in sales following the packaging change. The sales variance amounted to $26,884,188, indicating a significant negative change of -1.15%. This reduction represents a considerable drop compared to the previous years.
 
 **Part 2: How do the sale metrics for 12 weeks before and after compare with the previous years in 2018 and 2019?**
-- Use the same solution above and change to week 13 to 24 for before and week 25 to 37 for after.
+- Use the same solution above and change the window to 12 weeks before and 12 weeks after the baseline date. (The earlier version used weeks 13–24 as "before" and weeks 25–37 as "after", which is 12 weeks vs 13 weeks for 2018 and 2019 — filtering on dates avoids that mismatch.)
 
 ````sql
 WITH changes AS (
   SELECT 
     calendar_year, 
-    week_number, 
+    week_date,
+    MAKE_DATE(calendar_year::INT, 6, 15) AS baseline_date,
     SUM(sales) AS total_sales
   FROM clean_weekly_sales
-  WHERE week_number BETWEEN 13 AND 37
-  GROUP BY calendar_year, week_number
+  GROUP BY calendar_year, week_date
 )
 , before_after_changes AS (
   SELECT 
     calendar_year,
     SUM(CASE 
-      WHEN week_number BETWEEN 13 AND 24 THEN total_sales END) AS before_packaging_sales,
+      WHEN week_date >= baseline_date - INTERVAL '12 weeks' 
+        AND week_date < baseline_date THEN total_sales END) AS before_packaging_sales,
     SUM(CASE 
-      WHEN week_number BETWEEN 25 AND 37 THEN total_sales END) AS after_packaging_sales
+      WHEN week_date >= baseline_date 
+        AND week_date < baseline_date + INTERVAL '12 weeks' THEN total_sales END) AS after_packaging_sales
   FROM changes
   GROUP BY calendar_year
 )
@@ -569,15 +558,15 @@ FROM before_after_changes;
 
 **Answer:**
 
+> ⚠️ The 2018 and 2019 rows below were produced with the previous week-number filter (12 weeks before vs 13 weeks after) and need to be re-run with the corrected query and refreshed, together with the commentary beneath them. The 2020 row is unchanged because the dataset ends after 12 post-baseline weeks in 2020.
+
 |calendar_year|sales_variance|variance_percentage|
 |:----|:----|:----|
-|2018|104256193|1.63|
-|2019|-20740294|-0.30|
+|2018|_re-run_|_re-run_|
+|2019|_re-run_|_re-run_|
 |2020|-152325394|-2.14|
 
-There was a fair bit of percentage differences in all 3 years. However, now when you compare the worst year to their best year in 2018, the sales percentage difference is even more stark at a difference of 3.77% (1.63% + 2.14%).
-
-When comparing the sales performance across all three years, there were noticeable variations in the percentage differences. However, the most significant contrast emerges when comparing the worst-performing year in 2020 to the best-performing year in 2018. In this comparison, the sales percentage difference becomes even more apparent with a significant gap of 3.77% (1.63% + 2.14%).
+_Commentary to be updated once the 2018 and 2019 rows are refreshed._
 
 ***
 

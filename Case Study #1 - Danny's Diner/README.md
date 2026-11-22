@@ -138,29 +138,47 @@ Therefore, it would be inaccurate to conclude that curry is the customer's first
 
 **4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
 
+The question has two parts: (1) which item is the most purchased overall, and (2) how many times each customer purchased it.
+
 ````sql
+WITH most_purchased AS (
+  SELECT 
+    menu.product_id,
+    menu.product_name,
+    COUNT(sales.product_id) AS total_purchased
+  FROM dannys_diner.sales
+  INNER JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+  GROUP BY menu.product_id, menu.product_name
+  ORDER BY total_purchased DESC
+  LIMIT 1
+)
+
 SELECT 
-  menu.product_name,
-  COUNT(sales.product_id) AS most_purchased_item
+  mp.product_name,
+  mp.total_purchased,
+  sales.customer_id,
+  COUNT(sales.product_id) AS customer_purchased
 FROM dannys_diner.sales
-INNER JOIN dannys_diner.menu
-  ON sales.product_id = menu.product_id
-GROUP BY menu.product_name
-ORDER BY most_purchased_item DESC
-LIMIT 1;
+INNER JOIN most_purchased AS mp
+  ON sales.product_id = mp.product_id
+GROUP BY mp.product_name, mp.total_purchased, sales.customer_id
+ORDER BY sales.customer_id;
 ````
 
 #### Steps:
-- Perform a **COUNT** aggregation on the `product_id` column and **ORDER BY** the result in descending order using `most_purchased` field.
-- Apply the **LIMIT** 1 clause to filter and retrieve the highest number of purchased items.
+- Create a CTE called `most_purchased`. Perform a **COUNT** aggregation on the `product_id` column, **ORDER BY** the count in descending order and apply **LIMIT** 1 to retrieve the most purchased item overall.
+- In the outer query, join `sales` back to the CTE to keep only purchases of that item, then **COUNT** them per `customer_id`.
 
 #### Answer:
-| most_purchased | product_name | 
-| ----------- | ----------- |
-| 8       | ramen |
-
+| product_name | total_purchased | customer_id | customer_purchased |
+| ----------- | ----------- | ----------- | ----------- |
+| ramen | 8 | A | 3 |
+| ramen | 8 | B | 2 |
+| ramen | 8 | C | 3 |
 
 - Most purchased item on the menu is ramen which is 8 times. Yummy!
+- Customer A and C purchased it 3 times each, and customer B purchased it 2 times.
 
 ***
 
@@ -402,7 +420,6 @@ SELECT
 FROM dannys_diner.sales
 INNER JOIN dates_cte AS dates
   ON sales.customer_id = dates.customer_id
-  AND dates.join_date <= sales.order_date
   AND sales.order_date <= dates.last_date
 INNER JOIN dannys_diner.menu
   ON sales.product_id = menu.product_id
@@ -417,7 +434,7 @@ GROUP BY sales.customer_id;
 #### Steps:
 - Create a CTE called `dates_cte`. 
 - In `dates_cte`, calculate the `valid_date` by adding 6 days to the `join_date` and determine the `last_date` of the month by subtracting 1 day from the last day of January 2021.
-- From `dannys_diner.sales` table, join `dates_cte` on `customer_id` column, ensuring that the `order_date` of the sale is after the `join_date` (`dates.join_date <= sales.order_date`) and not later than the `last_date` (`sales.order_date <= dates.last_date`).
+- From `dannys_diner.sales` table, join `dates_cte` on `customer_id` column, ensuring that the `order_date` of the sale is not later than the `last_date` (`sales.order_date <= dates.last_date`). Purchases made *before* the join date are kept, because they still earn points (10 points per $1, or 20 for sushi) — the member-only join to `dates_cte` already limits the result to customers A and B.
 - Then, join `dannys_diner.menu` table based on the `product_id` column.
 - In the outer query, calculate the points by using a `CASE` statement to determine the points based on our assumptions above. 
     - If the `product_name` is 'sushi', multiply the price by 2 and then by 10. For orders placed between `join_date` and `valid_date`, also multiply the price by 2 and then by 10. 
@@ -427,11 +444,11 @@ GROUP BY sales.customer_id;
 #### Answer:
 | customer_id | total_points | 
 | ----------- | ---------- |
-| A           | 1020 |
-| B           | 320 |
+| A           | 1370 |
+| B           | 820 |
 
-- Total points for Customer A is 1,020.
-- Total points for Customer B is 320.
+- Total points for Customer A is 1,370.
+- Total points for Customer B is 820.
 
 ***
 
